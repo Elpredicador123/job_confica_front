@@ -9,15 +9,15 @@ export default {
   components: { Layout, PageHeader },
     data() {
         return {
-            title: "Advanced",
-            data_news : [],
-            data_temp : [],
+            tableData: [],
+            title: "Noticias",
             items: [
                 {
-                text: "Tables"
+                text: "Noticias",
+                href: "/news/index"
                 },
                 {
-                text: "Advanced",
+                text: "Listado",
                 active: true
                 }
             ],
@@ -31,6 +31,10 @@ export default {
             sortDesc: false,
             fields: [
                 {
+                    key: "id",
+                    sortable: true
+                },
+                {
                     key: "title",
                     sortable: true
                 },
@@ -40,10 +44,6 @@ export default {
                 },
                 {
                     key: "date",
-                    sortable: true
-                },
-                {
-                    key: "id",
                     sortable: true
                 },
                 {
@@ -57,20 +57,19 @@ export default {
             ]
         }
     },
-    computed: {
-        /**
-         * Total no. of records
-         */
-        rows() {
-            return this.data_news.length;
-        }
-    },
+    // computed: {
+    //     /**
+    //      * Total no. of records
+    //      */
+    //     rows: function () {
+    //         return this.tableData.length;
+    //     }
+    // },
     mounted() {
         // Set the initial number of items
         this.totalRows = this.items.length;
-    },
-    async created(){
-        await this.getData();
+        //obtener datos de la api
+        this.getData();
     },
     methods:{
         onFiltered(filteredItems) {
@@ -80,13 +79,9 @@ export default {
         },
         async getData() {
             try {
-                const response = await this.$http.get('http://comfica_back.test:8084/api/news/all');
-                this.data_temp = response.data.data;
-                for (let index = 0; index < this.data_temp.length; index++) {
-                    this.data_news.push(JSON.parse(JSON.stringify(this.data_temp[index])));
-                }
-                this.totalRows = this.data_news.length; // Asegúrate de actualizar las filas totales aquí
-                console.log(this.data_news);
+                const response = await this.$http.get('http://localhost:8000/api/news/all');
+                response.data.data.map(i => this.tableData.push({ ...i }));
+                this.totalRows = this.tableData.length;
             } catch (error) {
                 console.error(error);
             }
@@ -139,7 +134,7 @@ export default {
                         <!-- Table -->
                         <div class="table-responsive mb-0">
                             <BTable
-                                :items="data_news"
+                                :items="tableData"
                                 :fields="fields"
                                 responsive="sm"
                                 :per-page="perPage"
@@ -160,7 +155,7 @@ export default {
                                     <!-- pagination -->
                                     <BPagination
                                     v-model="currentPage"
-                                    :total-rows="rows"
+                                    :total-rows="totalRows"
                                     :per-page="perPage"
                                     ></BPagination>
                                 </ul>

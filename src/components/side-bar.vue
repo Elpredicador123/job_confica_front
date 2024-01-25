@@ -25,7 +25,6 @@ export default {
   },
 
   mounted: function () {
-    console.log(menuItems)
     const element = document.getElementById("side-menu");
     if (element) {
       new MetisMenu("#side-menu");
