@@ -27,26 +27,26 @@ const categories = [
 
 const calendarEvents = [
     {
-        id: 1,
+        id: 11,
         title: 'All Day Event',
         start: new Date().setDate(new Date().getDate() + 2),
         className: 'bg-warning text-white',
     },
     {
-        id: 2,
+        id: 12,
         title: 'Long Event',
         start: new Date().setDate(new Date().getDate() - 5),
         end: new Date().setDate(new Date().getDate() - 3),
         className: 'bg-success text-white',
     },
     {
-        id: 3,
+        id: 13,
         title: 'Lunch',
         start: new Date().setDate(new Date().getDate() + 2),
         className: 'bg-info text-white',
     },
     {
-        id: 4,
+        id: 14,
         title: 'Birthday Party',
         start: new Date().setDate(new Date().getDate() + 4),
         className: 'bg-primary text-white'

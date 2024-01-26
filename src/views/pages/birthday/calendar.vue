@@ -14,7 +14,7 @@ import Swal from "sweetalert2";
 import Layout from "../../layouts/main";
 import PageHeader from "@/components/page-header";
 
-import { calendarEvents, categories } from "../calendar/data-calendar";
+import {  categories } from "../calendar/data-calendar";
 
 /**
  * Calendar component
@@ -36,8 +36,7 @@ export default {
           active: true
         }
       ],
-      calendarEvents: calendarEvents,
-      calendarData:[],
+      calendarEvents: [],
       calendarOptions: {
         headerToolbar: {
           left: "prev,next today",
@@ -101,10 +100,9 @@ export default {
      */
         async getData() {
             try {
-                const response = await this.$http.get('http://comfica_back.test:8084/api/birthday/all');
-                
-                response.data.data.map(i => this.calendarData.push({ ...i }));
-                console.log(this.calendarData)
+                const response = await this.$http.get('http://localhost:8000/api/birthday/all');
+                this.calendarOptions.events  = response.data.data;
+                console.log(this.calendarOptions.events)
                 
             } catch (error) {
                 console.error(error);
