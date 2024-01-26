@@ -91,6 +91,12 @@
         
       }
     },
+    "birthday": {
+      "text": "Cumpleaños",
+      "list": {
+        "calendar": "Calendario"
+      }
+    },
     "email": {
       "text": "Email",
       "list": {

@@ -110,6 +110,19 @@ export const menuItems = [
         ]
     },
     {
+        id: 8,
+        label: "menuitems.birthday.text",
+        icon: "uil-store",
+        subItems: [
+            {
+                id: 93,
+                label: "menuitems.birthday.list.calendar",
+                link: "/birthday/calendar",
+                parentId: 8
+            }
+        ]
+    },
+    {
         id: 15,
         label: "menuitems.email.text",
         icon: "uil-envelope",

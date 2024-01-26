@@ -113,6 +113,12 @@ export default [
     component: () => import("../views/pages/news/index")
   },
   {
+    path: "/birthday/calendar",
+    name: "Cumpleaños",
+    meta: { title: "Cumpleaños", authRequired: true },
+    component: () => import("../views/pages/birthday/calendar")
+  },
+  {
     path: "/ecommerce/products",
     name: "Products",
     meta: { title: "Products", authRequired: true },
