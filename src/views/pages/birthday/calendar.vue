@@ -76,7 +76,7 @@ export default {
       deleteId: {},
       event: {
         title: "",
-        category: ""
+        category: "",
       },
       editevent: {
         editTitle: "",
@@ -100,8 +100,9 @@ export default {
      */
         async getData() {
             try {
-                const response = await this.$http.get('http://localhost:8000/api/birthday/all');
+                const response = await this.$http.get('http://comfica_back.test:8084/api/birthday/all');
                 this.calendarOptions.events  = response.data.data;
+                this.event.category = "Danger"
                 console.log(this.calendarOptions.events)
                 
             } catch (error) {
