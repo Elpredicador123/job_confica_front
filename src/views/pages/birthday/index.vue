@@ -75,7 +75,7 @@ export default {
         },
         async getData() {
             try {
-                const response = await this.$http.get('http://comfica_back.test:8084/api/birthday/all');
+                const response = await this.$http.get(this.$apiURL+'birthday/all');
                 response.data.data.map(i => this.tableData.push({ ...i }));
                 this.totalRows = this.tableData.length;
             } catch (error) {

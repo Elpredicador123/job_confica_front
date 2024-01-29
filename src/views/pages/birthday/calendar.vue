@@ -101,7 +101,7 @@ export default {
      */
         async getData() {
             try {
-                const response = await this.$http.get('http://comfica_back.test:8084/api/birthday/all');
+                const response = await this.$http.get(this.$apiURL+'birthday/all');
                 this.calendarOptions.events  = response.data.data;
                 this.event.category = "Danger"
                 console.log(this.calendarOptions.events)
@@ -127,7 +127,7 @@ export default {
       };
 
       // Aquí realizas la solicitud POST a tu API
-      this.$http.post('http://comfica_back.test:8084/api/birthday/store', eventData)
+      this.$http.post(this.$apiURL+'birthday/store', eventData)
           .then(response => {
               console.log(response);
               this.successmsg();

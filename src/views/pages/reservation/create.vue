@@ -16,11 +16,14 @@ import PageHeader from "@/components/page-header";
 
 import {  categories } from "../calendar/data-calendar";
 
+import VueDatePicker from "@vuepic/vue-datepicker";
+import "@vuepic/vue-datepicker/dist/main.css";
+
 /**
  * Calendar component
  */
 export default {
-components: { FullCalendar, Layout, PageHeader },
+components: { FullCalendar, Layout, PageHeader, VueDatePicker},
 setup() {
     return { v$: useVuelidate() };
 },
@@ -81,21 +84,25 @@ data() {
         editcategory: "",
         number_of_people : null,
         description: "",
-        time : null
+        start_time : "",
+        end_time : ""
     },
     editevent: {
         editTitle: "",
         editcategory: "",
         number_of_people : null,
         description: "",
-        time : null
+        start_time : "",
+        end_time : ""
     }
     };
 },
 validations: {
     event: {
     title: { required },
-    category: { required }
+    category: { required },
+    start_time : { required },
+    end_time : { required },
     }
 },
 mounted() {
@@ -108,7 +115,7 @@ methods: {
      */
         async getData() {
             try {
-                const response = await this.$http.get('http://comfica_back.test:8084/api/reservation/all');
+                const response = await this.$http.get(this.$apiURL+'reservation/all');
                 this.calendarOptions.events  = response.data.data;
                 this.event.category = "Danger"
                 console.log(this.calendarOptions.events)
@@ -128,22 +135,24 @@ methods: {
     console.log(this.newEventData)
 
     const dateStr = this.newEventData.dateStr;
-    const [date, time] = dateStr.split('T'); // Separa la fecha y la hora
-    const [time2, ] = time.split('-'); // Ignorar la información de zona horaria
-
+    const date = dateStr.split('T'); // Separa la fecha y la hora
+    const var_start_time = this.event.start_time.hours+":"+this.event.start_time.minutes+":00"
+    const var_end_time = this.event.end_time.hours+":"+this.event.end_time.minutes+":00"
+    
     const eventData = {
-        title: this.event.title,
-        description: this.event.description,
+        title: this.event.title + var_start_time + ' - ' + var_end_time,
+        description: this.event.description + var_start_time + ' - ' + var_end_time,
         number_of_people: this.event.numberOfPeople,
-        date: date,
-        time: time2,
+        date: date[0],
+        start_time: var_start_time,
+        end_time: var_end_time,
         user_id: 1 // Asegúrate de que este dato esté disponible
     };
 
     console.log(eventData)
 
     // Aquí realizas la solicitud POST a tu API
-    this.$http.post('http://comfica_back.test:8084/api/reservation/store', eventData)
+    this.$http.post(this.$apiURL+'reservation/store', eventData)
         .then(response => {
             console.log(response);
             this.successmsg();
@@ -170,9 +179,17 @@ methods: {
     editSubmit() {
     this.submit = true;
     const editTitle = this.editevent.editTitle;
+    const editDescription = this.editevent.editDescription;
+    const editNumberOfPeople = this.editevent.editNumberOfPeople;
+    const editStartTime = this.editevent.editStartTime;
+    const editEndTime = this.editevent.editEndTime;
     const editcategory = this.editevent.editcategory;
 
     this.edit.setProp("title", editTitle);
+    this.edit.setProp("description", editDescription);
+    this.edit.setProp("numberOfPeople", editNumberOfPeople);
+    this.edit.setProp("start_time", editStartTime);
+    this.edit.setProp("end_time", editEndTime);
     this.edit.setProp("classNames", editcategory);
     this.successmsg();
     this.eventModal = false;
@@ -198,6 +215,10 @@ methods: {
     editEvent(info) {
     this.edit = info.event;
     this.editevent.editTitle = this.edit.title;
+    this.editevent.editDescription = this.edit.description;
+    this.editevent.editNumberOfPeople = this.edit.numberOfPeople;
+    this.editevent.editStartTime = this.edit.start_time;
+    this.editevent.editEndTime = this.edit.end_time;
     this.editevent.editcategory = this.edit.classNames[0];
     this.eventModal = true;
     },
@@ -326,6 +347,18 @@ methods: {
                     <div class="mb-3">
                         <label for="numberOfPeople" class="form-label">Número de Personas</label>
                         <input id="numberOfPeople" v-model="event.numberOfPeople" type="number" class="form-control" placeholder="Número de personas">
+                    </div>
+                </BCol>
+                <BCol cols="12">
+                    <div class="mb-3">
+                        <label for="start_time" class="form-label">Hora inicio</label>
+                        <VueDatePicker id="start_time" v-model="event.start_time" time-picker />
+                    </div>
+                </BCol>
+                <BCol cols="12">
+                    <div class="mb-3">
+                        <label for="end_time" class="form-label">Hora fin</label>
+                        <VueDatePicker id="end_time" v-model="event.end_time" time-picker />
                     </div>
                 </BCol>
             </BRow>

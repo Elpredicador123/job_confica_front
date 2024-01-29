@@ -52,7 +52,12 @@ export default {
                 }
                 ,
                 {
-                    key: "time",
+                    key: "start_time",
+                    sortable: true
+                }
+                ,
+                {
+                    key: "end_time",
                     sortable: true
                 }
                 ,
@@ -85,7 +90,7 @@ export default {
         },
         async getData() {
             try {
-                const response = await this.$http.get('http://comfica_back.test:8084/api/reservation/all');
+                const response = await this.$http.get(this.$apiURL+'reservation/all');
                 response.data.data.map(i => this.tableData.push({ ...i }));
                 this.totalRows = this.tableData.length;
             } catch (error) {

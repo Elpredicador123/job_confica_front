@@ -111,7 +111,7 @@ export default {
 
             // Realiza la petición con Axios
             console.log(formData)
-            this.$http.post('http://comfica_back.test:8084/api/news/store', formData, {
+            this.$http.post(this.$apiURL+'news/store', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
