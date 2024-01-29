@@ -39,15 +39,25 @@ export default {
             DropFile : [],
             editor_title: ClassicEditor,
             editor_description: ClassicEditor,
-            news: {
+            news: {}
+        };
+  },
+  async created(){
+    this.initForm()
+  },
+    methods: {
+        initForm(){
+          this.news = {
                 title:"<h3>Título de la notica</h3>",
                 description :"<h3>Descripción de la notica</h3>",
                 date: null,
                 user_id : 1
-            }
-        };
-  },
-    methods: {
+            };
+            this.dPDefaultDate = null;
+            this.galleryDropzoneFile = "";
+            this.galleryFiles = [];
+            this.DropFile = [];
+        },
         deleteRecord(ele) {
             console.log("call Delet");
             if (ele.id) {
@@ -106,9 +116,24 @@ export default {
                     'Content-Type': 'multipart/form-data'
                 }
             }).then(response => {
-                console.log(response);
+                if(response.status == 200){
+                  console.log(response);
+                  this.$swal({
+                      title: 'Completado!',
+                      text:  response.data.message,
+                      icon: 'success',
+                      confirmButtonColor: '#6457A2', // Cambiar el color del botón de confirmación
+                  });
+                  this.$swal('Completado!', response.data.message, 'success');
+                  this.initForm()
+                }
             }).catch(error => {
                 console.error(error);
+                  this.$swal({
+                    icon: "error",
+                    title: "Oops...",
+                    text: error,
+                  });
             });
         }
     },
@@ -219,9 +244,6 @@ export default {
                   </div>
                 </li>
               </ul>
-              <div class="text-center mt-4">
-                <BButton variant="primary"> Send files </BButton>
-              </div>
             </BCardBody>
           </BCard>
         </BCol>

@@ -116,9 +116,34 @@ export const menuItems = [
         subItems: [
             {
                 id: 93,
+                label: "menuitems.birthday.list.index",
+                link: "/birthday/index",
+                parentId: 8
+            },
+            {
+                id: 94,
                 label: "menuitems.birthday.list.calendar",
                 link: "/birthday/calendar",
                 parentId: 8
+            }
+        ]
+    },
+    {
+        id: 9,
+        label: "menuitems.reservation.text",
+        icon: "uil-store",
+        subItems: [
+            {
+                id: 95,
+                label: "menuitems.reservation.list.index",
+                link: "/reservation/index",
+                parentId: 9
+            },
+            {
+                id: 96,
+                label: "menuitems.reservation.list.create",
+                link: "/reservation/create",
+                parentId: 9
             }
         ]
     },
@@ -567,37 +592,37 @@ export const menuItems = [
             },
         ]
     },
-    {
-        id: 88,
-        label: "menuitems.multilevel.text",
-        icon: "uil-share-alt",
-        subItems: [
-            {
-                id: 89,
-                label: "menuitems.multilevel.list.level1.1",
-                link: "#",
-                parentId: 88
-            },
-            {
-                id: 90,
-                label: "menuitems.multilevel.list.level1.2",
-                parentId: 88,
-                subItems: [
-                    {
-                        id: 91,
-                        label: "menuitems.multilevel.list.level1.level2.1",
-                        link: "#",
-                        parentId: 88
-                    },
-                    {
-                        id: 92,
-                        label: "menuitems.multilevel.list.level1.level2.2",
-                        link: "#",
-                        parentId: 88
-                    }
-                ]
-            }
-        ]
-    }
+    // {
+    //     id: 88,
+    //     label: "menuitems.multilevel.text",
+    //     icon: "uil-share-alt",
+    //     subItems: [
+    //         {
+    //             id: 89,
+    //             label: "menuitems.multilevel.list.level1.1",
+    //             link: "#",
+    //             parentId: 88
+    //         },
+    //         {
+    //             id: 90,
+    //             label: "menuitems.multilevel.list.level1.2",
+    //             parentId: 88,
+    //             subItems: [
+    //                 {
+    //                     id: 91,
+    //                     label: "menuitems.multilevel.list.level1.level2.1",
+    //                     link: "#",
+    //                     parentId: 88
+    //                 },
+    //                 {
+    //                     id: 92,
+    //                     label: "menuitems.multilevel.list.level1.level2.2",
+    //                     link: "#",
+    //                     parentId: 88
+    //                 }
+    //             ]
+    //         }
+    //     ]
+    // }
 ];
 

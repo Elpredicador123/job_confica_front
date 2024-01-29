@@ -10,11 +10,11 @@ export default {
     data() {
         return {
             tableData: [],
-            title: "Noticias",
+            title: "Cumpleaños",
             items: [
                 {
-                text: "Noticias",
-                href: "/news/index"
+                text: "Cumpleaños",
+                href: "/birthday/index"
                 },
                 {
                 text: "Listado",
@@ -39,23 +39,16 @@ export default {
                     sortable: true
                 },
                 {
-                    key: "description",
+                    key: "start",
                     sortable: true
                 },
                 {
-                    key: "date",
+                    key: "end",
                     sortable: true
                 },
                 {
                     key: "is_active",
                     sortable: true
-                },
-                {
-                    key: "user_id",
-                    sortable: true
-                },
-                {
-                    key: "actions",
                 }
             ]
         }
@@ -82,7 +75,7 @@ export default {
         },
         async getData() {
             try {
-                const response = await this.$http.get('http://comfica_back.test:8084/api/news/all');
+                const response = await this.$http.get('http://comfica_back.test:8084/api/birthday/all');
                 response.data.data.map(i => this.tableData.push({ ...i }));
                 this.totalRows = this.tableData.length;
             } catch (error) {
@@ -153,9 +146,6 @@ export default {
                                 :filter-included-fields="filterOn"
                                 @filtered="onFiltered"
                             >
-                                <template #cell(actions)="{ item }">
-                                    <b-button @click="editItem(item.id)" variant="primary">Editar</b-button>
-                                </template>
                         </BTable>
                         </div>
                         <BRow>

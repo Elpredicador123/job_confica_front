@@ -8,11 +8,13 @@ import { vMaska } from "maska";
 import VueApexCharts from "vue3-apexcharts";
 import CKEditor from "@ckeditor/ckeditor5-vue";
 import BootstrapVueNext from "bootstrap-vue-next";
+import VueSweetalert2 from 'vue-sweetalert2';
 import "simplebar";
 
 import { initFirebaseBackend } from "./helpers/firebase/authUtils";
 
 import { configureFakeBackend } from "./helpers/fakebackend/fake-backend";
+import 'sweetalert2/dist/sweetalert2.min.css';
 
 const firebaseConfig = {
   apiKey: process.env.VUE_APP_APIKEY,
@@ -42,6 +44,7 @@ app.config.globalProperties.$http = axiosInstance; // Provee Axios globalmente
   .use(router)
   .use(VueApexCharts)
   .use(BootstrapVueNext)
+  .use(VueSweetalert2)
   .use(i18n)
   .directive("maska", vMaska)
   .use(CKEditor)

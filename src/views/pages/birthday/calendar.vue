@@ -15,6 +15,7 @@ import Layout from "../../layouts/main";
 import PageHeader from "@/components/page-header";
 
 import {  categories } from "../calendar/data-calendar";
+import { format } from 'date-fns';
 
 /**
  * Calendar component
@@ -116,22 +117,29 @@ export default {
       this.v$.$touch();
       if (this.v$.$invalid) {
         return;
-      } else {
-        const title = this.event.title;
-        const category = this.event.category;
-        let calendarApi = this.newEventData.view.calendar;
-
-        this.currentEvents = calendarApi.addEvent({
-          id: this.newEventData.length + 1,
-          title,
-          start: this.newEventData.date,
-          end: this.newEventData.date,
-          classNames: [category]
-        });
-        this.successmsg();
-        this.showModal = false;
-        this.newEventData = {};
       }
+      const formattedStartDate = format(new Date(this.newEventData.date), 'yyyy-MM-dd');
+      const eventData = {
+          title: this.event.title,
+          start: formattedStartDate,
+          end: formattedStartDate, // Ajusta esto si tienes una lógica diferente para 'end'
+          user_id: 1 // Asegúrate de que este dato esté disponible
+      };
+
+      // Aquí realizas la solicitud POST a tu API
+      this.$http.post('http://comfica_back.test:8084/api/birthday/store', eventData)
+          .then(response => {
+              console.log(response);
+              this.successmsg();
+              
+              this.showModal = false;
+              this.getData()
+          })
+          .catch(error => {
+              console.error(error);
+              // Manejar errores aquí
+          });
+
       this.submitted = false;
       this.event = {};
     },

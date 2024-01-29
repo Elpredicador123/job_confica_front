@@ -108,8 +108,8 @@ export default [
   },
   {
     path: "/news/index",
-    name: "Noticias",
-    meta: { title: "Noticias", authRequired: true },
+    name: "Listado",
+    meta: { title: "Listado", authRequired: true },
     component: () => import("../views/pages/news/index")
   },
   {
@@ -119,10 +119,28 @@ export default [
     component: () => import("../views/pages/news/create")
   },
   {
+    path: "/birthday/index",
+    name: "Listado Cumpleaños",
+    meta: { title: "Listado Cumpleaños", authRequired: true },
+    component: () => import("../views/pages/birthday/index")
+  },
+  {
     path: "/birthday/calendar",
     name: "Cumpleaños",
     meta: { title: "Cumpleaños", authRequired: true },
     component: () => import("../views/pages/birthday/calendar")
+  },
+  {
+    path: "/reservation/index",
+    name: "Listado Reservas",
+    meta: { title: "Listado Reservas", authRequired: true },
+    component: () => import("../views/pages/reservation/index")
+  },
+  {
+    path: "/reservation/create",
+    name: "Reservaciones",
+    meta: { title: "Reservaciones", authRequired: true },
+    component: () => import("../views/pages/reservation/create")
   },
   {
     path: "/ecommerce/products",

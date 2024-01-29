@@ -94,7 +94,15 @@
     "birthday": {
       "text": "Cumpleaños",
       "list": {
-        "calendar": "Calendario"
+        "calendar": "Calendario",
+        "index": "Listado Cumpleaños"
+      }
+    },
+    "reservation": {
+      "text": "Reservaciones",
+      "list": {
+        "create": "Nueva Reservación",
+        "index": "Listado"
       }
     },
     "email": {

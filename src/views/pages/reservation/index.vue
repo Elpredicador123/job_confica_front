@@ -10,11 +10,11 @@ export default {
     data() {
         return {
             tableData: [],
-            title: "Noticias",
+            title: "Reservaciones",
             items: [
                 {
-                text: "Noticias",
-                href: "/news/index"
+                text: "Reservaciones",
+                href: "/reservation/index"
                 },
                 {
                 text: "Listado",
@@ -43,19 +43,22 @@ export default {
                     sortable: true
                 },
                 {
-                    key: "date",
+                    key: "number_of_people",
                     sortable: true
                 },
+                {
+                    key: "date",
+                    sortable: true
+                }
+                ,
+                {
+                    key: "time",
+                    sortable: true
+                }
+                ,
                 {
                     key: "is_active",
                     sortable: true
-                },
-                {
-                    key: "user_id",
-                    sortable: true
-                },
-                {
-                    key: "actions",
                 }
             ]
         }
@@ -82,7 +85,7 @@ export default {
         },
         async getData() {
             try {
-                const response = await this.$http.get('http://comfica_back.test:8084/api/news/all');
+                const response = await this.$http.get('http://comfica_back.test:8084/api/reservation/all');
                 response.data.data.map(i => this.tableData.push({ ...i }));
                 this.totalRows = this.tableData.length;
             } catch (error) {
@@ -153,9 +156,6 @@ export default {
                                 :filter-included-fields="filterOn"
                                 @filtered="onFiltered"
                             >
-                                <template #cell(actions)="{ item }">
-                                    <b-button @click="editItem(item.id)" variant="primary">Editar</b-button>
-                                </template>
                         </BTable>
                         </div>
                         <BRow>
