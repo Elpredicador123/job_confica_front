@@ -119,6 +119,13 @@ export default [
     component: () => import("../views/pages/news/create")
   },
   {
+    path: "/news/edit/:id",
+    name: "Noticias",
+    props: true,
+    meta: { title: "Noticias", authRequired: true },
+    component: () => import("../views/pages/news/edit")
+  },
+  {
     path: "/birthday/index",
     name: "Listado Cumpleaños",
     meta: { title: "Listado Cumpleaños", authRequired: true },

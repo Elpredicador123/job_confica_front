@@ -87,8 +87,8 @@
       "text": "Noticias",
       "list": {
         "index": "Listado",
-        "create": "Crear"
-        
+        "create": "Crear",
+        "edit": "Editar"
       }
     },
     "birthday": {

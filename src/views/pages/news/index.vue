@@ -91,6 +91,10 @@ export default {
         },
         editItem(item) {
             // Acción al hacer clic en editar. Por ejemplo:
+            // redirigir a la pagina de create con el id del item 
+
+            
+
             console.log("Editar item", item);
             // Aquí puedes abrir un modal de edición o navegar a una página de edición
         },
@@ -153,10 +157,12 @@ export default {
                                 :filter-included-fields="filterOn"
                                 @filtered="onFiltered"
                             >
-                                <template #cell(actions)="{ item }">
-                                    <b-button @click="editItem(item.id)" variant="primary">Editar</b-button>
+                                <template #cell(actions)="{item}">
+                                    <router-link :to="'/news/edit/' + item.id" class="logo logo-dark">
+                                        Editar
+                                    </router-link>
                                 </template>
-                        </BTable>
+                            </BTable>
                         </div>
                         <BRow>
                             <BCol>

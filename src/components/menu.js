@@ -104,7 +104,13 @@ export const menuItems = [
             {
                 id: 92,
                 label: "menuitems.news.list.create",
-                link: "/news/create",
+                link: "/news/create/",
+                parentId: 7
+            },
+            {
+                id: 93,
+                label: "menuitems.news.list.edit",
+                link: "/news/edit/:id",
                 parentId: 7
             }
         ]
