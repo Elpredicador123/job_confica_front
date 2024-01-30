@@ -15,15 +15,13 @@ import Layout from "../../layouts/main";
 import PageHeader from "@/components/page-header";
 
 import {  categories } from "../calendar/data-calendar";
-
-import VueDatePicker from "@vuepic/vue-datepicker";
-import "@vuepic/vue-datepicker/dist/main.css";
+import { format } from 'date-fns';
 
 /**
  * Calendar component
  */
 export default {
-components: { FullCalendar, Layout, PageHeader, VueDatePicker},
+components: { FullCalendar, Layout, PageHeader },
 setup() {
     return { v$: useVuelidate() };
 },
@@ -41,6 +39,7 @@ data() {
     ],
     calendarEvents: [],
     calendarOptions: {
+        eventDrop: this.handleEventDrop,
         headerToolbar: {
         left: "prev,next today",
         center: "title",
@@ -80,29 +79,22 @@ data() {
     event: {
         title: "",
         category: "",
-        editTitle: "",
-        editcategory: "",
         number_of_people : null,
         description: "",
-        start_time : "",
-        end_time : ""
+        time : null
     },
     editevent: {
         editTitle: "",
-        editcategory: "",
-        number_of_people : null,
-        description: "",
-        start_time : "",
-        end_time : ""
+        editCategory: "",
+        editNumber_of_people : null,
+        editDescription: ""
     }
     };
 },
 validations: {
     event: {
     title: { required },
-    category: { required },
-    start_time : { required },
-    end_time : { required },
+    category: { required }
     }
 },
 mounted() {
@@ -113,86 +105,116 @@ methods: {
     /**
      * Modal form submit
      */
-        async getData() {
-            try {
-                const response = await this.$http.get(this.$apiURL+'reservation/all');
-                this.calendarOptions.events  = response.data.data;
-                this.event.category = "Danger"
-                console.log(this.calendarOptions.events)
-                
-            } catch (error) {
-                console.error(error);
-            }
-        },
-    handleSubmit() {
-    this.submitted = true;
-
-    // stop here if form is invalid
-    this.v$.$touch();
-    if (this.v$.$invalid) {
-        return;
-    }
-    console.log(this.newEventData)
-
-    const dateStr = this.newEventData.dateStr;
-    const date = dateStr.split('T'); // Separa la fecha y la hora
-    const var_start_time = this.event.start_time.hours+":"+this.event.start_time.minutes+":00"
-    const var_end_time = this.event.end_time.hours+":"+this.event.end_time.minutes+":00"
-    
-    const eventData = {
-        title: this.event.title + var_start_time + ' - ' + var_end_time,
-        description: this.event.description + var_start_time + ' - ' + var_end_time,
-        number_of_people: this.event.numberOfPeople,
-        date: date[0],
-        start_time: var_start_time,
-        end_time: var_end_time,
-        user_id: 1 // Asegúrate de que este dato esté disponible
-    };
-
-    console.log(eventData)
-
-    // Aquí realizas la solicitud POST a tu API
-    this.$http.post(this.$apiURL+'reservation/store', eventData)
-        .then(response => {
-            console.log(response);
-            this.successmsg();
+    async getData() {
+        try {
+            const response = await this.$http.get('http://comfica_back.test:8084/api/reservation/all');
+            this.calendarOptions.events  = response.data.data;
+            this.event.category = "Danger"
+            console.log(this.calendarOptions.events)
             
-            this.showModal = false;
-            this.getData()
-        })
-        .catch(error => {
+        } catch (error) {
             console.error(error);
-            // Manejar errores aquí
-        });
+        }
+    },
+    handleEventDrop(info) {
+        console.log(info.event.description)
+        // Obtener la nueva fecha de inicio y finalización
+        const dateStr = format(new Date(info.event.start), "yyyy-MM-dd'T'HH:mm:ssXXX");
+        const [date, time] = dateStr.split('T'); // Separa la fecha y la hora
+        const [time2, time3] = time.split('-'); // Ignorar la información de zona horaria
 
-    this.submitted = false;
-    this.event = {};
+        // Datos del evento para actualizar
+        const updatedEventData = {
+            date: date,
+            start_time: time2,
+            end_time: time3,
+            id : parseInt(info.event.id)
+            // otros campos que puedas necesitar actualizar
+        };
+
+        // Llamar a tu API para actualizar el evento
+        this.updateEvent(info.event.id, updatedEventData);
+    },
+    updateEvent(eventId, updatedEventData) {
+        console.log(eventId,updatedEventData)
+        // Aquí puedes hacer una solicitud a tu API para actualizar el evento
+        this.$http.post(this.$apiURL+'reservation/store', updatedEventData)
+            .then(response => {
+                console.log(response);
+                this.successmsg();
+                
+                this.showModal = false;
+                this.getData()
+            })
+            .catch(error => {
+                console.error(error);
+                // Manejar errores aquí
+            });
+    },
+    handleSubmit() {
+        this.submitted = true;
+
+        // stop here if form is invalid
+        this.v$.$touch();
+        if (this.v$.$invalid) {
+            return;
+        }
+        console.log(this.newEventData)
+
+        const dateStr = this.newEventData.dateStr;
+        const [date, time] = dateStr.split('T'); // Separa la fecha y la hora
+        const [time2, time3] = time.split('-'); // Ignorar la información de zona horaria
+
+        const eventData = {
+            title: this.event.title,
+            description: this.event.description,
+            number_of_people: this.event.numberOfPeople,
+            date: date,
+            start_time: time2,
+            end_time: time3,
+            user_id: 1 // Asegúrate de que este dato esté disponible
+        };
+
+        console.log(eventData)
+
+        // Aquí realizas la solicitud POST a tu API
+        this.$http.post('http://comfica_back.test:8084/api/reservation/store', eventData)
+            .then(response => {
+                console.log(response);
+                this.successmsg();
+                
+                this.showModal = false;
+                this.getData()
+            })
+            .catch(error => {
+                console.error(error);
+                // Manejar errores aquí
+            });
+
+        this.submitted = false;
+        this.event = {};
     },
     hideModal() {
-    this.submitted = false;
-    this.showModal = false;
-    this.event = {};
+        this.submitted = false;
+        this.showModal = false;
+        this.event = {};
     },
     /**
      * Edit event modal submit
      */
     editSubmit() {
-    this.submit = true;
-    const editTitle = this.editevent.editTitle;
-    const editDescription = this.editevent.editDescription;
-    const editNumberOfPeople = this.editevent.editNumberOfPeople;
-    const editStartTime = this.editevent.editStartTime;
-    const editEndTime = this.editevent.editEndTime;
-    const editcategory = this.editevent.editcategory;
+        console.log(this.editevent)
 
-    this.edit.setProp("title", editTitle);
-    this.edit.setProp("description", editDescription);
-    this.edit.setProp("numberOfPeople", editNumberOfPeople);
-    this.edit.setProp("start_time", editStartTime);
-    this.edit.setProp("end_time", editEndTime);
-    this.edit.setProp("classNames", editcategory);
-    this.successmsg();
-    this.eventModal = false;
+        const updatedEventData = {
+            title: this.editevent.editTitle,
+            description: this.editevent.editDescription,
+            number_of_people: this.editevent.editNumber_of_people,
+            id : parseInt(this.edit.id),
+            // otros campos que puedas necesitar actualizar
+        };
+
+        this.updateEvent(this.edit.id, updatedEventData);
+        this.closeModal()
     },
 
     /**
@@ -206,21 +228,32 @@ methods: {
      * Modal open for add event
      */
     dateClicked(info) {
-    this.newEventData = info;
-    this.showModal = true;
+        if (this.$refs.fullCalendar.getApi().view.type === 'dayGridMonth') {
+            // Mostrar un mensaje de error o simplemente retornar para no hacer nada
+            Swal.fire({
+                title: "Acción no permitida",
+                text: "No se pueden crear eventos en la vista de mes.",
+                icon: "error",
+                confirmButtonColor: "#34c38f",
+            });
+            return;
+        }
+
+        // El resto de tu código para manejar clic en una fecha
+        this.newEventData = info;
+        this.showModal = true;
     },
     /**
      * Modal open for edit event
      */
     editEvent(info) {
-    this.edit = info.event;
-    this.editevent.editTitle = this.edit.title;
-    this.editevent.editDescription = this.edit.description;
-    this.editevent.editNumberOfPeople = this.edit.numberOfPeople;
-    this.editevent.editStartTime = this.edit.start_time;
-    this.editevent.editEndTime = this.edit.end_time;
-    this.editevent.editcategory = this.edit.classNames[0];
-    this.eventModal = true;
+        console.log(info)
+        this.edit = info.event;
+        this.editevent.editTitle = this.edit.title;
+        this.editevent.editDescription = this.edit.extendedProps.description;
+        this.editevent.editNumber_of_people = this.edit.extendedProps.number_of_people;
+        this.editevent.editcategory = this.edit.classNames[0];
+        this.eventModal = true;
     },
 
     closeModal() {
@@ -228,40 +261,40 @@ methods: {
     },
 
     confirm() {
-    Swal.fire({
-        title: "Are you sure?",
-        text: "You won't be able to delete this!",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#34c38f",
-        cancelButtonColor: "#f46a6a",
-        confirmButtonText: "Yes, delete it!"
-    }).then((result) => {
-        if (result.value) {
-        this.deleteEvent();
-        Swal.fire("Deleted!", "Event has been deleted.", "success");
-        }
-    });
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to delete this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#34c38f",
+            cancelButtonColor: "#f46a6a",
+            confirmButtonText: "Yes, delete it!"
+        }).then((result) => {
+            if (result.value) {
+            this.deleteEvent();
+            Swal.fire("Deleted!", "Event has been deleted.", "success");
+            }
+        });
     },
 
     /**
      * Show list of events
      */
     handleEvents(events) {
-    this.currentEvents = events;
+        this.currentEvents = events;
     },
 
     /**
      * Show successfull Save Dialog
      */
     successmsg() {
-    Swal.fire({
-        position: "center",
-        icon: "success",
-        title: "Event has been saved",
-        showConfirmButton: false,
-        timer: 1000
-    });
+        Swal.fire({
+            position: "center",
+            icon: "success",
+            title: "Event has been saved",
+            showConfirmButton: false,
+            timer: 1000
+        });
     }
 }
 };
@@ -349,18 +382,6 @@ methods: {
                         <input id="numberOfPeople" v-model="event.numberOfPeople" type="number" class="form-control" placeholder="Número de personas">
                     </div>
                 </BCol>
-                <BCol cols="12">
-                    <div class="mb-3">
-                        <label for="start_time" class="form-label">Hora inicio</label>
-                        <VueDatePicker id="start_time" v-model="event.start_time" time-picker />
-                    </div>
-                </BCol>
-                <BCol cols="12">
-                    <div class="mb-3">
-                        <label for="end_time" class="form-label">Hora fin</label>
-                        <VueDatePicker id="end_time" v-model="event.end_time" time-picker />
-                    </div>
-                </BCol>
             </BRow>
 
             <div class="text-end pt-5 mt-3">
@@ -411,7 +432,19 @@ methods: {
                             </option>
                         </select>
                     </div>
-                </BCol>                
+                </BCol>
+                <BCol cols="12">
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Descripción</label>
+                        <textarea id="description" v-model="editevent.editDescription" class="form-control" placeholder="Descripción del evento"></textarea>
+                    </div>
+                </BCol>
+                <BCol cols="12">
+                    <div class="mb-3">
+                        <label for="numberOfPeople" class="form-label">Número de Personas</label>
+                        <input id="numberOfPeople" v-model="editevent.editNumber_of_people" type="number" class="form-control" placeholder="Número de personas">
+                    </div>
+                </BCol>
             </BRow>
             <div class="d-flex justify-content-between">
                 <BButton class="ms-1" variant="danger" @click="confirm"

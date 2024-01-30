@@ -39,6 +39,7 @@ export default {
       ],
       calendarEvents: [],
       calendarOptions: {
+        eventDrop: this.handleEventDrop,
         headerToolbar: {
           left: "prev,next today",
           center: "title",
@@ -143,6 +144,41 @@ export default {
       this.submitted = false;
       this.event = {};
     },
+    handleEventDrop(info) {
+      console.log(info)
+      // Obtener la nueva fecha de inicio y finalización
+      const startDate = format(new Date(info.event.start), 'yyyy-MM-dd');
+      const endDate = info.event.end ? format(new Date(info.event.end), 'yyyy-MM-dd') : startDate;
+
+      // Datos del evento para actualizar
+      const updatedEventData = {
+        title: info.event.title,
+        start: startDate,
+        end: endDate,
+        id : parseInt(info.event.id)
+        // otros campos que puedas necesitar actualizar
+      };
+
+      // Llamar a tu API para actualizar el evento
+      this.updateEvent(info.event.id, updatedEventData);
+    },
+    updateEvent(eventId, updatedEventData) {
+      console.log(eventId,updatedEventData)
+      // Aquí puedes hacer una solicitud a tu API para actualizar el evento
+      this.$http.post(this.$apiURL+'birthday/store', updatedEventData)
+          .then(response => {
+              console.log(response);
+              this.successmsg();
+              
+              this.showModal = false;
+              this.getData()
+          })
+          .catch(error => {
+              console.error(error);
+              // Manejar errores aquí
+          });
+      
+    },
     hideModal() {
       this.submitted = false;
       this.showModal = false;
@@ -151,15 +187,20 @@ export default {
     /**
      * Edit event modal submit
      */
-    editSubmit() {
-      this.submit = true;
-      const editTitle = this.editevent.editTitle;
-      const editcategory = this.editevent.editcategory;
+     editSubmit() {
+      console.log(this.editevent)
 
-      this.edit.setProp("title", editTitle);
-      this.edit.setProp("classNames", editcategory);
-      this.successmsg();
-      this.eventModal = false;
+      // Datos del evento para actualizar
+      const updatedEventData = {
+        title: this.editevent.editTitle,
+        id : parseInt(this.edit.id),
+        // otros campos que puedas necesitar actualizar
+      };
+      // Llamar a tu API para actualizar el evento
+      this.updateEvent(this.edit.id, updatedEventData);
+      this.closeModal()
+      // Llamar a tu API para actualizar el evento
+      // Asumiendo que 'this.edit.id' contiene el ID del evento que estás editando
     },
 
     /**

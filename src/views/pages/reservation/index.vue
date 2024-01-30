@@ -161,6 +161,20 @@ export default {
                                 :filter-included-fields="filterOn"
                                 @filtered="onFiltered"
                             >
+                            <template #cell(is_active)="data">
+                                <b-button
+                                variant="success"
+                                v-if="data.item.is_active === 1"
+                                >
+                                Activo
+                                </b-button>
+                                <b-button
+                                variant="danger"
+                                v-else
+                                >
+                                Inactivo
+                                </b-button>
+                            </template>
                         </BTable>
                         </div>
                         <BRow>

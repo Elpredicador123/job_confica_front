@@ -157,10 +157,30 @@ export default {
                                 :filter-included-fields="filterOn"
                                 @filtered="onFiltered"
                             >
+                                <template #cell(title)="data">
+                                    <div v-html="data.item.title"></div>
+                                </template>
+                                <template #cell(description)="data">
+                                    <div v-html="data.item.description"></div>
+                                </template>
                                 <template #cell(actions)="{item}">
                                     <router-link :to="'/news/edit/' + item.id" class="logo logo-dark">
                                         Editar
                                     </router-link>
+                                </template>
+                                <template #cell(is_active)="data">
+                                    <b-button
+                                    variant="success"
+                                    v-if="data.item.is_active === 1"
+                                    >
+                                    Activo
+                                    </b-button>
+                                    <b-button
+                                    variant="danger"
+                                    v-else
+                                    >
+                                    Inactivo
+                                    </b-button>
                                 </template>
                             </BTable>
                         </div>

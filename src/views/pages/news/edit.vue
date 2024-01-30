@@ -128,11 +128,12 @@ export default {
                 for (let i = 0; i < this.DropFile.length; i++) {
                     formData.append("files[]", this.DropFile[i][0]);
                 }
-            }          
+            }
+            formData.append('id', this.id);
 
             // Realiza la petición con Axios
             console.log(formData)
-            this.$http.put(this.$apiURL+'news/update/'+this.id, formData, {
+            this.$http.post(this.$apiURL+'news/store', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
