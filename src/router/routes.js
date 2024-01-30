@@ -120,9 +120,9 @@ export default [
   },
   {
     path: "/news/edit/:id",
-    name: "Noticias",
+    name: "Noticias Editar",
     props: true,
-    meta: { title: "Noticias", authRequired: true },
+    meta: { title: "Noticias Editar", authRequired: true },
     component: () => import("../views/pages/news/edit")
   },
   {
