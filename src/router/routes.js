@@ -107,6 +107,12 @@ export default [
     component: () => import("../views/pages/chat/index")
   },
   {
+    path: "/principal",
+    name: "Principal",
+    meta: { title: "Principal", authRequired: true },
+    component: () => import("../views/pages/principal/index")
+  },
+  {
     path: "/news/index",
     name: "Listado",
     meta: { title: "Listado", authRequired: true },
