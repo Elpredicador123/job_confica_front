@@ -155,6 +155,12 @@ export const menuItems = [
     },
     {
         id: 10,
+        label: "menuitems.cuadromando.text",
+        icon: "uil-calender",
+        link: "/cuadromando"
+    },
+    {
+        id: 11,
         label: "menuitems.principal.text",
         icon: "uil-calender",
         link: "/principal"

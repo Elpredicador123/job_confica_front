@@ -113,6 +113,12 @@ export default [
     component: () => import("../views/pages/principal/index")
   },
   {
+    path: "/cuadromando",
+    name: "Cuadro de Mando",
+    meta: { title: "Cuadro de Mando", authRequired: true },
+    component: () => import("../views/pages/CuadroMando/index")
+  },
+  {
     path: "/news/index",
     name: "Listado",
     meta: { title: "Listado", authRequired: true },

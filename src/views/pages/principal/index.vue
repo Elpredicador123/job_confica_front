@@ -129,11 +129,25 @@ export default {
         //obtener datos de la api
         this.getData();
         this.getData2();
+        this.getDataNews();
     },
     methods: {
     /**
      * Modal form submit
      */
+     async getDataNews() {
+        try {
+            const response = await this.$http.get(this.$apiURL+'news/all');
+            response.data.data.map(i => this.tableData.push({ ...i }));
+            this.totalRows = this.tableData.length;
+        } catch (error) {
+            console.error(error);
+        }
+    },
+    getFullImageUrl(relativeUrl) {
+        console.log(relativeUrl)
+      return 'http://comfica_back.test:8084/storage/' + relativeUrl;
+    },
     async getData() {
         try {
             const response = await this.$http.get(this.$apiURL+'birthday/all');
@@ -321,34 +335,72 @@ export default {
   }
 };
 </script>
+<style>
+.w-100 {
+    width: 100% !important;
+    max-height: 600px;
+    object-fit: contain;
+}
+.carousel-item.active, .carousel-item-next, .carousel-item-prev {
+    display: block;
+    background: transparent !important;
+}
+</style>
 
 <template>
   <Layout>
     <PageHeader :title="title" :items="items" />
     <BRow>
-        <BCol cols="6">
-            <BCard np-body>
-            <BCardBody>
-                <div class="app-calendar">
-                <FullCalendar
-                    ref="fullCalendar"
-                    :options="calendarOptions"
-                ></FullCalendar>
-                </div>
-            </BCardBody>
-            </BCard>
+        <BCol cols="8">
+            <BRow>
+                <BCol cols="12" v-for="newsItem in tableData" :key="newsItem.id">
+                    <BCard>
+                        <BCardBody>
+                            <BCardTitle v-html="newsItem.title"></BCardTitle>
+                            <BCardText v-html="newsItem.description"></BCardText>
+
+                            <!-- Carousel para las imágenes de la noticia -->
+                            <BCarousel :interval="3000" 
+                                style="text-shadow: 0px 0px 2px #000; width: 75%;margin: 0 auto;"
+                                controls :id="'carousel' + newsItem.id">
+                                <BCarouselSlide
+                                    v-for="image in newsItem.images"
+                                    :key="image.id"
+                                    :img-src="getFullImageUrl(image.url)"
+                                ></BCarouselSlide>
+                            </BCarousel>
+                        </BCardBody>
+                    </BCard>
+                </BCol>
+            </BRow>
         </BCol>
-        <BCol cols="6">
-            <BCard np-body>
-                <BCardBody>
-                    <div class="app-calendar">
-                    <FullCalendar
-                        ref="fullCalendar"
-                        :options="calendarOptions2"
-                    ></FullCalendar>
-                    </div>
-                </BCardBody>
-            </BCard>
+        <BCol cols="4">
+            <BRow>
+                <BCol cols="12">
+                    <BCard np-body>
+                        <BCardBody>
+                            <div class="app-calendar">
+                            <FullCalendar
+                                ref="fullCalendar"
+                                :options="calendarOptions2"
+                            ></FullCalendar>
+                            </div>
+                        </BCardBody>
+                    </BCard>
+                </BCol>
+                <BCol cols="12">
+                    <BCard np-body>
+                        <BCardBody>
+                            <div class="app-calendar">
+                            <FullCalendar
+                                ref="fullCalendar"
+                                :options="calendarOptions"
+                            ></FullCalendar>
+                            </div>
+                        </BCardBody>
+                    </BCard>
+                </BCol>
+            </BRow>
         </BCol>
     </BRow>
     <!-- Edit Modal -->
