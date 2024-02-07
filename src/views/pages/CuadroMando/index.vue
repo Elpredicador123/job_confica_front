@@ -40,7 +40,18 @@ export default {
             donutChart: donutChart,
             title: "Apex",
             tableData: [],
+            tableData2: [],
             items: [
+                {
+                    text: "Charts",
+                    href: "/"
+                },
+                {
+                    text: "Apex",
+                    active: true
+                }
+            ],
+            items2: [
                 {
                     text: "Charts",
                     href: "/"
@@ -60,27 +71,29 @@ export default {
             sortBy: "age",
             sortDesc: false,
             fields: [
-                {
-                    key: "id",
-                    sortable: true
-                },
-                {
-                    key: "title",
-                    sortable: true
-                },
-                {
-                    key: "number_of_people",
-                    sortable: true
-                }
-            ]
+            ],
             //--------------------
+            totalRows2: 1,
+            currentPage2: 1,
+            perPage2: 3,
+            pageOptions2: [3,10, 25, 50, 100],
+            filter2: null,
+            filterOn2: [],
+            sortBy2: "age",
+            sortDesc2: false,
+            fields2: [
+            ]
         };
     },
     mounted() {
         // Set the initial number of items
         this.totalRows = this.items.length;
+        this.totalRows2 = this.items2.length;
         //obtener datos de la api
-        this.getData();
+        this.getInstalaciones();
+        this.getMantenimientos();
+        this.getTableMantenimientos();
+        this.getTableInstalaciones();
     },
     methods:{
         onFiltered(filteredItems) {
@@ -88,11 +101,52 @@ export default {
             this.totalRows = filteredItems.length;
             this.currentPage = 1;
         },
-        async getData() {
+
+        onFiltered2(filteredItems) {
+            // Trigger pagination to update the number of buttons/pages due to filtering
+            this.totalRows2 = filteredItems.length;
+            this.currentPage2 = 1;
+        },
+        async getTableMantenimientos() {
             try {
-                const response = await this.$http.get(this.$apiURL+'reservation/all');
-                response.data.data.map(i => this.tableData.push({ ...i }));
+                const response = await this.$http.get(this.$apiURL+'control-panel/maintenanceprogresstable');
+                console.log(response)
+                response.data.series.map(i => this.tableData2.push({ ...i }));
+                this.fields2.push({ key: "Ciudad", sortable : true })
+                response.data.fields.map(i => this.fields2.push({ key: i, sortable : true }));
+                console.log(this.tableData2)
+                this.totalRows2= this.tableData2.length;
+            } catch (error) {
+                console.error(error);
+            }
+        },
+        async getTableInstalaciones() {
+            try {
+                const response = await this.$http.get(this.$apiURL+'control-panel/installationprogresstable');
+                console.log(response)
+                response.data.series.map(i => this.tableData.push({ ...i }));
+                this.fields.push({ key: "Ciudad", sortable : true })
+                response.data.fields.map(i => this.fields.push({ key: i, sortable : true }));
+                console.log(this.tableData)
                 this.totalRows = this.tableData.length;
+            } catch (error) {
+                console.error(error);
+            }
+        },
+        async getInstalaciones() {
+            try {
+                const response = await this.$http.get(this.$apiURL+'control-panel/installationprogressgraphic');
+                this.columnChart.series = response.data.series;
+                this.columnChart.chartOptions.xaxis.categories = response.data.categories;
+            } catch (error) {
+                console.error(error);
+            }
+        },
+        async getMantenimientos() {
+            try {
+                const response = await this.$http.get(this.$apiURL+'control-panel/maintenanceprogressgraphic');
+                this.columnChart2.series = response.data.series;
+                this.columnChart2.chartOptions.xaxis.categories = response.data.categories;
             } catch (error) {
                 console.error(error);
             }
@@ -233,7 +287,7 @@ export default {
         <BCol cols="6">
             <BCard no-body>
                 <BCardBody>
-                    <BCardTitle>Data Table</BCardTitle>
+                    <BCardTitle>Instalaciones</BCardTitle>
                     <BRow class="mt-4">
                         <BCol sm="12" md="6">
                             <div id="tickets-table_length" class="dataTables_length">
@@ -281,20 +335,6 @@ export default {
                             :filter-included-fields="filterOn"
                             @filtered="onFiltered"
                         >
-                        <template #cell(is_active)="data">
-                            <b-button
-                            variant="success"
-                            v-if="data.item.is_active === 1"
-                            >
-                            Activo
-                            </b-button>
-                            <b-button
-                            variant="danger"
-                            v-else
-                            >
-                            Inactivo
-                            </b-button>
-                        </template>
                     </BTable>
                     </div>
                     <BRow>
@@ -319,16 +359,16 @@ export default {
         <BCol cols="6">
             <BCard no-body>
                 <BCardBody>
-                    <BCardTitle>Data Table</BCardTitle>
+                    <BCardTitle>Mantenimientos</BCardTitle>
                     <BRow class="mt-4">
                         <BCol sm="12" md="6">
                             <div id="tickets-table_length" class="dataTables_length">
                             <label class="d-inline-flex align-items-center">
                                 Show&nbsp;
                                 <BFormSelect
-                                v-model="perPage"
+                                v-model="perPage2"
                                 size="sm"
-                                :options="pageOptions"
+                                :options="pageOptions2"
                                 ></BFormSelect
                                 >&nbsp;entries
                             </label>
@@ -343,7 +383,7 @@ export default {
                             <label class="d-inline-flex align-items-center">
                                 Search:
                                 <BFormInput
-                                v-model="filter"
+                                v-model="filter2"
                                 type="search"
                                 placeholder="Search..."
                                 class="form-control form-control-sm ms-2"
@@ -356,31 +396,17 @@ export default {
                     <!-- Table -->
                     <div class="table-responsive mb-0">
                         <BTable
-                            :items="tableData"
-                            :fields="fields"
+                            :items="tableData2"
+                            :fields="fields2"
                             responsive="sm"
-                            :per-page="perPage"
-                            :current-page="currentPage"
-                            :sort-by.sync="sortBy"
-                            :sort-desc.sync="sortDesc"
-                            :filter="filter"
-                            :filter-included-fields="filterOn"
+                            :per-page="perPage2"
+                            :current-page="currentPage2"
+                            :sort-by.sync="sortBy2"
+                            :sort-desc.sync="sortDesc2"
+                            :filter="filter2"
+                            :filter-included-fields="filterOn2"
                             @filtered="onFiltered"
                         >
-                        <template #cell(is_active)="data">
-                            <b-button
-                            variant="success"
-                            v-if="data.item.is_active === 1"
-                            >
-                            Activo
-                            </b-button>
-                            <b-button
-                            variant="danger"
-                            v-else
-                            >
-                            Inactivo
-                            </b-button>
-                        </template>
                     </BTable>
                     </div>
                     <BRow>
@@ -391,9 +417,9 @@ export default {
                             <ul class="pagination pagination-rounded mb-0">
                                 <!-- pagination -->
                                 <BPagination
-                                v-model="currentPage"
-                                :total-rows="totalRows"
-                                :per-page="perPage"
+                                v-model="currentPage2"
+                                :total-rows="totalRows2"
+                                :per-page="perPage2"
                                 ></BPagination>
                             </ul>
                             </div>

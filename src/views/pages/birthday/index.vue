@@ -73,6 +73,7 @@ export default {
             try {
                 const response = await this.$http.get(this.$apiURL+'birthday/all');
                 response.data.data.map(i => this.tableData.push({ ...i }));
+                console.log(this.tableData)
                 this.totalRows = this.tableData.length;
             } catch (error) {
                 console.error(error);

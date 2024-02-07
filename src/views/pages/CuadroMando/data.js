@@ -1,17 +1,6 @@
 const columnChart = {
   series: [
-    {
-      name: "Verde",
-      data: [46, 57, 59]
-    },
-    {
-      name: "Amarrillo",
-      data: [74, 83, 102]
-    },
-    {
-      name: "Rojo",
-      data: [37, 42, 38]
-    }
+
   ],
   chartOptions: {
     chart: {
@@ -34,12 +23,10 @@ const columnChart = {
       width: 2,
       colors: ["transparent"]
     },
-    colors: ['#10b07a', '#f1b44c', '#dc3545'],
+    colors: ['#10b07a', '#dc3545', '#f1b44c'],
     xaxis: {
       categories: [
-        "LIMA",
-        "CUSCO",
-        "JULIACA",
+        
       ]
     },
     yaxis: {
@@ -53,29 +40,11 @@ const columnChart = {
     fill: {
       opacity: 1
     },
-    tooltip: {
-      y: {
-        formatter: function(val) {
-          return "$ " + val + " thousands";
-        }
-      }
-    }
   }
 };
 const columnChart2 = {
   series: [
-    {
-      name: "Verde",
-      data: [46, 57, 59]
-    },
-    {
-      name: "Amarrillo",
-      data: [74, 83, 102]
-    },
-    {
-      name: "Rojo",
-      data: [37, 42, 38]
-    }
+    
   ],
   chartOptions: {
     chart: {
@@ -98,17 +67,15 @@ const columnChart2 = {
       width: 2,
       colors: ["transparent"]
     },
-    colors: ['#10b07a', '#f1b44c', '#dc3545'],
+    colors: ['#10b07a', '#dc3545', '#f1b44c'],
     xaxis: {
       categories: [
-        "LIMA",
-        "CUSCO",
-        "JULIACA",
+        
       ]
     },
     yaxis: {
       title: {
-        text: "$ (thousands)"
+        text: "$"
       }
     },
     grid: {
@@ -116,13 +83,6 @@ const columnChart2 = {
     },
     fill: {
       opacity: 1
-    },
-    tooltip: {
-      y: {
-        formatter: function(val) {
-          return "$ " + val + " thousands";
-        }
-      }
     }
   }
 };
