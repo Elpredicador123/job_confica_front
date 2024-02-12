@@ -41,6 +41,7 @@ export default {
             title: "Apex",
             tableData: [],
             tableData2: [],
+            tableDataPorDia: [],
             items: [
                 {
                     text: "Charts",
@@ -52,6 +53,16 @@ export default {
                 }
             ],
             items2: [
+                {
+                    text: "Charts",
+                    href: "/"
+                },
+                {
+                    text: "Apex",
+                    active: true
+                }
+            ],
+            itemsPorDia: [
                 {
                     text: "Charts",
                     href: "/"
@@ -82,18 +93,34 @@ export default {
             sortBy2: "age",
             sortDesc2: false,
             fields2: [
-            ]
+            ],
+            //--------------------
+            totalRowsPorDia: 1,
+            currentPagePorDia: 1,
+            perPagePorDia: 3,
+            pageOptionsPorDia: [3,10,25,50,100],
+            filterOnPorDia: [],
+            filterPorDia: null,
+            sortByPorDia: "age",
+            sortDescPorDia: false,
+            fieldsPorDia: [],
+            totalesPorDia : 0,
         };
     },
     mounted() {
         // Set the initial number of items
         this.totalRows = this.items.length;
         this.totalRows2 = this.items2.length;
+        this.totalRowsPorDia = this.itemsPorDia.length;
+
         //obtener datos de la api
         this.getInstalaciones();
         this.getMantenimientos();
+        this.getTablePorDia();
         this.getTableMantenimientos();
         this.getTableInstalaciones();
+        this.getRatioInstalaciones();
+        this.getRatioMantenimientos();
     },
     methods:{
         onFiltered(filteredItems) {
@@ -106,6 +133,11 @@ export default {
             // Trigger pagination to update the number of buttons/pages due to filtering
             this.totalRows2 = filteredItems.length;
             this.currentPage2 = 1;
+        },
+        onFilteredPorDia(filteredItems) {
+            // Trigger pagination to update the number of buttons/pages due to filtering
+            this.totalRowsPorDia = filteredItems.length;
+            this.currentPagePorDia = 1;
         },
         async getTableMantenimientos() {
             try {
@@ -133,6 +165,20 @@ export default {
                 console.error(error);
             }
         },
+        async getTablePorDia(){
+            try {
+                const response = await this.$http.get(this.$apiURL+'control-panel/productiontable');
+                console.log(response)
+                response.data.series.map(i => this.tableDataPorDia.push({ ...i }));
+                //this.fieldsPorDia.push({ key: "Ciudad", sortable : true })
+                response.data.fields.map(i => this.fieldsPorDia.push({ key: i, sortable : true }));
+                console.log(this.tableDataPorDia)
+                this.totalRowsPorDia = this.tableDataPorDia.length;
+                this.totalesPorDia = response.data.totales;
+            } catch (error) {
+                console.error(error);
+            }
+        },
         async getInstalaciones() {
             try {
                 const response = await this.$http.get(this.$apiURL+'control-panel/installationprogressgraphic');
@@ -151,6 +197,24 @@ export default {
                 console.error(error);
             }
         },
+        async getRatioInstalaciones(){
+            try {
+                const response = await this.$http.get(this.$apiURL+'control-panel/installationratiographic');
+                this.pieChart.series = response.data.series;
+                this.pieChart.chartOptions.labels = response.data.labels;
+            } catch (error) {
+                console.error(error);
+            }
+        },
+        async getRatioMantenimientos(){
+            try {
+                const response = await this.$http.get(this.$apiURL+'control-panel/maintenanceratiographic');
+                this.pieChart2.series = response.data.series;
+                this.pieChart2.chartOptions.labels = response.data.labels ;
+            } catch (error) {
+                console.error(error);
+            }
+        }
     },
     middleware: "authentication"
 };
@@ -196,16 +260,16 @@ export default {
     <BCol cols="4">
         <BCard no-body>
             <BCardBody>
-                <BCardTitle>Producción Día : S/87,971.00</BCardTitle>
+                <BCardTitle>Producción Día : S/{{ totalesPorDia }}</BCardTitle>
                 <BRow class="mt-4">
                     <BCol sm="12" md="6">
                         <div id="tickets-table_length" class="dataTables_length">
                         <label class="d-inline-flex align-items-center">
                             Show&nbsp;
                             <BFormSelect
-                                v-model="perPage"
+                                v-model="perPagePorDia"
                                 size="sm"
-                                :options="pageOptions"
+                                :options="pageOptionsPorDia"
                             ></BFormSelect
                             >&nbsp;entries
                         </label>
@@ -220,7 +284,7 @@ export default {
                         <label class="d-inline-flex align-items-center">
                             Search:
                             <BFormInput
-                            v-model="filter"
+                            v-model="filterPorDia"
                             type="search"
                             placeholder="Search..."
                             class="form-control form-control-sm ms-2"
@@ -233,31 +297,17 @@ export default {
                 <!-- Table -->
                 <div class="table-responsive mb-0">
                     <BTable
-                        :items="tableData"
-                        :fields="fields"
+                        :items="tableDataPorDia"
+                        :fields="fieldsPorDia"
                         responsive="sm"
-                        :per-page="perPage"
-                        :current-page="currentPage"
-                        :sort-by.sync="sortBy"
-                        :sort-desc.sync="sortDesc"
-                        :filter="filter"
-                        :filter-included-fields="filterOn"
-                        @filtered="onFiltered"
-                    >
-                    <template #cell(is_active)="data">
-                        <b-button
-                        variant="success"
-                        v-if="data.item.is_active === 1"
-                        >
-                        Activo
-                        </b-button>
-                        <b-button
-                        variant="danger"
-                        v-else
-                        >
-                        Inactivo
-                        </b-button>
-                    </template>
+                        :per-page="perPagePorDia"
+                        :current-page="currentPagePorDia"
+                        :sort-by.sync="sortByPorDia"
+                        :sort-desc.sync="sortDescPorDia"
+                        :filter="filterPorDia"
+                        :filter-included-fields="filterOnPorDia"
+                        @filtered="onFilteredPorDia"
+                    >                    
                 </BTable>
                 </div>
                 <BRow>
@@ -268,9 +318,9 @@ export default {
                         <ul class="pagination pagination-rounded mb-0">
                             <!-- pagination -->
                             <BPagination
-                            v-model="currentPage"
-                            :total-rows="totalRows"
-                            :per-page="perPage"
+                            v-model="currentPagePorDia"
+                            :total-rows="totalRowsPorDia"
+                            :per-page="perPagePorDia"
                             ></BPagination>
                         </ul>
                         </div>
@@ -538,7 +588,7 @@ export default {
         <BCol lg="6">
             <BCard no-body>
                 <BCardBody>
-                    <BCardTitle class="mb-4">Ratio de instalaciones tec</BCardTitle>
+                    <BCardTitle class="mb-4">Ratio de mantenimientos tec</BCardTitle>
                     <!-- Pie Chart -->
                     <apexchart
                         class="apex-charts"

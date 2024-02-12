@@ -87,9 +87,9 @@ const columnChart2 = {
   }
 };
 const pieChart = {
-  series: [40, 50],
+  series: [],
   chartOptions: {
-    labels: ["HFC", "GPON"],
+    labels: [],
     colors: ["#34c38f", "#556ee6"],
     legend: {
       show: true,
@@ -118,9 +118,9 @@ const pieChart = {
 };
 
 const pieChart2 = {
-  series: [44, 55, 41, 17],
+  series: [],
   chartOptions: {
-    labels: ["HFC", "GPON", "DTH", "ADSL"],
+    labels: [],
     colors: ["#34c38f", "#556ee6", "#f46a6a", "#50a5f1", "#f1b44c"],
     legend: {
       show: true,
