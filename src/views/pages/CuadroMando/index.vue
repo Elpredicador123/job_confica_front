@@ -42,6 +42,7 @@ export default {
             tableData: [],
             tableData2: [],
             tableDataPorDia: [],
+            tableDataAgenda: [],
             items: [
                 {
                     text: "Charts",
@@ -63,6 +64,16 @@ export default {
                 }
             ],
             itemsPorDia: [
+                {
+                    text: "Charts",
+                    href: "/"
+                },
+                {
+                    text: "Apex",
+                    active: true
+                }
+            ],
+            itemsAgenda: [
                 {
                     text: "Charts",
                     href: "/"
@@ -105,6 +116,17 @@ export default {
             sortDescPorDia: false,
             fieldsPorDia: [],
             totalesPorDia : 0,
+            //--------------------
+            totalRowsAgenda: 1,
+            currentPageAgenda: 1,
+            perPageAgenda: 3,
+            pageOptionsAgenda: [3,10,25,50,100],
+            filterOnAgenda: [],
+            filterAgenda: null,
+            sortByAgenda: "age",
+            sortDescAgenda: false,
+            fieldsAgenda: [],
+            totalesAgenda : 0,
         };
     },
     mounted() {
@@ -112,6 +134,7 @@ export default {
         this.totalRows = this.items.length;
         this.totalRows2 = this.items2.length;
         this.totalRowsPorDia = this.itemsPorDia.length;
+        this.totalRowsAgenda = this.itemsAgenda.length;
 
         //obtener datos de la api
         this.getInstalaciones();
@@ -121,6 +144,7 @@ export default {
         this.getTableInstalaciones();
         this.getRatioInstalaciones();
         this.getRatioMantenimientos();
+        this.getTableAgendaPorDias();
     },
     methods:{
         onFiltered(filteredItems) {
@@ -139,12 +163,16 @@ export default {
             this.totalRowsPorDia = filteredItems.length;
             this.currentPagePorDia = 1;
         },
+        onFilteredAgenda(filteredItems) {
+            // Trigger pagination to update the number of buttons/pages due to filtering
+            this.totalRowsAgenda = filteredItems.length;
+            this.currentPageAgenda = 1;
+        },
         async getTableMantenimientos() {
             try {
                 const response = await this.$http.get(this.$apiURL+'control-panel/maintenanceprogresstable');
                 console.log(response)
                 response.data.series.map(i => this.tableData2.push({ ...i }));
-                this.fields2.push({ key: "Ciudad", sortable : true })
                 response.data.fields.map(i => this.fields2.push({ key: i, sortable : true }));
                 console.log(this.tableData2)
                 this.totalRows2= this.tableData2.length;
@@ -157,7 +185,6 @@ export default {
                 const response = await this.$http.get(this.$apiURL+'control-panel/installationprogresstable');
                 console.log(response)
                 response.data.series.map(i => this.tableData.push({ ...i }));
-                this.fields.push({ key: "Ciudad", sortable : true })
                 response.data.fields.map(i => this.fields.push({ key: i, sortable : true }));
                 console.log(this.tableData)
                 this.totalRows = this.tableData.length;
@@ -175,6 +202,20 @@ export default {
                 console.log(this.tableDataPorDia)
                 this.totalRowsPorDia = this.tableDataPorDia.length;
                 this.totalesPorDia = response.data.totales;
+            } catch (error) {
+                console.error(error);
+            }
+        },
+        async getTableAgendaPorDias(){
+            try {
+                const response = await this.$http.get(this.$apiURL+'control-panel/diarytable');
+                console.log(response)
+                response.data.series.map(i => this.tableDataAgenda.push({ ...i }));
+                //this.fieldsAgenda.push({ key: "Ciudad", sortable : true })
+                response.data.fields.map(i => this.fieldsAgenda.push({ key: i, sortable : true }));
+                console.log(this.tableDataAgenda)
+                this.totalRowsAgenda = this.tableDataAgenda.length;
+                this.totalesAgenda = response.data.totales;
             } catch (error) {
                 console.error(error);
             }
@@ -484,36 +525,33 @@ export default {
         <BCol cols="12">
             <BCard no-body>
                 <BCardBody>
-                    <BCardTitle>Data Table</BCardTitle>
+                    <BCardTitle>Agenda a 7 días</BCardTitle>
                     <BRow class="mt-4">
                         <BCol sm="12" md="6">
                             <div id="tickets-table_length" class="dataTables_length">
-                            <label class="d-inline-flex align-items-center">
-                                Show&nbsp;
-                                <BFormSelect
-                                v-model="perPage"
-                                size="sm"
-                                :options="pageOptions"
-                                ></BFormSelect
-                                >&nbsp;entries
-                            </label>
+                                <label class="d-inline-flex align-items-center">
+                                    Show&nbsp;
+                                    <BFormSelect
+                                        v-model="perPageAgenda"
+                                        size="sm"
+                                        :options="pageOptionsAgenda"
+                                    ></BFormSelect
+                                    >&nbsp;entries
+                                </label>
                             </div>
                         </BCol>
                         <!-- Search -->
                         <div class="col-sm-12 col-md-6">
-                            <div
-                            id="tickets-table_filter"
-                            class="dataTables_filter text-md-end"
-                            >
-                            <label class="d-inline-flex align-items-center">
-                                Search:
-                                <BFormInput
-                                v-model="filter"
-                                type="search"
-                                placeholder="Search..."
-                                class="form-control form-control-sm ms-2"
-                                ></BFormInput>
-                            </label>
+                            <div id="tickets-table_filter" class="dataTables_filter text-md-end">
+                                <label class="d-inline-flex align-items-center">
+                                    Search:
+                                    <BFormInput
+                                    v-model="filterAgenda"
+                                    type="search"
+                                    placeholder="Search..."
+                                    class="form-control form-control-sm ms-2"
+                                    ></BFormInput>
+                                </label>
                             </div>
                         </div>
                         <!-- End search -->
@@ -521,49 +559,33 @@ export default {
                     <!-- Table -->
                     <div class="table-responsive mb-0">
                         <BTable
-                            :items="tableData"
-                            :fields="fields"
+                            :items="tableDataAgenda"
+                            :fields="fieldsAgenda"
                             responsive="sm"
-                            :per-page="perPage"
-                            :current-page="currentPage"
-                            :sort-by.sync="sortBy"
-                            :sort-desc.sync="sortDesc"
-                            :filter="filter"
-                            :filter-included-fields="filterOn"
-                            @filtered="onFiltered"
-                        >
-                        <template #cell(is_active)="data">
-                            <b-button
-                            variant="success"
-                            v-if="data.item.is_active === 1"
-                            >
-                            Activo
-                            </b-button>
-                            <b-button
-                            variant="danger"
-                            v-else
-                            >
-                            Inactivo
-                            </b-button>
-                        </template>
-                    </BTable>
+                            :per-page="perPageAgenda"
+                            :current-page="currentPageAgenda"
+                            :sort-by.sync="sortByAgenda"
+                            :sort-desc.sync="sortDescAgenda"
+                            :filter="filterAgenda"
+                            :filter-included-fields="filterOnAgenda"
+                            @filtered="onFilteredAgenda"
+                        >                    
+                        </BTable>
                     </div>
-                    <BRow>
-                        <BCol>
-                            <div
-                            class="dataTables_paginate paging_simple_numbers float-end"
-                            >
+                <BRow>
+                    <BCol>
+                        <div class="dataTables_paginate paging_simple_numbers float-end">
                             <ul class="pagination pagination-rounded mb-0">
                                 <!-- pagination -->
                                 <BPagination
-                                v-model="currentPage"
-                                :total-rows="totalRows"
-                                :per-page="perPage"
+                                    v-model="currentPageAgenda"
+                                    :total-rows="totalRowsAgenda"
+                                    :per-page="perPageAgenda"
                                 ></BPagination>
                             </ul>
-                            </div>
-                        </BCol>
-                    </BRow>
+                        </div>
+                    </BCol>
+                </BRow>
                 </BCardBody>
             </BCard>
         </BCol>
