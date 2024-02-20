@@ -1,20 +1,6 @@
 <script>
 import Layout from "../../layouts/main";
 import PageHeader from "@/components/page-header";
-import {
-    linewithDataChart,
-    dashedLineChart,
-    splineAreaChart,
-    columnChart,
-    columnChart2,
-    columnDatalabelChart,
-    barChart,
-    mixedChart,
-    radialChart,
-    pieChart,
-    pieChart2,
-    donutChart
-} from "./data";
 
 /**
  * Apex-chart component
@@ -26,23 +12,11 @@ export default {
     },
     data() {
         return {
-            linewithDataChart: linewithDataChart,
-            dashedLineChart: dashedLineChart,
-            splineAreaChart: splineAreaChart,
-            columnChart: columnChart,
-            columnChart2: columnChart2,
-            columnDatalabelChart: columnDatalabelChart,
-            barChart: barChart,
-            mixedChart: mixedChart,
-            radialChart: radialChart,
-            pieChart: pieChart,
-            pieChart2: pieChart2,
-            donutChart: donutChart,
-            title: "Apex",
+            title: "Gestión",
             tableData: [],
             tableData2: [],
-            tableDataPorDia: [],
-            tableDataAgenda: [],
+            tableDataGestor: [],
+            tableDataOrder: [],
             items: [
                 {
                     text: "Charts",
@@ -63,7 +37,7 @@ export default {
                     active: true
                 }
             ],
-            itemsPorDia: [
+            itemsGestor: [
                 {
                     text: "Charts",
                     href: "/"
@@ -73,7 +47,7 @@ export default {
                     active: true
                 }
             ],
-            itemsAgenda: [
+            itemsOrder: [
                 {
                     text: "Charts",
                     href: "/"
@@ -106,45 +80,41 @@ export default {
             fields2: [
             ],
             //--------------------
-            totalRowsPorDia: 1,
-            currentPagePorDia: 1,
-            perPagePorDia: 3,
-            pageOptionsPorDia: [3,10,25,50,100],
-            filterOnPorDia: [],
-            filterPorDia: null,
-            sortByPorDia: "age",
-            sortDescPorDia: false,
-            fieldsPorDia: [],
-            totalesPorDia : 0,
+            totalRowsGestor: 1,
+            currentPageGestor: 1,
+            perPageGestor: 3,
+            pageOptionsGestor: [3,10,25,50,100],
+            filterOnGestor: [],
+            filterGestor: null,
+            sortByGestor: "age",
+            sortDescGestor: false,
+            fieldsGestor: [],
+            totalesGestor : 0,
             //--------------------
-            totalRowsAgenda: 1,
-            currentPageAgenda: 1,
-            perPageAgenda: 3,
-            pageOptionsAgenda: [3,10,25,50,100],
-            filterOnAgenda: [],
-            filterAgenda: null,
-            sortByAgenda: "age",
-            sortDescAgenda: false,
-            fieldsAgenda: [],
-            totalesAgenda : 0,
+            totalRowsOrder: 1,
+            currentPageOrder: 1,
+            perPageOrder: 3,
+            pageOptionsOrder: [3,10,25,50,100],
+            filterOnOrder: [],
+            filterOrder: null,
+            sortByOrder: "age",
+            sortDescOrder: false,
+            fieldsOrder: [],
+            totalesOrder : 0,
         };
     },
     mounted() {
         // Set the initial number of items
         this.totalRows = this.items.length;
         this.totalRows2 = this.items2.length;
-        this.totalRowsPorDia = this.itemsPorDia.length;
-        this.totalRowsAgenda = this.itemsAgenda.length;
+        this.totalRowsGestor = this.itemsGestor.length;
+        this.totalRowsOrder = this.itemsOrder.length;
 
         //obtener datos de la api
-        this.getInstalaciones();
-        this.getMantenimientos();
-        this.getTablePorDia();
+        this.getTableGestor();
         this.getTableMantenimientos();
         this.getTableInstalaciones();
-        this.getRatioInstalaciones();
-        this.getRatioMantenimientos();
-        this.getTableAgendaPorDias();
+        this.getTableOrder();
     },
     methods:{
         onFiltered(filteredItems) {
@@ -158,19 +128,20 @@ export default {
             this.totalRows2 = filteredItems.length;
             this.currentPage2 = 1;
         },
-        onFilteredPorDia(filteredItems) {
+
+        onFilteredGestor(filteredItems) {
             // Trigger pagination to update the number of buttons/pages due to filtering
-            this.totalRowsPorDia = filteredItems.length;
-            this.currentPagePorDia = 1;
+            this.totalRowsGestor = filteredItems.length;
+            this.currentPageGestor = 1;
         },
-        onFilteredAgenda(filteredItems) {
+        onFilteredOrder(filteredItems) {
             // Trigger pagination to update the number of buttons/pages due to filtering
-            this.totalRowsAgenda = filteredItems.length;
-            this.currentPageAgenda = 1;
+            this.totalRowsOrder = filteredItems.length;
+            this.currentPageOrder = 1;
         },
         async getTableMantenimientos() {
             try {
-                const response = await this.$http.get(this.$apiURL+'control-panel/maintenanceprogresstable');
+                const response = await this.$http.get(this.$apiURL+'management/maintenanceprogresstable');
                 console.log(response)
                 response.data.series.map(i => this.tableData2.push({ ...i }));
                 response.data.fields.map(i => this.fields2.push({ key: i, sortable : true }));
@@ -182,7 +153,7 @@ export default {
         },
         async getTableInstalaciones() {
             try {
-                const response = await this.$http.get(this.$apiURL+'control-panel/installationprogresstable');
+                const response = await this.$http.get(this.$apiURL+'management/installationprogresstable');
                 console.log(response)
                 response.data.series.map(i => this.tableData.push({ ...i }));
                 response.data.fields.map(i => this.fields.push({ key: i, sortable : true }));
@@ -192,70 +163,34 @@ export default {
                 console.error(error);
             }
         },
-        async getTablePorDia(){
+        async getTableGestor(){
             try {
-                const response = await this.$http.get(this.$apiURL+'control-panel/productiontable');
+                const response = await this.$http.get(this.$apiURL+'management/installationlogmanagertable');
                 console.log(response)
-                response.data.series.map(i => this.tableDataPorDia.push({ ...i }));
-                //this.fieldsPorDia.push({ key: "Ciudad", sortable : true })
-                response.data.fields.map(i => this.fieldsPorDia.push({ key: i, sortable : true }));
-                console.log(this.tableDataPorDia)
-                this.totalRowsPorDia = this.tableDataPorDia.length;
-                this.totalesPorDia = response.data.totales;
+                response.data.series.map(i => this.tableDataGestor.push({ ...i }));
+                //this.fieldsGestor.push({ key: "Ciudad", sortable : true })
+                response.data.fields.map(i => this.fieldsGestor.push({ key: i, sortable : true }));
+                console.log(this.tableDataGestor)
+                this.totalRowsGestor = this.tableDataGestor.length;
+                this.totalesGestor = response.data.totales;
             } catch (error) {
                 console.error(error);
             }
         },
-        async getTableAgendaPorDias(){ 
+        async getTableOrder(){
             try {
-                const response = await this.$http.get(this.$apiURL+'control-panel/diarytable');
+                const response = await this.$http.get(this.$apiURL+'management/ordermanagertable');
                 console.log(response)
-                response.data.series.map(i => this.tableDataAgenda.push({ ...i }));
-                //this.fieldsAgenda.push({ key: "Ciudad", sortable : true })
-                response.data.fields.map(i => this.fieldsAgenda.push({ key: i, sortable : true }));
-                console.log(this.tableDataAgenda)
-                this.totalRowsAgenda = this.tableDataAgenda.length;
-                this.totalesAgenda = response.data.totales;
+                response.data.series.map(i => this.tableDataOrder.push({ ...i }));
+                //this.fieldsOrder.push({ key: "Ciudad", sortable : true })
+                response.data.fields.map(i => this.fieldsOrder.push({ key: i, sortable : true }));
+                console.log(this.tableDataOrder)
+                this.totalRowsOrder = this.tableDataOrder.length;
+                this.totalesOrder = response.data.totales;
             } catch (error) {
                 console.error(error);
             }
         },
-        async getInstalaciones() {
-            try {
-                const response = await this.$http.get(this.$apiURL+'control-panel/installationprogressgraphic');
-                this.columnChart.series = response.data.series;
-                this.columnChart.chartOptions.xaxis.categories = response.data.categories;
-            } catch (error) {
-                console.error(error);
-            }
-        },
-        async getMantenimientos() {
-            try {
-                const response = await this.$http.get(this.$apiURL+'control-panel/maintenanceprogressgraphic');
-                this.columnChart2.series = response.data.series;
-                this.columnChart2.chartOptions.xaxis.categories = response.data.categories;
-            } catch (error) {
-                console.error(error);
-            }
-        },
-        async getRatioInstalaciones(){
-            try {
-                const response = await this.$http.get(this.$apiURL+'control-panel/installationratiographic');
-                this.pieChart.series = response.data.series;
-                this.pieChart.chartOptions.labels = response.data.labels;
-            } catch (error) {
-                console.error(error); 
-            }
-        },
-        async getRatioMantenimientos(){
-            try {
-                const response = await this.$http.get(this.$apiURL+'control-panel/maintenanceratiographic');
-                this.pieChart2.series = response.data.series;
-                this.pieChart2.chartOptions.labels = response.data.labels ;
-            } catch (error) {
-                console.error(error);
-            }
-        }
     },
     middleware: "authentication"
 };
@@ -264,121 +199,11 @@ export default {
 <template>
 <Layout>
     <PageHeader :title="title" :items="items" />
-
     <BRow>
-    <BCol lg="4">
-        <BCard no-body>
-            <BCardBody>
-                <BCardTitle class="mb-4">Avance instalaciones</BCardTitle>
-                <!-- Column Charts -->
-                <apexchart
-                    class="apex-charts"
-                    height="350"
-                    type="bar"
-                    dir="ltr"
-                    :series="columnChart.series"
-                    :options="columnChart.chartOptions"
-                ></apexchart>
-            </BCardBody>
-        </BCard>
-    </BCol>
-    <BCol lg="4">
-        <BCard no-body>
-            <BCardBody>
-                <BCardTitle class="mb-4">Avance mantenimientos</BCardTitle>
-                <!-- Column Charts -->
-                <apexchart
-                    class="apex-charts"
-                    height="350"
-                    type="bar"
-                    dir="ltr"
-                    :series="columnChart2.series"
-                    :options="columnChart2.chartOptions"
-                ></apexchart>
-            </BCardBody>
-        </BCard>
-    </BCol>
-    <BCol cols="4">
-        <BCard no-body>
-            <BCardBody>
-                <BCardTitle>Producción Día : S/{{ totalesPorDia }}</BCardTitle>
-                <BRow class="mt-4">
-                    <BCol sm="12" md="6">
-                        <div id="tickets-table_length" class="dataTables_length">
-                        <label class="d-inline-flex align-items-center">
-                            Show&nbsp;
-                            <BFormSelect
-                                v-model="perPagePorDia"
-                                size="sm"
-                                :options="pageOptionsPorDia"
-                            ></BFormSelect
-                            >&nbsp;entries
-                        </label>
-                        </div>
-                    </BCol>
-                    <!-- Search -->
-                    <div class="col-sm-12 col-md-6">
-                        <div
-                        id="tickets-table_filter"
-                        class="dataTables_filter text-md-end"
-                        >
-                        <label class="d-inline-flex align-items-center">
-                            Search:
-                            <BFormInput
-                            v-model="filterPorDia"
-                            type="search"
-                            placeholder="Search..."
-                            class="form-control form-control-sm ms-2"
-                            ></BFormInput>
-                        </label>
-                        </div>
-                    </div>
-                    <!-- End search -->
-                </BRow>
-                <!-- Table -->
-                <div class="table-responsive mb-0">
-                    <BTable
-                        :items="tableDataPorDia"
-                        :fields="fieldsPorDia"
-                        responsive="sm"
-                        :per-page="perPagePorDia"
-                        :current-page="currentPagePorDia"
-                        :sort-by.sync="sortByPorDia"
-                        :sort-desc.sync="sortDescPorDia"
-                        :filter="filterPorDia"
-                        :filter-included-fields="filterOnPorDia"
-                        @filtered="onFilteredPorDia"
-                    >                    
-                </BTable>
-                </div>
-                <BRow>
-                    <BCol>
-                        <div
-                        class="dataTables_paginate paging_simple_numbers float-end"
-                        >
-                        <ul class="pagination pagination-rounded mb-0">
-                            <!-- pagination -->
-                            <BPagination
-                            v-model="currentPagePorDia"
-                            :total-rows="totalRowsPorDia"
-                            :per-page="perPagePorDia"
-                            ></BPagination>
-                        </ul>
-                        </div>
-                    </BCol>
-                </BRow>
-            </BCardBody>
-        </BCard>
-    </BCol>
-    </BRow>
-    <!-- end row -->
-
-    <!-- end row -->
-    <div class="row">
         <BCol cols="6">
             <BCard no-body>
                 <BCardBody>
-                    <BCardTitle>Instalaciones</BCardTitle>
+                    <BCardTitle>Avance instalaciones</BCardTitle>
                     <BRow class="mt-4">
                         <BCol sm="12" md="6">
                             <div id="tickets-table_length" class="dataTables_length">
@@ -450,7 +275,84 @@ export default {
         <BCol cols="6">
             <BCard no-body>
                 <BCardBody>
-                    <BCardTitle>Mantenimientos</BCardTitle>
+                    <BCardTitle>Orders por gestor instalaciones</BCardTitle>
+                    <BRow class="mt-4">
+                        <BCol sm="12" md="6">
+                            <div id="tickets-table_length" class="dataTables_length">
+                            <label class="d-inline-flex align-items-center">
+                                Show&nbsp;
+                                <BFormSelect
+                                    v-model="perPageGestor"
+                                    size="sm"
+                                    :options="pageOptionsGestor"
+                                ></BFormSelect
+                                >&nbsp;entries
+                            </label>
+                            </div>
+                        </BCol>
+                        <!-- Search -->
+                        <div class="col-sm-12 col-md-6">
+                            <div
+                            id="tickets-table_filter"
+                            class="dataTables_filter text-md-end"
+                            >
+                            <label class="d-inline-flex align-items-center">
+                                Search:
+                                <BFormInput
+                                v-model="filterGestor"
+                                type="search"
+                                placeholder="Search..."
+                                class="form-control form-control-sm ms-2"
+                                ></BFormInput>
+                            </label>
+                            </div>
+                        </div>
+                        <!-- End search -->
+                    </BRow>
+                    <!-- Table -->
+                    <div class="table-responsive mb-0">
+                        <BTable
+                            :items="tableDataGestor"
+                            :fields="fieldsGestor"
+                            responsive="sm"
+                            :per-page="perPageGestor"
+                            :current-page="currentPageGestor"
+                            :sort-by.sync="sortByGestor"
+                            :sort-desc.sync="sortDescGestor"
+                            :filter="filterGestor"
+                            :filter-included-fields="filterOnGestor"
+                            @filtered="onFilteredGestor"
+                        >                    
+                    </BTable>
+                    </div>
+                    <BRow>
+                        <BCol>
+                            <div
+                            class="dataTables_paginate paging_simple_numbers float-end"
+                            >
+                            <ul class="pagination pagination-rounded mb-0">
+                                <!-- pagination -->
+                                <BPagination
+                                v-model="currentPageGestor"
+                                :total-rows="totalRowsGestor"
+                                :per-page="perPageGestor"
+                                ></BPagination>
+                            </ul>
+                            </div>
+                        </BCol>
+                    </BRow>
+                </BCardBody>
+            </BCard>
+        </BCol>
+    </BRow>
+    <!-- end row -->
+
+    <!-- end row -->
+    <div class="row">
+        <BCol cols="6">
+            <BCard no-body>
+                <BCardBody>
+                    <BCardTitle>Avance Mantenimientos</BCardTitle>
                     <BRow class="mt-4">
                         <BCol sm="12" md="6">
                             <div id="tickets-table_length" class="dataTables_length">
@@ -519,22 +421,19 @@ export default {
                 </BCardBody>
             </BCard>
         </BCol>
-    </div>
-    <div class="row">
-        
-        <BCol cols="12">
+        <BCol cols="6">
             <BCard no-body>
                 <BCardBody>
-                    <BCardTitle>Agenda a 7 días</BCardTitle>
+                    <BCardTitle>Ordenes por gestor - horas pendientes</BCardTitle>
                     <BRow class="mt-4">
                         <BCol sm="12" md="6">
                             <div id="tickets-table_length" class="dataTables_length">
                                 <label class="d-inline-flex align-items-center">
                                     Show&nbsp;
                                     <BFormSelect
-                                        v-model="perPageAgenda"
+                                        v-model="perPageOrder"
                                         size="sm"
-                                        :options="pageOptionsAgenda"
+                                        :options="pageOptionsOrder"
                                     ></BFormSelect
                                     >&nbsp;entries
                                 </label>
@@ -546,7 +445,7 @@ export default {
                                 <label class="d-inline-flex align-items-center">
                                     Search:
                                     <BFormInput
-                                    v-model="filterAgenda"
+                                    v-model="filterOrder"
                                     type="search"
                                     placeholder="Search..."
                                     class="form-control form-control-sm ms-2"
@@ -559,16 +458,16 @@ export default {
                     <!-- Table -->
                     <div class="table-responsive mb-0">
                         <BTable
-                            :items="tableDataAgenda"
-                            :fields="fieldsAgenda"
+                            :items="tableDataOrder"
+                            :fields="fieldsOrder"
                             responsive="sm"
-                            :per-page="perPageAgenda"
-                            :current-page="currentPageAgenda"
-                            :sort-by.sync="sortByAgenda"
-                            :sort-desc.sync="sortDescAgenda"
-                            :filter="filterAgenda"
-                            :filter-included-fields="filterOnAgenda"
-                            @filtered="onFilteredAgenda"
+                            :per-page="perPageOrder"
+                            :current-page="currentPageOrder"
+                            :sort-by.sync="sortByOrder"
+                            :sort-desc.sync="sortDescOrder"
+                            :filter="filterOrder"
+                            :filter-included-fields="filterOnOrder"
+                            @filtered="onFilteredOrder"
                         >                    
                         </BTable>
                     </div>
@@ -578,9 +477,9 @@ export default {
                             <ul class="pagination pagination-rounded mb-0">
                                 <!-- pagination -->
                                 <BPagination
-                                    v-model="currentPageAgenda"
-                                    :total-rows="totalRowsAgenda"
-                                    :per-page="perPageAgenda"
+                                    v-model="currentPageOrder"
+                                    :total-rows="totalRowsOrder"
+                                    :per-page="perPageOrder"
                                 ></BPagination>
                             </ul>
                         </div>
@@ -589,41 +488,6 @@ export default {
                 </BCardBody>
             </BCard>
         </BCol>
-    </div>
-    <div class="row">
-        <BCol lg="6">
-            <BCard no-body>
-                <BCardBody>
-                    <BCardTitle class="mb-4">Ratio de instalaciones tec</BCardTitle>
-                    <!-- Pie Chart -->
-                    <apexchart
-                        class="apex-charts"
-                        height="320"
-                        type="pie"
-                        dir="ltr"
-                        :series="pieChart.series"
-                        :options="pieChart.chartOptions"
-                    ></apexchart>
-                </BCardBody>
-            </BCard>
-        </BCol>
-        <BCol lg="6">
-            <BCard no-body>
-                <BCardBody>
-                    <BCardTitle class="mb-4">Ratio de mantenimientos tec</BCardTitle>
-                    <!-- Pie Chart -->
-                    <apexchart
-                        class="apex-charts"
-                        height="320"
-                        type="pie"
-                        dir="ltr"
-                        :series="pieChart2.series"
-                        :options="pieChart2.chartOptions"
-                    ></apexchart>
-                </BCardBody>
-            </BCard>
-        </BCol>
-
     </div>
     <!-- end row -->
 </Layout>
