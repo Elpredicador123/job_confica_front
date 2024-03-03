@@ -125,6 +125,12 @@ export default [
     component: () => import("../views/pages/Gestion/index")
   },
   {
+    path: "/provision",
+    name: "Provisión",
+    meta: { title: "Provisión", authRequired: true },
+    component: () => import("../views/pages/Provision/index")
+  },
+  {
     path: "/news/index",
     name: "Listado",
     meta: { title: "Listado", authRequired: true },

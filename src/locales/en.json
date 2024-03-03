@@ -75,6 +75,9 @@
     "gestion": {
       "text": "Gestión"
     },
+    "provision": {
+      "text": "Provisión"
+    },
     "chat": {
       "text": "Chat",
       "badge": "New"

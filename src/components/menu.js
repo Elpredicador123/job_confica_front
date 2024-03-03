@@ -172,6 +172,12 @@ export const menuItems = [
         link: "/gestion"
     },
     {
+        id: 13,
+        label: "menuitems.provision.text",
+        icon: "uil-calender",
+        link: "/provision"
+    },
+    {
         id: 15,
         label: "menuitems.email.text",
         icon: "uil-envelope",
