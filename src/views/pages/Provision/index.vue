@@ -17,8 +17,8 @@ export default {
     data() {
         return {
             title: "Gestión",
-            tableDataGestor: [],
-            tableDataOrder: [],
+            tableDataSup: [],
+            tableDataTec: [],
             ContrataBar: barChart,
             GestorBar: barChart,
             GestorAgenda: [],
@@ -26,7 +26,12 @@ export default {
             ],
             GestorAgendaId: null,
             GestorOrdenId: null,
-            itemsGestor: [
+            Ciudades : [],
+            CiudadId1: null,
+            CiudadId2: null,
+            CiudadId3: null,
+            CiudadId4: null,
+            itemsSup: [
                 {
                     text: "Charts",
                     href: "/"
@@ -36,7 +41,7 @@ export default {
                     active: true
                 }
             ],
-            itemsOrder: [
+            itemsTec: [
                 {
                     text: "Charts",
                     href: "/"
@@ -47,50 +52,50 @@ export default {
                 }
             ],
             //--------------------
-            totalRowsGestor: 1,
-            currentPageGestor: 1,
-            perPageGestor: 3,
-            pageOptionsGestor: [3,10,25,50,100],
-            filterOnGestor: [],
-            filterGestor: null,
-            sortByGestor: "age",
-            sortDescGestor: false,
-            fieldsGestor: [],
-            totalesGestor : 0,
+            totalRowsSup: 1,
+            currentPageSup: 1,
+            perPageSup: 3,
+            pageOptionsSup: [3,10,25,50,100],
+            filterOnSup: [],
+            filterSup: null,
+            sortBySup: "age",
+            sortDescSup: false,
+            fieldsSup: [],
+            totalesSup : 0,
             //--------------------
-            totalRowsOrder: 1,
-            currentPageOrder: 1,
-            perPageOrder: 3,
-            pageOptionsOrder: [3,10,25,50,100],
-            filterOnOrder: [],
-            filterOrder: null,
-            sortByOrder: "age",
-            sortDescOrder: false,
-            fieldsOrder: [],
-            totalesOrder : 0,
+            totalRowsTec: 1,
+            currentPageTec: 1,
+            perPageTec: 3,
+            pageOptionsTec: [3,10,25,50,100],
+            filterOnTec: [],
+            filterTec: null,
+            sortByTec: "age",
+            sortDescTec: false,
+            fieldsTec: [],
+            totalesTec : 0,
         };
     },
     mounted() {
         // Set the initial number of items
-        this.totalRowsGestor = this.itemsGestor.length;
-        this.totalRowsOrder = this.itemsOrder.length;
+        this.totalRowsSup = this.itemsSup.length;
+        this.totalRowsTec = this.itemsTec.length;
 
         //obtener datos de la api
-        this.getTableGestor();
-        //this.getGestor();
-        this.getTableOrder();
-        //this.getContrata();
+        this.getTableSup();
+        this.getCity();
+        this.getTableTec();
+        this.getContrata();
     },
     methods:{
-        onFilteredGestor(filteredItems) {
+        onFilteredSup(filteredItems) {
             // Trigger pagination to update the number of buttons/pages due to filtering
-            this.totalRowsGestor = filteredItems.length;
-            this.currentPageGestor = 1;
+            this.totalRowsSup = filteredItems.length;
+            this.currentPageSup = 1;
         },
-        onFilteredOrder(filteredItems) {
+        onFilteredTec(filteredItems) {
             // Trigger pagination to update the number of buttons/pages due to filtering
-            this.totalRowsOrder = filteredItems.length;
-            this.currentPageOrder = 1;
+            this.totalRowsTec = filteredItems.length;
+            this.currentPageTec = 1;
         },
         async getContrata(){
             const response = await this.$http.get(this.$apiURL+'provision/diarycontratagraphic');
@@ -106,29 +111,35 @@ export default {
                 console.error(error);
             }
         },
-        async getTableGestor(){
+        async getTableSup(){
             try {
-                const response = await this.$http.get(this.$apiURL+'management/installationlogmanagertable');
-                response.data.series.map(i => this.tableDataGestor.push({ ...i }));
+                const response = await this.$http.get(this.$apiURL+'provision/childhoodbreakdownsmanagers');
+                response.data.series.map(i => this.tableDataSup.push({ ...i }));
                 //this.fieldsGestor.push({ key: "Ciudad", sortable : true })
-                response.data.fields.map(i => this.fieldsGestor.push({ key: i, sortable : true }));
-                this.totalRowsGestor = this.tableDataGestor.length;
-                this.totalesGestor = response.data.totales;
+                response.data.fields.map(i => this.fieldsSup.push({ key: i, sortable : true }));
+                this.totalRowsSup = this.tableDataSup.length;
+                this.totalesSup = response.data.totales;
             } catch (error) {
                 console.error(error);
             }
         },
-        async getTableOrder(){
+        async getTableTec(){
             try {
-                const response = await this.$http.get(this.$apiURL+'management/ordermanagertable');
-                response.data.series.map(i => this.tableDataOrder.push({ ...i }));
-                //this.fieldsOrder.push({ key: "Ciudad", sortable : true })
-                response.data.fields.map(i => this.fieldsOrder.push({ key: i, sortable : true }));
-                this.totalRowsOrder = this.tableDataOrder.length;
-                this.totalesOrder = response.data.totales;
+                const response = await this.$http.get(this.$apiURL+'provision/childhoodbreakdownstechnicians');
+                response.data.series.map(i => this.tableDataTec.push({ ...i }));
+                //this.fieldsTec.push({ key: "Ciudad", sortable : true })
+                response.data.fields.map(i => this.fieldsTec.push({ key: i, sortable : true }));
+                this.totalRowsTec = this.tableDataTec.length;
+                this.totalesTec = response.data.totales;
             } catch (error) {
                 console.error(error);
             }
+        },
+        async getCity(){
+            const response = await this.$http.get(this.$apiURL+'city/all');
+                console.log(response)
+                response.data.data.map(i => this.Ciudades.push( i.name ));
+                console.log(this.Ciudades)
         },
     },
     middleware: "authentication"
@@ -143,6 +154,19 @@ export default {
             <BCard no-body>
                 <BCardBody>
                     <BCardTitle class="mb-4">Cumplimiento agenda - Contrata</BCardTitle>
+                    <BRow>
+                        <BCol cols="7">
+
+                        </BCol>
+                        <BCol cols="5">
+                            Filtrar por:
+                            <Multiselect
+                                v-model="CiudadId1"
+                                :options="Ciudades"
+                                placeholder="Seleccionar Ciudad"
+                            />
+                        </BCol>
+                    </BRow>
                     <!-- Bar Chart -->
                     <apexchart
                         class="apex-charts"
@@ -159,6 +183,19 @@ export default {
             <BCard no-body>
                 <BCardBody>
                     <BCardTitle class="mb-4">Cumplimiento agenda - Gestor</BCardTitle>
+                    <BRow>
+                        <BCol cols="7">
+
+                        </BCol>
+                        <BCol cols="5">
+                            Filtrar por:
+                            <Multiselect
+                                v-model="CiudadId2"
+                                :options="Ciudades"
+                                placeholder="Seleccionar Ciudad"
+                            />
+                        </BCol>
+                    </BRow>
                     <!-- Bar Chart -->
                     <apexchart
                         class="apex-charts"
@@ -174,18 +211,17 @@ export default {
         <BCol cols="6">
             <BCard no-body>
                 <BCardBody>
-                    <BCardTitle>Ordenes por gestor instalaciones</BCardTitle>
+                    <BCardTitle>Averías de infancia - Sup</BCardTitle>
                     <BRow>
-                        <BCol cols="8">
+                        <BCol cols="7">
 
                         </BCol>
-                        <BCol cols="4">
+                        <BCol cols="5">
                             Filtrar por:
                             <Multiselect
-                                v-model="GestorAgendaId"
-                                :options="GestorAgenda"
-                                placeholder="Seleccionar Gestor"
-                                label="manager"
+                                v-model="CiudadId3"
+                                :options="Ciudades"
+                                placeholder="Seleccionar Ciudad"
                             />
                         </BCol>
                     </BRow>
@@ -195,9 +231,9 @@ export default {
                             <label class="d-inline-flex align-items-center">
                                 Show&nbsp;
                                 <BFormSelect
-                                    v-model="perPageGestor"
+                                    v-model="perPageSup"
                                     size="sm"
-                                    :options="pageOptionsGestor"
+                                    :options="pageOptionsSup"
                                 ></BFormSelect
                                 >&nbsp;entries
                             </label>
@@ -212,7 +248,7 @@ export default {
                             <label class="d-inline-flex align-items-center">
                                 Search:
                                 <BFormInput
-                                v-model="filterGestor"
+                                v-model="filterSup"
                                 type="search"
                                 placeholder="Search..."
                                 class="form-control form-control-sm ms-2"
@@ -225,16 +261,16 @@ export default {
                     <!-- Table -->
                     <div class="table-responsive mb-0">
                         <BTable
-                            :items="tableDataGestor"
-                            :fields="fieldsGestor"
+                            :items="tableDataSup"
+                            :fields="fieldsSup"
                             responsive="sm"
-                            :per-page="perPageGestor"
-                            :current-page="currentPageGestor"
-                            :sort-by.sync="sortByGestor"
-                            :sort-desc.sync="sortDescGestor"
-                            :filter="filterGestor"
-                            :filter-included-fields="filterOnGestor"
-                            @filtered="onFilteredGestor"
+                            :per-page="perPageSup"
+                            :current-page="currentPageSup"
+                            :sort-by.sync="sortBySup"
+                            :sort-desc.sync="sortDescSup"
+                            :filter="filterSup"
+                            :filter-included-fields="filterOnSup"
+                            @filtered="onFilteredSup"
                         >                    
                     </BTable>
                     </div>
@@ -246,9 +282,9 @@ export default {
                             <ul class="pagination pagination-rounded mb-0">
                                 <!-- pagination -->
                                 <BPagination
-                                v-model="currentPageGestor"
-                                :total-rows="totalRowsGestor"
-                                :per-page="perPageGestor"
+                                v-model="currentPageSup"
+                                :total-rows="totalRowsSup"
+                                :per-page="perPageSup"
                                 ></BPagination>
                             </ul>
                             </div>
@@ -260,18 +296,17 @@ export default {
         <BCol cols="6">
             <BCard no-body>
                 <BCardBody>
-                    <BCardTitle>Ordenes por gestor - horas pendientes</BCardTitle>
+                    <BCardTitle>Averías de infancia - Tec</BCardTitle>
                     <BRow>
-                        <BCol cols="8">
+                        <BCol cols="7">
 
                         </BCol>
-                        <BCol cols="4">
+                        <BCol cols="5">
                             Filtrar por:
                             <Multiselect
-                                v-model="GestorOrdenId"
-                                :options="GestorOrdenes"
-                                placeholder="Seleccionar Gestor"
-                                label="manager"
+                                v-model="CiudadId4"
+                                :options="Ciudades"
+                                placeholder="Seleccionar Ciudad"
                             />
                         </BCol>
                     </BRow>
@@ -281,9 +316,9 @@ export default {
                                 <label class="d-inline-flex align-items-center">
                                     Show&nbsp;
                                     <BFormSelect
-                                        v-model="perPageOrder"
+                                        v-model="perPageTec"
                                         size="sm"
-                                        :options="pageOptionsOrder"
+                                        :options="pageOptionsTec"
                                     ></BFormSelect
                                     >&nbsp;entries
                                 </label>
@@ -295,7 +330,7 @@ export default {
                                 <label class="d-inline-flex align-items-center">
                                     Search:
                                     <BFormInput
-                                    v-model="filterOrder"
+                                    v-model="filterTec"
                                     type="search"
                                     placeholder="Search..."
                                     class="form-control form-control-sm ms-2"
@@ -308,16 +343,16 @@ export default {
                     <!-- Table -->
                     <div class="table-responsive mb-0">
                         <BTable
-                            :items="tableDataOrder"
-                            :fields="fieldsOrder"
+                            :items="tableDataTec"
+                            :fields="fieldsTec"
                             responsive="sm"
-                            :per-page="perPageOrder"
-                            :current-page="currentPageOrder"
-                            :sort-by.sync="sortByOrder"
-                            :sort-desc.sync="sortDescOrder"
-                            :filter="filterOrder"
-                            :filter-included-fields="filterOnOrder"
-                            @filtered="onFilteredOrder"
+                            :per-page="perPageTec"
+                            :current-page="currentPageTec"
+                            :sort-by.sync="sortByTec"
+                            :sort-desc.sync="sortDescTec"
+                            :filter="filterTec"
+                            :filter-included-fields="filterOnTec"
+                            @filtered="onFilteredTec"
                         >                    
                         </BTable>
                     </div>
@@ -327,9 +362,9 @@ export default {
                             <ul class="pagination pagination-rounded mb-0">
                                 <!-- pagination -->
                                 <BPagination
-                                    v-model="currentPageOrder"
-                                    :total-rows="totalRowsOrder"
-                                    :per-page="perPageOrder"
+                                    v-model="currentPageTec"
+                                    :total-rows="totalRowsTec"
+                                    :per-page="perPageTec"
                                 ></BPagination>
                             </ul>
                         </div>
