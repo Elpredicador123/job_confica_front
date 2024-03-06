@@ -78,6 +78,9 @@
     "provision": {
       "text": "Provisión"
     },
+    "mantenimiento": {
+      "text": "Mantenimiento"
+    },
     "chat": {
       "text": "Chat",
       "badge": "New"

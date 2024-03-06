@@ -131,6 +131,12 @@ export default [
     component: () => import("../views/pages/Provision/index")
   },
   {
+    path: "/mantenimiento",
+    name: "Mantenimiento",
+    meta: { title: "Mantenimiento", authRequired: true },
+    component: () => import("../views/pages/Mantenimiento/index")
+  },
+  {
     path: "/news/index",
     name: "Listado",
     meta: { title: "Listado", authRequired: true },

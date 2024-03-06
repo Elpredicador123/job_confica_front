@@ -1,7 +1,7 @@
 const barChart = {
   series: [
     {
-      data: [380, 430, 450, 475, 550, 584, 780, 1100, 1220, 1365]
+      data: []
     }
   ],
   chartOptions: {
@@ -24,16 +24,38 @@ const barChart = {
     },
     xaxis: {
       categories: [
-        "South Korea",
-        "Canada",
-        "United Kingdom",
-        "Netherlands",
-        "Italy",
-        "France",
-        "Japan",
-        "United States",
-        "China",
-        "Germany"
+        
+      ]
+    }
+  }
+};
+const barChart2 = {
+  series: [
+    {
+      data: []
+    }
+  ],
+  chartOptions: {
+    chart: {
+      toolbar: {
+        show: false
+      }
+    },
+    plotOptions: {
+      bar: {
+        horizontal: true
+      }
+    },
+    dataLabels: {
+      enabled: false
+    },
+    colors: ['#34c38f'],
+    grid: {
+      borderColor: "#f1f1f1"
+    },
+    xaxis: {
+      categories: [
+        
       ]
     }
   }
@@ -41,4 +63,5 @@ const barChart = {
 
 export {
   barChart,
+  barChart2
 };

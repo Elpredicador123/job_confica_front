@@ -4,24 +4,28 @@ import PageHeader from "@/components/page-header";
 import Multiselect from "@vueform/multiselect";
 import {
   barChart,
-  barChart2
+  barChart2, 
+  pieChart,
+    pieChart2,
 } from "./data";
 /**
  * Apex-chart component
  */
 export default {
-    components: {
+    components: { 
         Layout,
         Multiselect,
         PageHeader
-    },
+    }, 
     data() {
-        return {
+        return { 
             title: "Gestión",
             tableDataSup: [],
             tableDataTec: [],
             ContrataBar: barChart, 
             GestorBar: barChart2,
+            pieChart: pieChart,
+            pieChart2: pieChart2,
             GestorAgenda: [],
             GestorOrdenes: [
             ],
@@ -87,6 +91,8 @@ export default {
         this.getTableTec();
         this.getContrata();
         this.getGestor();
+        this.getRatioInstalaciones();
+        this.getRatioMantenimientos();
     },
     methods:{
         onFilteredSup(filteredItems) {
@@ -100,7 +106,7 @@ export default {
             this.currentPageTec = 1;
         },
         async getContrata(){
-            const response = await this.$http.get(this.$apiURL+'provision/diarycontratagraphic');
+            const response = await this.$http.get(this.$apiURL+'maintenance/diarycontratagraphic');
                 this.ContrataBar.series[0].data = response.data.series; 
                 this.ContrataBar.chartOptions.xaxis.categories = response.data.categories;
         },
@@ -115,7 +121,7 @@ export default {
         },
         async getTableSup(){
             try {
-                const response = await this.$http.get(this.$apiURL+'provision/childhoodbreakdownsmanagers');
+                const response = await this.$http.get(this.$apiURL+'maintenance/childhoodbreakdownsmanagers');
                 response.data.series.map(i => this.tableDataSup.push({ ...i }));
                 //this.fieldsGestor.push({ key: "Ciudad", sortable : true })
                 response.data.fields.map(i => this.fieldsSup.push({ key: i, sortable : true }));
@@ -127,7 +133,7 @@ export default {
         },
         async getTableTec(){
             try {
-                const response = await this.$http.get(this.$apiURL+'provision/childhoodbreakdownstechnicians');
+                const response = await this.$http.get(this.$apiURL+'maintenance/childhoodbreakdownstechnicians');
                 response.data.series.map(i => this.tableDataTec.push({ ...i }));
                 //this.fieldsTec.push({ key: "Ciudad", sortable : true })
                 response.data.fields.map(i => this.fieldsTec.push({ key: i, sortable : true }));
@@ -143,6 +149,24 @@ export default {
                 response.data.data.map(i => this.Ciudades.push( i.name ));
                 console.log(this.Ciudades)
         },
+        async getRatioInstalaciones(){
+            try {
+                const response = await this.$http.get(this.$apiURL+'maintenance/ineffectivedistributiongraphic');
+                this.pieChart.series = response.data.series;
+                this.pieChart.chartOptions.labels = response.data.labels;
+            } catch (error) {
+                console.error(error); 
+            }
+        },
+        async getRatioMantenimientos(){
+            try {
+                const response = await this.$http.get(this.$apiURL+'maintenance/ineffectivedistributiongraphic');
+                this.pieChart2.series = response.data.series;
+                this.pieChart2.chartOptions.labels = response.data.labels ;
+            } catch (error) {
+                console.error(error);
+            }
+        }
     },
     middleware: "authentication"
 };
@@ -155,7 +179,7 @@ export default {
         <BCol lg="6">
             <BCard no-body>
                 <BCardBody>
-                    <BCardTitle class="mb-4">Cumplimiento agenda - Contrata</BCardTitle>
+                    <BCardTitle class="mb-4">Inefectiva Gestor</BCardTitle>
                     <BRow>
                         <BCol cols="7">
 
@@ -184,7 +208,23 @@ export default {
         <BCol lg="6">
             <BCard no-body>
                 <BCardBody>
-                    <BCardTitle class="mb-4">Cumplimiento agenda - Gestor</BCardTitle>
+                    <BCardTitle class="mb-4">Distrubución Inefectiva</BCardTitle>
+                    <!-- Pie Chart -->
+                    <apexchart
+                        class="apex-charts"
+                        height="320"
+                        type="pie"
+                        dir="ltr"
+                        :series="pieChart2.series"
+                        :options="pieChart2.chartOptions"
+                    ></apexchart>
+                </BCardBody>
+            </BCard>
+        </BCol>
+        <BCol lg="6">
+            <BCard no-body>
+                <BCardBody>
+                    <BCardTitle class="mb-4">TCFL Gestor</BCardTitle>
                     <BRow>
                         <BCol cols="7">
 
@@ -210,10 +250,26 @@ export default {
                 </BCardBody>
             </BCard>
         </BCol>
+        <BCol lg="6">
+            <BCard no-body>
+                <BCardBody>
+                    <BCardTitle class="mb-4">Distrubución Reitero</BCardTitle>
+                    <!-- Pie Chart -->
+                    <apexchart
+                        class="apex-charts"
+                        height="320"
+                        type="pie"
+                        dir="ltr"
+                        :series="pieChart.series"
+                        :options="pieChart.chartOptions"
+                    ></apexchart>
+                </BCardBody>
+            </BCard>
+        </BCol>
         <BCol cols="6">
             <BCard no-body>
                 <BCardBody>
-                    <BCardTitle>Averías de infancia - Sup</BCardTitle>
+                    <BCardTitle>Averías Reiteradas - Sup</BCardTitle>
                     <BRow>
                         <BCol cols="7">
 
@@ -298,7 +354,7 @@ export default {
         <BCol cols="6">
             <BCard no-body>
                 <BCardBody>
-                    <BCardTitle>Averías de infancia - Tec</BCardTitle>
+                    <BCardTitle>Averías Reiteradas - Tec</BCardTitle>
                     <BRow>
                         <BCol cols="7">
 
