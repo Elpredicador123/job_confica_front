@@ -95,7 +95,7 @@ const pieChart2 = {
   series: [],
   chartOptions: {
     labels: [],
-    colors: ["#34c38f", "#556ee6", "#f46a6a", "#50a5f1", "#f1b44c"],
+    colors: ["#34c38f", "#556ee6", "#f46a6a", "#50a5f1", "#f1b44c", "#f3a44c", "#55b44c", "#H1b44c"],
     legend: {
       show: true,
       position: "bottom",

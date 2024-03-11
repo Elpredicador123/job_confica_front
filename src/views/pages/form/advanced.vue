@@ -141,8 +141,16 @@ export default {
   computed: {
     isDarkMode() {
       return this.$store?.state?.layout?.mode === "dark" || false;
+    },
+   
+  },
+  methods:{
+    changeMulti(){
+      this.$nextTick(() => {
+      console.log(this.value);
+    });
     }
-  }
+  },
 };
 </script>
 
@@ -164,6 +172,7 @@ export default {
                 :options="options"
                 class="form-control p-0"
                 placeholder="Select option"
+                @change="changeMulti"
               />
 
               <label class="mt-3">Multiple Select</label>

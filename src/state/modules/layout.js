@@ -4,7 +4,7 @@ export const state = {
   leftSidebarType: "dark",
   topbar: "light",
   loader: false,
-  mode: "dark"
+  mode: "light"
 };
 
 export const getters = {};

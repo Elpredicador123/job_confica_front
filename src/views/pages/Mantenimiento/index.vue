@@ -32,10 +32,10 @@ export default {
             GestorAgendaId: null,
             GestorOrdenId: null,
             Ciudades : [],
-            CiudadId1: null,
-            CiudadId2: null,
-            CiudadId3: null,
-            CiudadId4: null,
+            CiudadId1: "LIMA",
+            CiudadId2: "LIMA",
+            CiudadId3: "LIMA",
+            CiudadId4: "LIMA",
             itemsSup: [
                 {
                     text: "Charts",
@@ -87,7 +87,25 @@ export default {
 
         //obtener datos de la api
         this.getTableSup();
-        this.getCity();
+        this.getCity().then(() => {
+        // Después de obtener los datos de la ciudad, inicializa los CiudadId
+        const multiselect1 = this.$refs.multiselect1;
+        if (multiselect1) {
+            multiselect1.update("LIMA");
+        }
+        const multiselect2 = this.$refs.multiselect2;
+        if (multiselect2) {
+            multiselect2.update("LIMA");
+        }
+        const multiselect3 = this.$refs.multiselect3;
+        if (multiselect3) {
+            multiselect3.update("LIMA");
+        }
+        const multiselect4 = this.$refs.multiselect4;
+        if (multiselect4) {
+            multiselect4.update("LIMA");
+        }
+    });
         this.getTableTec();
         this.getContrata();
         this.getGestor();
@@ -114,7 +132,7 @@ export default {
             try {
                 const response = await this.$http.get(this.$apiURL+'provision/diarymanagergraphic');
                 this.GestorBar.series[0].data = response.data.series;
-                this.GestorBar.chartOptions.xaxis.categories = response.data.categories;
+                this.GestorBar.chartOptions.xaxis.categories = response.data.categories; 
             } catch (error) {
                 console.error(error);
             }
@@ -143,7 +161,7 @@ export default {
                 console.error(error);
             }
         },
-        async getCity(){
+        async getCity(){ 
             const response = await this.$http.get(this.$apiURL+'city/all');
                 console.log(response)
                 response.data.data.map(i => this.Ciudades.push( i.name ));
@@ -151,18 +169,19 @@ export default {
         },
         async getRatioInstalaciones(){
             try {
-                const response = await this.$http.get(this.$apiURL+'maintenance/ineffectivedistributiongraphic');
+                const response = await this.$http.get(this.$apiURL+'maintenance/childhoodbreakdownsgeneral');
                 this.pieChart.series = response.data.series;
                 this.pieChart.chartOptions.labels = response.data.labels;
             } catch (error) {
-                console.error(error); 
+                console.error(error);  
             }
         },
         async getRatioMantenimientos(){
             try {
+                this.pieChart2=pieChart2;
                 const response = await this.$http.get(this.$apiURL+'maintenance/ineffectivedistributiongraphic');
                 this.pieChart2.series = response.data.series;
-                this.pieChart2.chartOptions.labels = response.data.labels ;
+                this.pieChart2.chartOptions.labels = response.data.categories ;
             } catch (error) {
                 console.error(error);
             }
@@ -190,6 +209,7 @@ export default {
                                 v-model="CiudadId1"
                                 :options="Ciudades"
                                 placeholder="Seleccionar Ciudad"
+                                ref="multiselect1"
                             />
                         </BCol>
                     </BRow>

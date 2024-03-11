@@ -100,39 +100,56 @@ export default {
             this.currentPageTec = 1;
         },
         async getContrata(){
-            const response = await this.$http.get(this.$apiURL+'provision/diarycontratagraphic');
+            this.$nextTick(async () => {
+                this.ContrataBar = barChart;
+                const response = await this.$http.get(this.$apiURL+'provision/diarycontratagraphic/'+this.CiudadId1);
                 this.ContrataBar.series[0].data = response.data.series; 
                 this.ContrataBar.chartOptions.xaxis.categories = response.data.categories;
+            });
         },
         async getGestor() {
             try {
-                const response = await this.$http.get(this.$apiURL+'provision/diarymanagergraphic');
-                this.GestorBar.series[0].data = response.data.series;
-                this.GestorBar.chartOptions.xaxis.categories = response.data.categories;
+                this.$nextTick(async () => {
+                    this.GestorBar = barChart2;
+
+                    const response = await this.$http.get(this.$apiURL+'provision/diarymanagergraphic/'+this.CiudadId2);
+                    this.GestorBar.series[0].data = response.data.series;
+                    this.GestorBar.chartOptions.xaxis.categories = response.data.categories;
+                })
             } catch (error) {
                 console.error(error);
             }
         },
         async getTableSup(){
             try {
-                const response = await this.$http.get(this.$apiURL+'provision/childhoodbreakdownsmanagers');
-                response.data.series.map(i => this.tableDataSup.push({ ...i }));
-                //this.fieldsGestor.push({ key: "Ciudad", sortable : true })
-                response.data.fields.map(i => this.fieldsSup.push({ key: i, sortable : true }));
-                this.totalRowsSup = this.tableDataSup.length;
-                this.totalesSup = response.data.totales;
+                this.$nextTick(async () => {
+                    this.tableDataSup.splice(0, this.tableDataSup.length);
+                    this.fieldsSup.splice(0, this.fieldsSup.length);
+
+                    const response = await this.$http.get(this.$apiURL+'provision/childhoodbreakdownsmanagers/'+this.CiudadId3);
+                    response.data.series.map(i => this.tableDataSup.push({ ...i }));
+                    //this.fieldsGestor.push({ key: "Ciudad", sortable : true })
+                    response.data.fields.map(i => this.fieldsSup.push({ key: i, sortable : true }));
+                    this.totalRowsSup = this.tableDataSup.length;
+                    this.totalesSup = response.data.totales;
+                });
             } catch (error) {
                 console.error(error);
             }
         },
         async getTableTec(){
             try {
-                const response = await this.$http.get(this.$apiURL+'provision/childhoodbreakdownstechnicians');
-                response.data.series.map(i => this.tableDataTec.push({ ...i }));
-                //this.fieldsTec.push({ key: "Ciudad", sortable : true })
-                response.data.fields.map(i => this.fieldsTec.push({ key: i, sortable : true }));
-                this.totalRowsTec = this.tableDataTec.length;
-                this.totalesTec = response.data.totales;
+                this.$nextTick(async () => { 
+                    this.tableDataTec.splice(0, this.tableDataTec.length);
+                    this.fieldsTec.splice(0, this.fieldsTec.length);
+
+                    const response = await this.$http.get(this.$apiURL+'provision/childhoodbreakdownstechnicians/'+this.CiudadId4);
+                    response.data.series.map(i => this.tableDataTec.push({ ...i }));
+                    //this.fieldsTec.push({ key: "Ciudad", sortable : true })
+                    response.data.fields.map(i => this.fieldsTec.push({ key: i, sortable : true }));
+                    this.totalRowsTec = this.tableDataTec.length;
+                    this.totalesTec = response.data.totales;
+                });
             } catch (error) {
                 console.error(error);
             }
@@ -165,6 +182,7 @@ export default {
                             <Multiselect
                                 v-model="CiudadId1"
                                 :options="Ciudades"
+                                @change="getContrata()"
                                 placeholder="Seleccionar Ciudad"
                             />
                         </BCol>
@@ -194,6 +212,7 @@ export default {
                             <Multiselect
                                 v-model="CiudadId2"
                                 :options="Ciudades"
+                                @change="getGestor()"
                                 placeholder="Seleccionar Ciudad"
                             />
                         </BCol>
@@ -223,6 +242,7 @@ export default {
                             <Multiselect
                                 v-model="CiudadId3"
                                 :options="Ciudades"
+                                @change="getTableSup()"
                                 placeholder="Seleccionar Ciudad"
                             />
                         </BCol>
@@ -308,6 +328,7 @@ export default {
                             <Multiselect
                                 v-model="CiudadId4"
                                 :options="Ciudades"
+                                @change="getTableTec()"
                                 placeholder="Seleccionar Ciudad"
                             />
                         </BCol>

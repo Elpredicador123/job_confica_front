@@ -15,14 +15,14 @@ export default {
     data() {
         return {
             title: "Gestión",
-            tableData: [],
-            tableData2: [],
+            TableInstalaciones: [],
+            tableMantenimiento: [],
             tableDataGestor: [],
             tableDataOrder: [],
             GestorAgenda: [],
             Ciudades : [],
-            CiudadId: null,
-            CiudadId2: null,
+            CiudadId: "LIMA",
+            CiudadId2: "LIMA",
             OrdenesGestor: [],
             GestorOrdenes: [],
             GestorAgendaId: null,
@@ -71,8 +71,8 @@ export default {
             //Primera tabla------------:
             totalRows: 1,
             currentPage: 1,
-            perPage: 3,
-            pageOptions: [3,10, 25, 50, 100],
+            perPage: 5,
+            pageOptions: [3,5,10, 25, 50, 100],
             filter: null,
             filterOn: [],
             sortBy: "age",
@@ -82,19 +82,19 @@ export default {
             //--------------------
             totalRows2: 1,
             currentPage2: 1,
-            perPage2: 3,
-            pageOptions2: [3,10, 25, 50, 100],
+            perPage2: 5,
+            pageOptions2: [3,5,10, 25, 50, 100],
             filter2: null,
             filterOn2: [],
             sortBy2: "age",
             sortDesc2: false,
-            fields2: [
+            fieldsMantenimiento: [
             ],
             //--------------------
             totalRowsGestor: 1,
             currentPageGestor: 1,
-            perPageGestor: 3,
-            pageOptionsGestor: [3,10,25,50,100],
+            perPageGestor: 5,
+            pageOptionsGestor: [3,5,10,25,50,100],
             filterOnGestor: [],
             filterGestor: null,
             sortByGestor: "age",
@@ -104,8 +104,8 @@ export default {
             //--------------------
             totalRowsOrder: 1,
             currentPageOrder: 1,
-            perPageOrder: 3,
-            pageOptionsOrder: [3,10,25,50,100],
+            perPageOrder: 5,
+            pageOptionsOrder: [3,5,10,25,50,100],
             filterOnOrder: [],
             filterOrder: null,
             sortByOrder: "age",
@@ -114,7 +114,7 @@ export default {
             totalesOrder : 0,
         };
     },
-    mounted() {
+    async created() {
         // Set the initial number of items
         this.totalRows = this.items.length;
         this.totalRows2 = this.items2.length;
@@ -173,44 +173,67 @@ export default {
         },
         async getTableMantenimientos() {
             try {
-                const response = await this.$http.get(this.$apiURL+'management/maintenanceprogresstable');
-                response.data.series.map(i => this.tableData2.push({ ...i }));
-                response.data.fields.map(i => this.fields2.push({ key: i, sortable : true }));
-                this.totalRows2= this.tableData2.length;
+                this.$nextTick(async () => {
+                    this.tableMantenimiento.splice(0, this.tableMantenimiento.length);
+                    this.fieldsMantenimiento.splice(0, this.fieldsMantenimiento.length);
+                    const response = await this.$http.get(this.$apiURL+'management/maintenanceprogresstable/'+this.CiudadId2);
+                    
+                    response.data.series.map(i => this.tableMantenimiento.push({ ...i }));
+                    console.log(this.tableMantenimiento);
+        
+                    response.data.fields.map(i => this.fieldsMantenimiento.push({ key: i, sortable : true }));
+                    this.totalRows2 = this.tableMantenimiento.length;
+                });
             } catch (error) {
                 console.error(error);
             }
         },
+
         async getTableInstalaciones() {
             try {
-                const response = await this.$http.get(this.$apiURL+'management/installationprogresstable');
-                response.data.series.map(i => this.tableData.push({ ...i }));
-                response.data.fields.map(i => this.fields.push({ key: i, sortable : true }));
-                this.totalRows = this.tableData.length;
+                this.$nextTick(async () => {
+                    this.TableInstalaciones.splice(0, this.TableInstalaciones.length);
+                    this.fields.splice(0, this.fields.length);
+
+                    const response = await this.$http.get(this.$apiURL+'management/installationprogresstable/'+this.CiudadId);
+                    response.data.series.map(i => this.TableInstalaciones.push({ ...i }));
+                    response.data.fields.map(i => this.fields.push({ key: i, sortable : true }));
+                    this.totalRows = this.TableInstalaciones.length;
+                });
             } catch (error) {
                 console.error(error);
             }
         },
         async getTableGestor(){
             try {
-                const response = await this.$http.get(this.$apiURL+'management/installationlogmanagertable');
-                response.data.series.map(i => this.tableDataGestor.push({ ...i }));
-                //this.fieldsGestor.push({ key: "Ciudad", sortable : true })
-                response.data.fields.map(i => this.fieldsGestor.push({ key: i, sortable : true }));
-                this.totalRowsGestor = this.tableDataGestor.length;
-                this.totalesGestor = response.data.totales;
+                this.$nextTick(async () => {
+                    this.tableDataGestor.splice(0, this.tableDataGestor.length);
+                    this.fieldsGestor.splice(0, this.fieldsGestor.length);
+
+                    const response = await this.$http.get(this.$apiURL+'management/installationlogmanagertable/'+this.GestorAgendaId);
+                    response.data.series.map(i => this.tableDataGestor.push({ ...i }));
+                    //this.fieldsGestor.push({ key: "Ciudad", sortable : true })
+                    response.data.categories.map(i => this.fieldsGestor.push({ key: i, sortable : true }));
+                    this.totalRowsGestor = this.tableDataGestor.length;
+                    this.totalesGestor = response.data.totales;
+                });
             } catch (error) {
                 console.error(error);
             }
         },
         async getTableOrder(){
             try {
-                const response = await this.$http.get(this.$apiURL+'management/ordermanagertable');
-                response.data.series.map(i => this.tableDataOrder.push({ ...i }));
-                //this.fieldsOrder.push({ key: "Ciudad", sortable : true })
-                response.data.fields.map(i => this.fieldsOrder.push({ key: i, sortable : true }));
-                this.totalRowsOrder = this.tableDataOrder.length;
-                this.totalesOrder = response.data.totales;
+                this.$nextTick(async () => {
+                    this.tableDataOrder.splice(0, this.tableDataOrder.length);
+                    this.fieldsOrder.splice(0, this.fieldsOrder.length);
+
+                    const response = await this.$http.get(this.$apiURL+'management/ordermanagertable/'+this.OrdenesGestorId);
+                    response.data.series.map(i => this.tableDataOrder.push({ ...i }));
+                    //this.fieldsOrder.push({ key: "Ciudad", sortable : true })
+                    response.data.categories.map(i => this.fieldsOrder.push({ key: i, sortable : true }));
+                    this.totalRowsOrder = this.tableDataOrder.length;
+                    this.totalesOrder = response.data.totales;
+                });
             } catch (error) {
                 console.error(error);
             }
@@ -237,6 +260,7 @@ export default {
                             <Multiselect
                                 v-model="CiudadId"
                                 :options="Ciudades"
+                                @change="getTableInstalaciones()"
                                 placeholder="Seleccionar Ciudad"
                             />
                         </BCol>
@@ -277,7 +301,7 @@ export default {
                     <!-- Table -->
                     <div class="table-responsive mb-0">
                         <BTable
-                            :items="tableData"
+                            :items="TableInstalaciones"
                             :fields="fields"
                             responsive="sm"
                             :per-page="perPage"
@@ -322,6 +346,7 @@ export default {
                             <Multiselect
                                 v-model="GestorAgendaId"
                                 :options="GestorAgenda"
+                                @change="getTableGestor()"
                                 placeholder="Seleccionar Gestor"
                             />
                         </BCol>
@@ -412,6 +437,7 @@ export default {
                             <Multiselect
                                 v-model="CiudadId2"
                                 :options="Ciudades"
+                                @change="getTableMantenimientos()"
                                 placeholder="Seleccionar Ciudad"
                             />
                         </BCol>
@@ -452,8 +478,8 @@ export default {
                     <!-- Table -->
                     <div class="table-responsive mb-0">
                         <BTable
-                            :items="tableData2"
-                            :fields="fields2"
+                            :items="tableMantenimiento"
+                            :fields="fieldsMantenimiento"
                             responsive="sm"
                             :per-page="perPage2"
                             :current-page="currentPage2"
@@ -498,6 +524,7 @@ export default {
                                 v-model="OrdenesGestorId"
                                 :options="OrdenesGestor"
                                 placeholder="Seleccionar Gestor"
+                                @change="getTableOrder()"
                             />
                         </BCol>
                     </BRow>
