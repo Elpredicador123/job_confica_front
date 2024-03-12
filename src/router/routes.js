@@ -137,6 +137,12 @@ export default [
     component: () => import("../views/pages/Mantenimiento/index")
   },
   {
+    path: "/calidad",
+    name: "Calidad",
+    meta: { title: "Calidad", authRequired: true },
+    component: () => import("../views/pages/Calidad/index")
+  },
+  {
     path: "/news/index",
     name: "Listado",
     meta: { title: "Listado", authRequired: true },

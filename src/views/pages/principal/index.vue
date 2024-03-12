@@ -137,7 +137,7 @@ export default {
      */
      async getDataNews() {
         try {
-            const response = await this.$http.get(this.$apiURL+'news/all');
+            const response = await this.$http.get(this.$apiURL+'news/principal');
             response.data.data.map(i => this.tableData.push({ ...i }));
             this.totalRows = this.tableData.length;
         } catch (error) {

@@ -185,23 +185,11 @@ export const menuItems = [
     },
     {
         id: 15,
-        label: "menuitems.email.text",
-        icon: "uil-envelope",
-        subItems: [
-            {
-                id: 16,
-                label: "menuitems.email.list.inbox",
-                link: "/email/inbox",
-                parentId: 15
-            },
-            {
-                id: 17,
-                label: "menuitems.email.list.reademail",
-                link: "/email/reademail/1",
-                parentId: 15
-            }
-        ]
+        label: "menuitems.calidad.text",
+        icon: "uil-calender",
+        link: "/calidad"
     },
+
     {
         id: 18,
         label: "menuitems.invoices.text",
