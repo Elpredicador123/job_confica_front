@@ -71,8 +71,8 @@ export default {
             //Primera tabla------------:
             totalRows: 1,
             currentPage: 1,
-            perPage: 5,
-            pageOptions: [3,5,10, 25, 50, 100],
+            perPage: 10,
+            pageOptions: [10, 25, 50, 100],
             filter: null,
             filterOn: [],
             sortBy: "age",
@@ -82,8 +82,8 @@ export default {
             //--------------------
             totalRows2: 1,
             currentPage2: 1,
-            perPage2: 5,
-            pageOptions2: [3,5,10, 25, 50, 100],
+            perPage2: 10,
+            pageOptions2: [10, 25, 50, 100],
             filter2: null,
             filterOn2: [],
             sortBy2: "age",
@@ -93,8 +93,8 @@ export default {
             //--------------------
             totalRowsGestor: 1,
             currentPageGestor: 1,
-            perPageGestor: 5,
-            pageOptionsGestor: [3,5,10,25,50,100],
+            perPageGestor: 10,
+            pageOptionsGestor: [10,25,50,100],
             filterOnGestor: [],
             filterGestor: null,
             sortByGestor: "age",
@@ -104,8 +104,8 @@ export default {
             //--------------------
             totalRowsOrder: 1,
             currentPageOrder: 1,
-            perPageOrder: 5,
-            pageOptionsOrder: [3,5,10,25,50,100],
+            perPageOrder: 10,
+            pageOptionsOrder: [10,25,50,100],
             filterOnOrder: [],
             filterOrder: null,
             sortByOrder: "age",
@@ -177,10 +177,7 @@ export default {
                     this.tableMantenimiento.splice(0, this.tableMantenimiento.length);
                     this.fieldsMantenimiento.splice(0, this.fieldsMantenimiento.length);
                     const response = await this.$http.get(this.$apiURL+'management/maintenanceprogresstable/'+this.CiudadId2);
-                    
                     response.data.series.map(i => this.tableMantenimiento.push({ ...i }));
-                    console.log(this.tableMantenimiento);
-        
                     response.data.fields.map(i => this.fieldsMantenimiento.push({ key: i, sortable : true }));
                     this.totalRows2 = this.tableMantenimiento.length;
                 });

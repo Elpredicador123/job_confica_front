@@ -28,10 +28,10 @@ export default {
             GestorAgendaId: null,
             GestorOrdenId: null,
             Ciudades : [],
-            CiudadId1: null,
-            CiudadId2: null,
-            CiudadId3: null,
-            CiudadId4: null,
+            CiudadId1: "LIMA",
+            CiudadId2: "LIMA",
+            CiudadId3: "LIMA",
+            CiudadId4: "LIMA",
             itemsSup: [
                 {
                     text: "Charts",

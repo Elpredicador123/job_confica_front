@@ -4,7 +4,6 @@ import PageHeader from "@/components/page-header";
 import Multiselect from "@vueform/multiselect";
 import {
   barChart,
-  barChart2, 
   pieChart,
     pieChart2,
 } from "./data";
@@ -22,8 +21,7 @@ export default {
             title: "Gestión",
             tableDataSup: [],
             tableDataTec: [],
-            ContrataBar: barChart, 
-            GestorBar: barChart2,
+            ContrataBar: barChart,
             pieChart: pieChart,
             pieChart2: pieChart2,
             GestorAgenda: [],
@@ -66,7 +64,6 @@ export default {
             sortBySup: "age",
             sortDescSup: false,
             fieldsSup: [],
-            totalesSup : 0,
             //--------------------
             totalRowsTec: 1,
             currentPageTec: 1,
@@ -87,28 +84,9 @@ export default {
 
         //obtener datos de la api
         this.getTableSup();
-        this.getCity().then(() => {
-        // Después de obtener los datos de la ciudad, inicializa los CiudadId
-        const multiselect1 = this.$refs.multiselect1;
-        if (multiselect1) {
-            multiselect1.update("LIMA");
-        }
-        const multiselect2 = this.$refs.multiselect2;
-        if (multiselect2) {
-            multiselect2.update("LIMA");
-        }
-        const multiselect3 = this.$refs.multiselect3;
-        if (multiselect3) {
-            multiselect3.update("LIMA");
-        }
-        const multiselect4 = this.$refs.multiselect4;
-        if (multiselect4) {
-            multiselect4.update("LIMA");
-        }
-    });
+        this.getCity();
         this.getTableTec();
         this.getContrata();
-        this.getGestor();
         this.getRatioInstalaciones();
         this.getRatioMantenimientos();
     },
@@ -124,42 +102,36 @@ export default {
             this.currentPageTec = 1;
         },
         async getContrata(){
-            const response = await this.$http.get(this.$apiURL+'maintenance/diarycontratagraphic');
+            this.$nextTick(async () => {
+                const response = await this.$http.get(this.$apiURL+'maintenance/ineffectivecontratagraphic/'+this.CiudadId1);
                 this.ContrataBar.series[0].data = response.data.series; 
                 this.ContrataBar.chartOptions.xaxis.categories = response.data.categories;
-        },
-        async getGestor() {
-            try {
-                const response = await this.$http.get(this.$apiURL+'provision/diarymanagergraphic');
-                this.GestorBar.series[0].data = response.data.series;
-                this.GestorBar.chartOptions.xaxis.categories = response.data.categories; 
-            } catch (error) {
-                console.error(error);
-            }
+            })
         },
         async getTableSup(){
-            try {
-                const response = await this.$http.get(this.$apiURL+'maintenance/childhoodbreakdownsmanagers');
+            this.$nextTick(async () => {
+                this.tableDataSup.splice(0, this.tableDataSup.length);
+                this.fieldsSup.splice(0, this.fieldsSup.length);
+                const response = await this.$http.get(this.$apiURL+'maintenance/childhoodbreakdownsmanagers/'+this.CiudadId3);
+
                 response.data.series.map(i => this.tableDataSup.push({ ...i }));
-                //this.fieldsGestor.push({ key: "Ciudad", sortable : true })
                 response.data.fields.map(i => this.fieldsSup.push({ key: i, sortable : true }));
+
                 this.totalRowsSup = this.tableDataSup.length;
-                this.totalesSup = response.data.totales;
-            } catch (error) {
-                console.error(error);
-            }
+            });
         },
         async getTableTec(){
-            try {
-                const response = await this.$http.get(this.$apiURL+'maintenance/childhoodbreakdownstechnicians');
+            this.$nextTick(async () => {
+                this.tableDataTec.splice(0, this.tableDataTec.length);
+                this.fieldsTec.splice(0, this.fieldsTec.length);
+
+                const response = await this.$http.get(this.$apiURL+'maintenance/childhoodbreakdownstechnicians/'+this.CiudadId4);
                 response.data.series.map(i => this.tableDataTec.push({ ...i }));
                 //this.fieldsTec.push({ key: "Ciudad", sortable : true })
                 response.data.fields.map(i => this.fieldsTec.push({ key: i, sortable : true }));
                 this.totalRowsTec = this.tableDataTec.length;
                 this.totalesTec = response.data.totales;
-            } catch (error) {
-                console.error(error);
-            }
+            });
         },
         async getCity(){ 
             const response = await this.$http.get(this.$apiURL+'city/all');
@@ -169,9 +141,11 @@ export default {
         },
         async getRatioInstalaciones(){
             try {
+                this.pieChart=pieChart;
+
                 const response = await this.$http.get(this.$apiURL+'maintenance/childhoodbreakdownsgeneral');
                 this.pieChart.series = response.data.series;
-                this.pieChart.chartOptions.labels = response.data.labels;
+                this.pieChart.chartOptions.labels = response.data.categories;
             } catch (error) {
                 console.error(error);  
             }
@@ -179,7 +153,7 @@ export default {
         async getRatioMantenimientos(){
             try {
                 this.pieChart2=pieChart2;
-                const response = await this.$http.get(this.$apiURL+'maintenance/ineffectivedistributiongraphic');
+                const response = await this.$http.get(this.$apiURL+'maintenance/ineffectivedistributionratiographic');
                 this.pieChart2.series = response.data.series;
                 this.pieChart2.chartOptions.labels = response.data.categories ;
             } catch (error) {
@@ -210,6 +184,7 @@ export default {
                                 :options="Ciudades"
                                 placeholder="Seleccionar Ciudad"
                                 ref="multiselect1"
+                                @change="getContrata()"
                             />
                         </BCol>
                     </BRow>
@@ -244,36 +219,7 @@ export default {
         <BCol lg="6">
             <BCard no-body>
                 <BCardBody>
-                    <BCardTitle class="mb-4">TCFL Gestor</BCardTitle>
-                    <BRow>
-                        <BCol cols="7">
-
-                        </BCol>
-                        <BCol cols="5">
-                            Filtrar por:
-                            <Multiselect
-                                v-model="CiudadId2"
-                                :options="Ciudades"
-                                placeholder="Seleccionar Ciudad"
-                            />
-                        </BCol>
-                    </BRow>
-                    <!-- Bar Chart -->
-                    <apexchart
-                        class="apex-charts"
-                        height="350"
-                        type="bar"
-                        dir="ltr"
-                        :series="GestorBar.series"
-                        :options="GestorBar.chartOptions"
-                    ></apexchart>
-                </BCardBody>
-            </BCard>
-        </BCol>
-        <BCol lg="6">
-            <BCard no-body>
-                <BCardBody>
-                    <BCardTitle class="mb-4">Distrubución Reitero</BCardTitle>
+                    <BCardTitle class="mb-4">Distribución Reitero</BCardTitle>
                     <!-- Pie Chart -->
                     <apexchart
                         class="apex-charts"
@@ -300,6 +246,7 @@ export default {
                                 v-model="CiudadId3"
                                 :options="Ciudades"
                                 placeholder="Seleccionar Ciudad"
+                                @change="getTableSup()"
                             />
                         </BCol>
                     </BRow>
@@ -385,6 +332,7 @@ export default {
                                 v-model="CiudadId4"
                                 :options="Ciudades"
                                 placeholder="Seleccionar Ciudad"
+                                @change="getTableTec()"
                             />
                         </BCol>
                     </BRow>
