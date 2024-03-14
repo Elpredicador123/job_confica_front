@@ -18,6 +18,13 @@ export default {
         return { 
             title: "Gestión",
             Ciudades : [],
+            Gestor: [],
+            CiudadId1: "LIMA",
+            CiudadId2: "LIMA",
+            CiudadId3: "LIMA",
+            CiudadId4: "LIMA",
+            ManagerId1: null,
+            ManagerId2: null,
             //-------------------
             pieChart: pieChart,
             //--------------------
@@ -92,12 +99,25 @@ export default {
             sortDescErrorTec: false,
             fieldsErrorTec: [],
             totalesErrorTec : 0,
+            //--------------------
+            tableDataRescate: [],
+            totalRowsRescate: 1,
+            currentPageRescate: 1,
+            perPageRescate: 3,
+            pageOptionsRescate: [3,10,25,50,100],
+            filterOnRescate: [],
+            filterRescate: null,
+            sortByRescate: "age",
+            sortDescRescate: false,
+            fieldsRescate: [],
+            totalesRescate : 0,
         };
     },
     mounted() {
         // Set the initial number of items
         //obtener datos de la api
         this.getCity();
+        this.getGestor();
         this.getEfectividad();
         this.getAuditoria();
         this.getInspeccionesTec();
@@ -112,92 +132,98 @@ export default {
             this.totalRowsEfectividad = filteredItems.length;
             this.currentPageEfectividad = 1;
         },
-        async getErrorCalidad(){
-            try {
-                const response = await this.$http.get(this.$apiURL+'maintenance/ineffectivedistributiongraphic');
-                this.pieChart.series = response.data.series;
-                this.pieChart.chartOptions.labels = response.data.categories ;
-            } catch (error) {
-                console.error(error);
-            }
-        },
-        async getErrorTec(){
-            try {
-                const response = await this.$http.get(this.$apiURL+'maintenance/childhoodbreakdownsEfectividadhnicians');
-                response.data.series.map(i => this.tableDataErrorTec.push({ ...i }));
-                //this.fieldsErrorTec.push({ key: "Ciudad", sortable : true })
-                response.data.fields.map(i => this.fieldsErrorTec.push({ key: i, sortable : true }));
-                this.totalRowsErrorTec = this.tableDataErrorTec.length;
-                this.totalesErrorTec = response.data.totales;
-            } catch (error) {
-                console.error(error);
-            }
-        },
-        async getRescate(){
-            try {
-                const response = await this.$http.get(this.$apiURL+'maintenance/childhoodbreakdownsEfectividadhnicians');
-                response.data.series.map(i => this.tableDataRescate.push({ ...i }));
-                //this.fieldsRescate.push({ key: "Ciudad", sortable : true })
-                response.data.fields.map(i => this.fieldsRescate.push({ key: i, sortable : true }));
-                this.totalRowsRescate = this.tableDataRescate.length;
-                this.totalesRescate = response.data.totales;
-            } catch (error) {
-                console.error(error);
-            }
-        },
-        async getAvanceTec(){
-            try {
-                const response = await this.$http.get(this.$apiURL+'maintenance/childhoodbreakdownsEfectividadhnicians');
-                response.data.series.map(i => this.tableDataAvanceTec.push({ ...i }));
-                //this.fieldsAvanceTec.push({ key: "Ciudad", sortable : true })
-                response.data.fields.map(i => this.fieldsAvanceTec.push({ key: i, sortable : true }));
-                this.totalRowsAvanceTec = this.tableDataAvanceTec.length;
-                this.totalesAvanceTec = response.data.totales;
-            } catch (error) {
-                console.error(error);
-            }
-        },
-        async getInspeccionesTec(){
-            try {
-                const response = await this.$http.get(this.$apiURL+'maintenance/childhoodbreakdownsEfectividadhnicians');
-                response.data.series.map(i => this.tableDataInspeccionesTec.push({ ...i }));
-                //this.fieldsInspeccionesTec.push({ key: "Ciudad", sortable : true })
-                response.data.fields.map(i => this.fieldsInspeccionesTec.push({ key: i, sortable : true }));
-                this.totalRowsInspeccionesTec = this.tableDataInspeccionesTec.length;
-                this.totalesInspeccionesTec = response.data.totales;
-            } catch (error) {
-                console.error(error);
-            }
-        },
         async getEfectividad(){
-            try {
-                const response = await this.$http.get(this.$apiURL+'maintenance/childhoodbreakdownsEfectividadhnicians');
+            this.$nextTick(async () => {
+
+                this.tableDataEfectividad.splice(0, this.tableDataEfectividad.length);
+                this.fieldsEfectividad.splice(0, this.fieldsEfectividad.length);
+
+                const response = await this.$http.get(this.$apiURL+'quality/inspectioneffectivenesstable/'+this.CiudadId1);
                 response.data.series.map(i => this.tableDataEfectividad.push({ ...i }));
                 //this.fieldsEfectividad.push({ key: "Ciudad", sortable : true })
-                response.data.fields.map(i => this.fieldsEfectividad.push({ key: i, sortable : true }));
+                response.data.categories.map(i => this.fieldsEfectividad.push({ key: i, sortable : true }));
                 this.totalRowsEfectividad = this.tableDataEfectividad.length;
                 this.totalesEfectividad = response.data.totales;
-            } catch (error) {
-                console.error(error);
-            }
+            });
         },
         async getAuditoria(){
-            try {
-                const response = await this.$http.get(this.$apiURL+'maintenance/childhoodbreakdownsEfectividadhnicians');
+            this.$nextTick(async () => {
+                this.tableDataAuditoria.splice(0, this.tableDataAuditoria.length);
+                this.fieldsAuditoria.splice(0, this.fieldsAuditoria.length);
+
+                const response = await this.$http.get(this.$apiURL+'quality/auditsprogresstable/' + this.CiudadId2);
                 response.data.series.map(i => this.tableDataAuditoria.push({ ...i }));
                 //this.fieldsAuditoria.push({ key: "Ciudad", sortable : true })
-                response.data.fields.map(i => this.fieldsAuditoria.push({ key: i, sortable : true }));
+                response.data.categories.map(i => this.fieldsAuditoria.push({ key: i, sortable : true }));
                 this.totalRowsAuditoria = this.tableDataAuditoria.length;
                 this.totalesAuditoria = response.data.totales;
-            } catch (error) {
-                console.error(error);
-            }
+            });
+        },
+        async getInspeccionesTec(){
+            this.$nextTick(async () => {
+                this.tableDataInspeccionesTec.splice(0, this.tableDataInspeccionesTec.length);
+                this.fieldsInspeccionesTec.splice(0, this.fieldsInspeccionesTec.length);
+
+                const response = await this.$http.get(this.$apiURL+'quality/inspectioneffectivenessbytectable/'+this.ManagerId1);
+                response.data.series.map(i => this.tableDataInspeccionesTec.push({ ...i }));
+                //this.fieldsInspeccionesTec.push({ key: "Ciudad", sortable : true })
+                response.data.categories.map(i => this.fieldsInspeccionesTec.push({ key: i, sortable : true }));
+                this.totalRowsInspeccionesTec = this.tableDataInspeccionesTec.length;
+                this.totalesInspeccionesTec = response.data.totales;
+            });
+        },
+        async getAvanceTec(){
+            this.$nextTick(async () => {
+                this.tableDataAvanceTec.splice(0, this.tableDataAvanceTec.length);
+                this.fieldsAvanceTec.splice(0, this.fieldsAvanceTec.length);
+
+                const response = await this.$http.get(this.$apiURL+'quality/auditsprogressbytectable/'+this.ManagerId2);
+                response.data.series.map(i => this.tableDataAvanceTec.push({ ...i }));
+                response.data.categories.map(i => this.fieldsAvanceTec.push({ key: i, sortable : true }));
+                this.totalRowsAvanceTec = this.tableDataAvanceTec.length;
+                this.totalesAvanceTec = response.data.totales;
+            });
+        },
+        async getRescate(){
+            this.$nextTick(async () => {
+                this.tableDataRescate.splice(0, this.tableDataRescate.length);
+                this.fieldsRescate.splice(0, this.fieldsRescate.length);
+
+                const response = await this.$http.get(this.$apiURL+'quality/errorsevidencetable/'+this.CiudadId3);
+                response.data.series.map(i => this.tableDataRescate.push({ ...i }));
+                //this.fieldsRescate.push({ key: "Ciudad", sortable : true })
+                response.data.categories.map(i => this.fieldsRescate.push({ key: i, sortable : true }));
+                this.totalRowsRescate = this.tableDataRescate.length;
+                this.totalesRescate = response.data.totales;
+            });
+        },
+        async getErrorTec(){
+            this.$nextTick(async () => {
+                this.tableDataErrorTec.splice(0, this.tableDataErrorTec.length);
+                this.fieldsErrorTec.splice(0, this.fieldsErrorTec.length);
+
+                const response = await this.$http.get(this.$apiURL+'quality/errorsevidencebytectable/'+this.CiudadId4);
+                response.data.series.map(i => this.tableDataErrorTec.push({ ...i }));
+                //this.fieldsErrorTec.push({ key: "Ciudad", sortable : true })
+                response.data.categories.map(i => this.fieldsErrorTec.push({ key: i, sortable : true }));
+                this.totalRowsErrorTec = this.tableDataErrorTec.length;
+                this.totalesErrorTec = response.data.totales;
+            });
+        },
+        async getErrorCalidad(){
+                const response = await this.$http.get(this.$apiURL+'quality/errorinspectionratiotable');
+                this.pieChart.series = response.data.series;
+                this.pieChart.chartOptions.labels = response.data.categories ;
         },
         async getCity(){ 
             const response = await this.$http.get(this.$apiURL+'city/all');
                 console.log(response)
                 response.data.data.map(i => this.Ciudades.push( i.name ));
                 console.log(this.Ciudades)
+        },
+        async getGestor(){
+            const response = await this.$http.get(this.$apiURL+'manager/all');
+                response.data.data.map(i => this.Gestor.push( i.manager ));
         },
 
     },
@@ -212,7 +238,7 @@ export default {
         <BCol cols="6">
             <BCard no-body>
                 <BCardBody>
-                    <BCardTitle>Averías Reiteradas - Tec</BCardTitle>
+                    <BCardTitle>Efectividad inspecciones</BCardTitle>
                     <BRow>
                         <BCol cols="7">
 
@@ -220,9 +246,10 @@ export default {
                         <BCol cols="5">
                             Filtrar por:
                             <Multiselect
-                                v-model="CiudadId4"
+                                v-model="CiudadId1"
                                 :options="Ciudades"
                                 placeholder="Seleccionar Ciudad"
+                                @change="getEfectividad()"
                             />
                         </BCol>
                     </BRow>
@@ -292,7 +319,7 @@ export default {
         <BCol cols="6">
             <BCard no-body>
                 <BCardBody>
-                    <BCardTitle>Averías Reiteradas - Tec</BCardTitle>
+                    <BCardTitle>Avance auditorias</BCardTitle>
                     <BRow>
                         <BCol cols="7">
 
@@ -300,9 +327,10 @@ export default {
                         <BCol cols="5">
                             Filtrar por:
                             <Multiselect
-                                v-model="CiudadId4"
+                                v-model="CiudadId2"
                                 :options="Ciudades"
                                 placeholder="Seleccionar Ciudad"
+                                @change="getAuditoria()"
                             />
                         </BCol>
                     </BRow>
@@ -372,7 +400,7 @@ export default {
         <BCol cols="6">
             <BCard no-body>
                 <BCardBody>
-                    <BCardTitle>Averías Reiteradas - Tec</BCardTitle>
+                    <BCardTitle>Efectividad inspecciones x tec</BCardTitle>
                     <BRow>
                         <BCol cols="7">
 
@@ -380,9 +408,11 @@ export default {
                         <BCol cols="5">
                             Filtrar por:
                             <Multiselect
-                                v-model="CiudadId4"
-                                :options="Ciudades"
-                                placeholder="Seleccionar Ciudad"
+                                v-model="ManagerId1"
+                                :options="Gestor"
+                                placeholder="Seleccionar Gestor"
+                                @change="getInspeccionesTec()"
+
                             />
                         </BCol>
                     </BRow>
@@ -452,7 +482,7 @@ export default {
         <BCol cols="6">
             <BCard no-body>
                 <BCardBody>
-                    <BCardTitle>Averías Reiteradas - Tec</BCardTitle>
+                    <BCardTitle>Avance auditoria x tec</BCardTitle>
                     <BRow>
                         <BCol cols="7">
 
@@ -460,9 +490,11 @@ export default {
                         <BCol cols="5">
                             Filtrar por:
                             <Multiselect
-                                v-model="CiudadId4"
-                                :options="Ciudades"
-                                placeholder="Seleccionar Ciudad"
+                                v-model="ManagerId2"
+                                :options="Gestor"
+                                placeholder="Seleccionar Gestor"
+                                @change="getAvanceTec()"
+
                             />
                         </BCol>
                     </BRow>
@@ -534,7 +566,7 @@ export default {
         <BCol cols="6">
             <BCard no-body>
                 <BCardBody>
-                    <BCardTitle>Averías Reiteradas - Tec</BCardTitle>
+                    <BCardTitle>Errores en línea de rescate</BCardTitle>
                     <BRow>
                         <BCol cols="7">
 
@@ -542,9 +574,11 @@ export default {
                         <BCol cols="5">
                             Filtrar por:
                             <Multiselect
-                                v-model="CiudadId4"
+                                v-model="CiudadId3"
                                 :options="Ciudades"
                                 placeholder="Seleccionar Ciudad"
+                                @change="getRescate()"
+
                             />
                         </BCol>
                     </BRow>
@@ -614,7 +648,7 @@ export default {
         <BCol cols="6">
             <BCard no-body>
                 <BCardBody>
-                    <BCardTitle class="mb-4">Distrubución Inefectiva</BCardTitle>
+                    <BCardTitle class="mb-4">% Errores calidad</BCardTitle>
                     <!-- Pie Chart -->
                     <apexchart
                         class="apex-charts"
@@ -627,10 +661,10 @@ export default {
                 </BCardBody>
             </BCard>
         </BCol>
-        <BCol cols="6">
+        <BCol cols="12">
             <BCard no-body>
                 <BCardBody>
-                    <BCardTitle>Averías Reiteradas - Tec</BCardTitle>
+                    <BCardTitle>Errores en línea de rescate - Tec</BCardTitle>
                     <BRow>
                         <BCol cols="7">
 
@@ -641,6 +675,8 @@ export default {
                                 v-model="CiudadId4"
                                 :options="Ciudades"
                                 placeholder="Seleccionar Ciudad"
+                                @change="getErrorTec()"
+
                             />
                         </BCol>
                     </BRow>
