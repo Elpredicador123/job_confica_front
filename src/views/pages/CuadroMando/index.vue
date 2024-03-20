@@ -119,8 +119,8 @@ export default {
             //--------------------
             totalRowsAgenda: 1,
             currentPageAgenda: 1,
-            perPageAgenda: 3,
-            pageOptionsAgenda: [3,10,25,50,100],
+            perPageAgenda: 4,
+            pageOptionsAgenda: [4,10,25,50,100],
             filterOnAgenda: [],
             filterAgenda: null,
             sortByAgenda: "age",
@@ -145,6 +145,9 @@ export default {
         this.getRatioInstalaciones();
         this.getRatioMantenimientos();
         this.getTableAgendaPorDias();
+        setInterval(() => {
+                this.updateDataIfChanged();
+            }, 30000);
     },
     methods:{
         onFiltered(filteredItems) {
@@ -168,6 +171,106 @@ export default {
             this.totalRowsAgenda = filteredItems.length;
             this.currentPageAgenda = 1;
         },
+        async updateDataIfChanged() {
+            await Promise.all([
+                this.updateTableMantenimientos(),
+                this.updateTableInstalaciones(),
+                this.updateTablePorDia(),
+                this.updateTableAgendaPorDias(),
+                this.getInstalaciones(),
+                this.getMantenimientos(),
+                this.getRatioInstalaciones(),
+                this.getRatioMantenimientos()
+            ]);
+        },
+
+        async updateTableMantenimientos() {
+            try {
+                const response = await this.$http.get(this.$apiURL+'control-panel/maintenanceprogresstable');
+                const currentData = {
+                    series: response.data.series,
+                    fields: response.data.fields
+                };
+
+                if (this.dataChanged(this.previousTableMantenimientosData, currentData)) {
+                    this.tableData2.splice(0, this.tableData2.length);
+                    this.fields2.splice(0, this.fields2.length);
+                    currentData.series.map(i => this.tableData2.push({ ...i }));
+                    currentData.fields.map(i => this.fields2.push({ key: i, sortable : true }));
+                    this.totalRows2 = this.tableData2.length;
+                    this.previousTableMantenimientosData = currentData;
+                }
+            } catch (error) {
+                console.error(error);
+            }
+        },
+
+        async updateTableInstalaciones() {
+            try {
+                const response = await this.$http.get(this.$apiURL+'control-panel/installationprogresstable');
+                const currentData = {
+                    series: response.data.series,
+                    fields: response.data.fields
+                };
+
+                if (this.dataChanged(this.previousTableInstalacionesData, currentData)) {
+                    this.tableData.splice(0, this.tableData.length);
+                    this.fields.splice(0, this.fields.length);
+                    currentData.series.map(i => this.tableData.push({ ...i }));
+                    currentData.fields.map(i => this.fields.push({ key: i, sortable : true }));
+                    this.totalRows = this.tableData.length;
+                    this.previousTableInstalacionesData = currentData;
+                }
+            } catch (error) {
+                console.error(error);
+            }
+        },
+
+        async updateTablePorDia() {
+            try {
+                const response = await this.$http.get(this.$apiURL+'control-panel/productiontable');
+                const currentData = {
+                    series: response.data.series,
+                    fields: response.data.fields
+                };
+
+                if (this.dataChanged(this.previousTablePorDiaData, currentData)) {
+                    this.tableDataPorDia.splice(0, this.tableDataPorDia.length);
+                    this.fieldsPorDia.splice(0, this.fieldsPorDia.length);
+                    currentData.series.map(i => this.tableDataPorDia.push({ ...i }));
+                    currentData.fields.map(i => this.fieldsPorDia.push({ key: i, sortable : true }));
+                    this.totalRowsPorDia = this.tableDataPorDia.length;
+                    this.totalesPorDia = response.data.totales;
+                    this.previousTablePorDiaData = currentData;
+                }
+            } catch (error) {
+                console.error(error);
+            }
+        },
+
+        async updateTableAgendaPorDias() {
+            try {
+                const response = await this.$http.get(this.$apiURL+'control-panel/diarytable');
+                const currentData = {
+                    series: response.data.series,
+                    fields: response.data.fields
+                };
+
+                if (this.dataChanged(this.previousTableAgendaPorDiasData, currentData)) {
+                    this.tableDataAgenda.splice(0, this.tableDataAgenda.length);
+                    this.fieldsAgenda.splice(0, this.fieldsAgenda.length);
+                    currentData.series.map(i => this.tableDataAgenda.push({ ...i }));
+                    currentData.fields.map(i => this.fieldsAgenda.push({ key: i, sortable : true }));
+                    this.totalRowsAgenda = this.tableDataAgenda.length;
+                    this.totalesAgenda = response.data.totales;
+                    this.previousTableAgendaPorDiasData = currentData;
+                }
+            } catch (error) {
+                console.error(error);
+            }
+        },
+
+
         async getTableMantenimientos() {
             try {
                 const response = await this.$http.get(this.$apiURL+'control-panel/maintenanceprogresstable');
@@ -223,8 +326,12 @@ export default {
         async getInstalaciones() {
             try {
                 const response = await this.$http.get(this.$apiURL+'control-panel/installationprogressgraphic');
-                this.columnChart.series = response.data.series;
-                this.columnChart.chartOptions.xaxis.categories = response.data.categories;
+                const currentData = response.data.series;
+
+                if (this.dataChanged(this.previousInstalacionesData, currentData)) {
+                    this.columnChart.series = currentData;
+                    this.previousInstalacionesData = currentData;
+                }
             } catch (error) {
                 console.error(error);
             }
@@ -232,30 +339,47 @@ export default {
         async getMantenimientos() {
             try {
                 const response = await this.$http.get(this.$apiURL+'control-panel/maintenanceprogressgraphic');
-                this.columnChart2.series = response.data.series;
-                this.columnChart2.chartOptions.xaxis.categories = response.data.categories;
+                const currentData = response.data.series;
+
+                if (this.dataChanged(this.previousMantenimientosData, currentData)) {
+                    this.columnChart2.series = currentData;
+                    this.previousMantenimientosData = currentData;
+                }
             } catch (error) {
                 console.error(error);
             }
         },
-        async getRatioInstalaciones(){
+
+        async getRatioInstalaciones() {
             try {
                 const response = await this.$http.get(this.$apiURL+'control-panel/installationratiographic');
-                this.pieChart.series = response.data.series;
-                this.pieChart.chartOptions.labels = response.data.labels;
-            } catch (error) {
-                console.error(error); 
-            }
-        },
-        async getRatioMantenimientos(){
-            try {
-                const response = await this.$http.get(this.$apiURL+'control-panel/maintenanceratiographic');
-                this.pieChart2.series = response.data.series;
-                this.pieChart2.chartOptions.labels = response.data.labels ;
+                const currentData = response.data.series;
+
+                if (this.dataChanged(this.previousRatioInstalacionesData, currentData)) {
+                    this.pieChart.series = currentData;
+                    this.previousRatioInstalacionesData = currentData;
+                }
             } catch (error) {
                 console.error(error);
             }
-        }
+        },
+        async getRatioMantenimientos() {
+            try {
+                const response = await this.$http.get(this.$apiURL+'control-panel/maintenanceratiographic');
+                const currentData = response.data.series;
+
+                if (this.dataChanged(this.previousRatioMantenimientosData, currentData)) {
+                    this.pieChart2.series = currentData;
+                    this.previousRatioMantenimientosData = currentData;
+                }
+            } catch (error) {
+                console.error(error);
+            }
+        },
+        dataChanged(previousData, currentData) {
+            return JSON.stringify(previousData) !== JSON.stringify(currentData);
+        },
+
     },
     middleware: "authentication"
 };

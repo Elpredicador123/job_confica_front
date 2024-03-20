@@ -125,6 +125,15 @@ export default {
         this.getRescate();
         this.getErrorTec();
         this.getErrorCalidad();
+        setInterval(() => {
+            this.getEfectividad();
+            this.getAuditoria();
+            this.getInspeccionesTec();
+            this.getAvanceTec();
+            this.getRescate();
+            this.getErrorTec();
+            this.getErrorCalidad();
+        }, 30000);
     },
     methods:{
         onFilteredEfectividad(filteredItems) {

@@ -89,6 +89,13 @@ export default {
         this.getContrata();
         this.getRatioInstalaciones();
         this.getRatioMantenimientos();
+        setInterval(() => {
+            this.getTableSup();
+            this.getTableTec();
+            this.getContrata();
+            this.getRatioInstalaciones();
+            this.getRatioMantenimientos();
+        }, 30000);
     },
     methods:{
         onFilteredSup(filteredItems) {

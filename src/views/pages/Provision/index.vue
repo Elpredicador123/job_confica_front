@@ -74,6 +74,12 @@ export default {
             sortDescTec: false,
             fieldsTec: [],
             totalesTec : 0,
+            //---------------------
+            previousContrataData: null,
+            previousGestorData: null,
+            previousTableSupData: null,
+            previousTableTecData: null,
+            previousCityData: null
         };
     },
     mounted() {
@@ -87,8 +93,92 @@ export default {
         this.getTableTec();
         this.getContrata();
         this.getGestor();
+        setInterval(() => {
+            this.updateDataIfChanged();
+        }, 300000);
     },
     methods:{
+        async updateDataIfChanged() {
+            await Promise.all([
+                this.updateContrataData(),
+                this.updateGestorData(),
+                this.updateTableSupData(),
+                this.updateTableTecData(),
+            ]);
+        },
+        async updateContrataData() {
+            this.$nextTick(async () => {
+                const response = await this.$http.get(this.$apiURL + 'provision/diarycontratagraphic/' + this.CiudadId1);
+                const currentData = {
+                    series: response.data.series,
+                    categories: response.data.categories
+                };
+
+                if (this.dataChanged(this.previousContrataData, currentData)) {
+                    this.ContrataBar.series[0].data = currentData.series;
+                    this.ContrataBar.chartOptions.xaxis.categories = currentData.categories;
+                    this.previousContrataData = currentData;
+                }
+            });
+        },
+
+        async updateGestorData() {
+            this.$nextTick(async () => {
+                const response = await this.$http.get(this.$apiURL + 'provision/diarymanagergraphic/' + this.CiudadId2);
+                const currentData = {
+                    series: response.data.series,
+                    categories: response.data.categories
+                };
+
+                if (this.dataChanged(this.previousGestorData, currentData)) {
+                    this.GestorBar.series[0].data = currentData.series;
+                    this.GestorBar.chartOptions.xaxis.categories = currentData.categories;
+                    this.previousGestorData = currentData;
+                }
+            });
+        },
+
+        async updateTableSupData() {
+            this.$nextTick(async () => {
+                const response = await this.$http.get(this.$apiURL + 'provision/childhoodbreakdownsmanagers/' + this.CiudadId3);
+                const currentData = {
+                    series: response.data.series,
+                    fields: response.data.fields
+                };
+
+                if (this.dataChanged(this.previousTableSupData, currentData)) {
+                    this.tableDataSup.splice(0, this.tableDataSup.length);
+                    this.fieldsSup.splice(0, this.fieldsSup.length);
+                    currentData.series.map(i => this.tableDataSup.push({ ...i }));
+                    currentData.fields.map(i => this.fieldsSup.push({ key: i, sortable: true }));
+                    this.totalRowsSup = this.tableDataSup.length;
+                    this.totalesSup = response.data.totales;
+                    this.previousTableSupData = currentData;
+                }
+            });
+        },
+
+        async updateTableTecData() {
+            this.$nextTick(async () => {
+                const response = await this.$http.get(this.$apiURL + 'provision/childhoodbreakdownstechnicians/' + this.CiudadId4);
+                const currentData = {
+                    series: response.data.series,
+                    fields: response.data.fields
+                };
+                if (this.dataChanged(this.previousTableTecData, currentData)) {
+                    this.tableDataTec.splice(0, this.tableDataTec.length);
+                    this.fieldsTec.splice(0, this.fieldsTec.length);
+                    currentData.series.map(i => this.tableDataTec.push({ ...i }));
+                    currentData.fields.map(i => this.fieldsTec.push({ key: i, sortable: true }));
+                    this.totalRowsTec = this.tableDataTec.length;
+                    this.totalesTec = response.data.totales;
+                    this.previousTableTecData = currentData;
+                }
+            });
+        },
+        dataChanged(previousData, currentData) {
+            return JSON.stringify(previousData) !== JSON.stringify(currentData);
+        },
         onFilteredSup(filteredItems) {
             // Trigger pagination to update the number of buttons/pages due to filtering
             this.totalRowsSup = filteredItems.length;
