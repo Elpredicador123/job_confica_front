@@ -112,6 +112,11 @@ export default {
             sortDescOrder: false,
             fieldsOrder: [],
             totalesOrder : 0,
+            //-----------------------
+            previousTableMantenimientosData: {},
+            previousTableInstalacionesData : {},
+            previousTableGestorData: {},
+            previousTableOrderData: { },
         };
     },
     mounted() {
@@ -271,6 +276,10 @@ export default {
                     this.tableMantenimiento.splice(0, this.tableMantenimiento.length);
                     this.fieldsMantenimiento.splice(0, this.fieldsMantenimiento.length);
                     const response = await this.$http.get(this.$apiURL+'management/maintenanceprogresstable/'+this.CiudadId2);
+                    this.previousTableMantenimientosData = {
+                        series: response.data.series,
+                        fields: response.data.fields
+                    };
                     response.data.series.map(i => this.tableMantenimiento.push({ ...i }));
                     response.data.fields.map(i => this.fieldsMantenimiento.push({ key: i, sortable : true }));
                     this.totalRows2 = this.tableMantenimiento.length;
@@ -287,6 +296,10 @@ export default {
                     this.fields.splice(0, this.fields.length);
 
                     const response = await this.$http.get(this.$apiURL+'management/installationprogresstable/'+this.CiudadId);
+                    this.previousTableInstalacionesData = {
+                        series: response.data.series,
+                        fields: response.data.fields
+                    };
                     response.data.series.map(i => this.TableInstalaciones.push({ ...i }));
                     response.data.fields.map(i => this.fields.push({ key: i, sortable : true }));
                     this.totalRows = this.TableInstalaciones.length;
@@ -302,6 +315,10 @@ export default {
                     this.fieldsGestor.splice(0, this.fieldsGestor.length);
 
                     const response = await this.$http.get(this.$apiURL+'management/installationlogmanagertable/'+this.GestorAgendaId);
+                    this.previousTableGestorData = {
+                        series: response.data.series,
+                        fields: response.data.fields
+                    };
                     response.data.series.map(i => this.tableDataGestor.push({ ...i }));
                     //this.fieldsGestor.push({ key: "Ciudad", sortable : true })
                     response.data.categories.map(i => this.fieldsGestor.push({ key: i, sortable : true }));
@@ -319,6 +336,10 @@ export default {
                     this.fieldsOrder.splice(0, this.fieldsOrder.length);
 
                     const response = await this.$http.get(this.$apiURL+'management/ordermanagertable/'+this.OrdenesGestorId);
+                    this.previousTableOrderData = {
+                        series: response.data.series,
+                        fields: response.data.fields
+                    };
                     response.data.series.map(i => this.tableDataOrder.push({ ...i }));
                     //this.fieldsOrder.push({ key: "Ciudad", sortable : true })
                     response.data.categories.map(i => this.fieldsOrder.push({ key: i, sortable : true }));

@@ -127,6 +127,11 @@ export default {
             sortDescAgenda: false,
             fieldsAgenda: [],
             totalesAgenda : 0,
+            //---------------------
+            previousTableGestorData: {},
+            previousTableInstalacionesData:{},
+            previousTablePorDiaData: {},
+            previousTableAgendaPorDiasData: {},
         };
     },
     mounted() {
@@ -147,7 +152,7 @@ export default {
         this.getTableAgendaPorDias();
         setInterval(() => {
                 this.updateDataIfChanged();
-            }, 30000);
+            }, 300000);
     },
     methods:{
         onFiltered(filteredItems) {
@@ -274,7 +279,10 @@ export default {
         async getTableMantenimientos() {
             try {
                 const response = await this.$http.get(this.$apiURL+'control-panel/maintenanceprogresstable');
-                console.log(response)
+                this.previousTableMantenimientosData = {
+                    series: response.data.series,
+                    fields: response.data.fields
+                };
                 response.data.series.map(i => this.tableData2.push({ ...i }));
                 response.data.fields.map(i => this.fields2.push({ key: i, sortable : true }));
                 console.log(this.tableData2)
@@ -286,7 +294,10 @@ export default {
         async getTableInstalaciones() {
             try {
                 const response = await this.$http.get(this.$apiURL+'control-panel/installationprogresstable');
-                console.log(response)
+                this.previousTableInstalacionesData = {
+                    series: response.data.series,
+                    fields: response.data.fields
+                };
                 response.data.series.map(i => this.tableData.push({ ...i }));
                 response.data.fields.map(i => this.fields.push({ key: i, sortable : true }));
                 console.log(this.tableData)
@@ -298,7 +309,10 @@ export default {
         async getTablePorDia(){
             try {
                 const response = await this.$http.get(this.$apiURL+'control-panel/productiontable');
-                console.log(response)
+                this.previousTablePorDiaData = {
+                    series: response.data.series,
+                    fields: response.data.fields
+                };
                 response.data.series.map(i => this.tableDataPorDia.push({ ...i }));
                 //this.fieldsPorDia.push({ key: "Ciudad", sortable : true })
                 response.data.fields.map(i => this.fieldsPorDia.push({ key: i, sortable : true }));
@@ -312,7 +326,10 @@ export default {
         async getTableAgendaPorDias(){ 
             try {
                 const response = await this.$http.get(this.$apiURL+'control-panel/diarytable');
-                console.log(response)
+                this.previousTableAgendaPorDiasData = {
+                    series: response.data.series,
+                    fields: response.data.fields
+                };
                 response.data.series.map(i => this.tableDataAgenda.push({ ...i }));
                 //this.fieldsAgenda.push({ key: "Ciudad", sortable : true })
                 response.data.fields.map(i => this.fieldsAgenda.push({ key: i, sortable : true }));

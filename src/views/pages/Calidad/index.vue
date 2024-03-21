@@ -126,14 +126,8 @@ export default {
         this.getErrorTec();
         this.getErrorCalidad();
         setInterval(() => {
-            this.getEfectividad();
-            this.getAuditoria();
-            this.getInspeccionesTec();
-            this.getAvanceTec();
-            this.getRescate();
-            this.getErrorTec();
-            this.getErrorCalidad();
-        }, 30000);
+            this.updateDataIfChanged();
+        }, 300000);
     },
     methods:{
         onFilteredEfectividad(filteredItems) {
@@ -141,6 +135,122 @@ export default {
             this.totalRowsEfectividad = filteredItems.length;
             this.currentPageEfectividad = 1;
         },
+        async updateDataIfChanged() {
+            await Promise.all([
+                this.UpdategetEfectividad(),
+                this.UpdategetAuditoria(),
+                this.UpdategetInspeccionesTec(),
+                this.UpdategetAvanceTec(),
+                this.UpdategetRescate(),
+                this.UpdategetErrorTec(),
+                this.UpdategetErrorCalidad()
+            ]);
+        },
+        async UpdategetEfectividad(){
+            const response = await this.$http.get(this.$apiURL+'quality/inspectioneffectivenesstable/'+this.CiudadId1);
+            const currentData = {
+                series: response.data.series,
+                categories: response.data.categories
+            };
+
+            if (this.dataChanged(this.previousTableDataEfectividad, currentData)) {
+                this.tableDataEfectividad.splice(0, this.tableDataEfectividad.length);
+                this.fieldsEfectividad.splice(0, this.fieldsEfectividad.length);
+                response.data.series.map(i => this.tableDataEfectividad.push({ ...i }));
+                response.data.categories.map(i => this.fieldsEfectividad.push({ key: i, sortable : true }));
+                this.totalRowsEfectividad = this.tableDataEfectividad.length;
+                this.totalesEfectividad = response.data.totales;
+                this.previousTableDataEfectividad = currentData;
+            }
+        },
+
+        async UpdategetAuditoria(){
+            const response = await this.$http.get(this.$apiURL+'quality/auditsprogresstable/' + this.CiudadId2);
+            const currentData = {
+                series: response.data.series,
+                categories: response.data.categories
+            };
+
+            if (this.dataChanged(this.previousTableDataAuditoria, currentData)) {
+                this.tableDataAuditoria.splice(0, this.tableDataAuditoria.length);
+                this.fieldsAuditoria.splice(0, this.fieldsAuditoria.length);
+                response.data.series.map(i => this.tableDataAuditoria.push({ ...i }));
+                response.data.categories.map(i => this.fieldsAuditoria.push({ key: i, sortable : true }));
+                this.totalRowsAuditoria = this.tableDataAuditoria.length;
+                this.totalesAuditoria = response.data.totales;
+                this.previousTableDataAuditoria = currentData;
+            }
+        },
+        async UpdategetInspeccionesTec(){
+            const response = await this.$http.get(this.$apiURL+'quality/inspectioneffectivenessbytectable/'+this.ManagerId1);
+            const currentData = {
+                series: response.data.series,
+                categories: response.data.categories
+            };
+
+            if (this.dataChanged(this.previousTableDataInspeccionesTec, currentData)) {
+                this.tableDataInspeccionesTec.splice(0, this.tableDataInspeccionesTec.length);
+                this.fieldsInspeccionesTec.splice(0, this.fieldsInspeccionesTec.length);
+                response.data.series.map(i => this.tableDataInspeccionesTec.push({ ...i }));
+                response.data.categories.map(i => this.fieldsInspeccionesTec.push({ key: i, sortable : true }));
+                this.totalRowsInspeccionesTec = this.tableDataInspeccionesTec.length;
+                this.totalesInspeccionesTec = response.data.totales;
+                this.previousTableDataInspeccionesTec = currentData;
+            }
+        },
+        async UpdategetAvanceTec(){
+            const response = await this.$http.get(this.$apiURL+'quality/auditsprogressbytectable/'+this.ManagerId2);
+            const currentData = {
+                series: response.data.series,
+                categories: response.data.categories
+            };
+
+            if (this.dataChanged(this.previousTableDataAvanceTec, currentData)) {
+                this.tableDataAvanceTec.splice(0, this.tableDataAvanceTec.length);
+                this.fieldsAvanceTec.splice(0, this.fieldsAvanceTec.length);
+                response.data.series.map(i => this.tableDataAvanceTec.push({ ...i }));
+                response.data.categories.map(i => this.fieldsAvanceTec.push({ key: i, sortable : true }));
+                this.totalRowsAvanceTec = this.tableDataAvanceTec.length;
+                this.totalesAvanceTec = response.data.totales;
+                this.previousTableDataAvanceTec = currentData;
+            }
+        },
+        async UpdategetRescate(){
+            const response = await this.$http.get(this.$apiURL+'quality/errorsevidencetable/'+this.CiudadId3);
+            const currentData = {
+                series: response.data.series,
+                categories: response.data.categories
+            };
+
+            if (this.dataChanged(this.previousTableDataRescate, currentData)) {
+                this.tableDataRescate.splice(0, this.tableDataRescate.length);
+                this.fieldsRescate.splice(0, this.fieldsRescate.length);
+                response.data.series.map(i => this.tableDataRescate.push({ ...i }));
+                response.data.categories.map(i => this.fieldsRescate.push({ key: i, sortable : true }));
+                this.totalRowsRescate = this.tableDataRescate.length;
+                this.totalesRescate = response.data.totales;
+                this.previousTableDataRescate = currentData;
+            }
+        },
+
+        async UpdategetErrorTec(){
+            const response = await this.$http.get(this.$apiURL+'quality/errorsevidencebytectable/'+this.CiudadId4);
+            const currentData = {
+                series: response.data.series,
+                categories: response.data.categories
+            };
+
+            if (this.dataChanged(this.previousTableDataErrorTec, currentData)) {
+                this.tableDataErrorTec.splice(0, this.tableDataErrorTec.length);
+                this.fieldsErrorTec.splice(0, this.fieldsErrorTec.length);
+                response.data.series.map(i => this.tableDataErrorTec.push({ ...i }));
+                response.data.categories.map(i => this.fieldsErrorTec.push({ key: i, sortable : true }));
+                this.totalRowsErrorTec = this.tableDataErrorTec.length;
+                this.totalesErrorTec = response.data.totales;
+                this.previousTableDataErrorTec = currentData;
+            }
+        },
+        //---------------------------------------
         async getEfectividad(){
             this.$nextTick(async () => {
 
@@ -148,6 +258,11 @@ export default {
                 this.fieldsEfectividad.splice(0, this.fieldsEfectividad.length);
 
                 const response = await this.$http.get(this.$apiURL+'quality/inspectioneffectivenesstable/'+this.CiudadId1);
+                this.previousTableDataEfectividad = {
+                    series: response.data.series,
+                    categories: response.data.categories
+                };
+
                 response.data.series.map(i => this.tableDataEfectividad.push({ ...i }));
                 //this.fieldsEfectividad.push({ key: "Ciudad", sortable : true })
                 response.data.categories.map(i => this.fieldsEfectividad.push({ key: i, sortable : true }));
@@ -161,6 +276,10 @@ export default {
                 this.fieldsAuditoria.splice(0, this.fieldsAuditoria.length);
 
                 const response = await this.$http.get(this.$apiURL+'quality/auditsprogresstable/' + this.CiudadId2);
+                this.previousTableDataAuditoria = {
+                    series: response.data.series,
+                    categories: response.data.categories
+                };
                 response.data.series.map(i => this.tableDataAuditoria.push({ ...i }));
                 //this.fieldsAuditoria.push({ key: "Ciudad", sortable : true })
                 response.data.categories.map(i => this.fieldsAuditoria.push({ key: i, sortable : true }));
@@ -174,6 +293,10 @@ export default {
                 this.fieldsInspeccionesTec.splice(0, this.fieldsInspeccionesTec.length);
 
                 const response = await this.$http.get(this.$apiURL+'quality/inspectioneffectivenessbytectable/'+this.ManagerId1);
+                this.previousTableDataInspeccionesTec = {
+                    series: response.data.series,
+                    categories: response.data.categories
+                };
                 response.data.series.map(i => this.tableDataInspeccionesTec.push({ ...i }));
                 //this.fieldsInspeccionesTec.push({ key: "Ciudad", sortable : true })
                 response.data.categories.map(i => this.fieldsInspeccionesTec.push({ key: i, sortable : true }));
@@ -187,6 +310,10 @@ export default {
                 this.fieldsAvanceTec.splice(0, this.fieldsAvanceTec.length);
 
                 const response = await this.$http.get(this.$apiURL+'quality/auditsprogressbytectable/'+this.ManagerId2);
+                this.previousTableDataAvanceTec = {
+                    series: response.data.series,
+                    categories: response.data.categories
+                };
                 response.data.series.map(i => this.tableDataAvanceTec.push({ ...i }));
                 response.data.categories.map(i => this.fieldsAvanceTec.push({ key: i, sortable : true }));
                 this.totalRowsAvanceTec = this.tableDataAvanceTec.length;
@@ -199,6 +326,10 @@ export default {
                 this.fieldsRescate.splice(0, this.fieldsRescate.length);
 
                 const response = await this.$http.get(this.$apiURL+'quality/errorsevidencetable/'+this.CiudadId3);
+                this.previousTableDataRescate = {
+                    series: response.data.series,
+                    categories: response.data.categories
+                };
                 response.data.series.map(i => this.tableDataRescate.push({ ...i }));
                 //this.fieldsRescate.push({ key: "Ciudad", sortable : true })
                 response.data.categories.map(i => this.fieldsRescate.push({ key: i, sortable : true }));
@@ -212,6 +343,10 @@ export default {
                 this.fieldsErrorTec.splice(0, this.fieldsErrorTec.length);
 
                 const response = await this.$http.get(this.$apiURL+'quality/errorsevidencebytectable/'+this.CiudadId4);
+                this.previousTableDataErrorTec = {
+                    series: response.data.series,
+                    categories: response.data.categories
+                };
                 response.data.series.map(i => this.tableDataErrorTec.push({ ...i }));
                 //this.fieldsErrorTec.push({ key: "Ciudad", sortable : true })
                 response.data.categories.map(i => this.fieldsErrorTec.push({ key: i, sortable : true }));

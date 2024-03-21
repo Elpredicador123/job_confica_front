@@ -193,6 +193,10 @@ export default {
             this.$nextTick(async () => {
                 this.ContrataBar = barChart;
                 const response = await this.$http.get(this.$apiURL+'provision/diarycontratagraphic/'+this.CiudadId1);
+                this.previousContrataData = {
+                    series: response.data.series,
+                    categories: response.data.categories
+                };
                 this.ContrataBar.series[0].data = response.data.series; 
                 this.ContrataBar.chartOptions.xaxis.categories = response.data.categories;
             });
@@ -203,6 +207,10 @@ export default {
                     this.GestorBar = barChart2;
 
                     const response = await this.$http.get(this.$apiURL+'provision/diarymanagergraphic/'+this.CiudadId2);
+                    this.previousGestorData = {
+                        series: response.data.series,
+                        categories: response.data.categories
+                    };
                     this.GestorBar.series[0].data = response.data.series;
                     this.GestorBar.chartOptions.xaxis.categories = response.data.categories;
                 })
@@ -217,6 +225,10 @@ export default {
                     this.fieldsSup.splice(0, this.fieldsSup.length);
 
                     const response = await this.$http.get(this.$apiURL+'provision/childhoodbreakdownsmanagers/'+this.CiudadId3);
+                    this.previousTableSupData = {
+                        series: response.data.series,
+                        categories: response.data.categories
+                    };
                     response.data.series.map(i => this.tableDataSup.push({ ...i }));
                     //this.fieldsGestor.push({ key: "Ciudad", sortable : true })
                     response.data.fields.map(i => this.fieldsSup.push({ key: i, sortable : true }));
@@ -234,6 +246,10 @@ export default {
                     this.fieldsTec.splice(0, this.fieldsTec.length);
 
                     const response = await this.$http.get(this.$apiURL+'provision/childhoodbreakdownstechnicians/'+this.CiudadId4);
+                    this.previousTableTecData = {
+                        series: response.data.series,
+                        categories: response.data.categories
+                    };
                     response.data.series.map(i => this.tableDataTec.push({ ...i }));
                     //this.fieldsTec.push({ key: "Ciudad", sortable : true })
                     response.data.fields.map(i => this.fieldsTec.push({ key: i, sortable : true }));

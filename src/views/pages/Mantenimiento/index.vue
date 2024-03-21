@@ -75,6 +75,9 @@ export default {
             sortDescTec: false,
             fieldsTec: [],
             totalesTec : 0,
+            //--------------------
+            previousTableSupData: {},
+            previousTableTecData: {},
         };
     },
     mounted() {
@@ -90,12 +93,8 @@ export default {
         this.getRatioInstalaciones();
         this.getRatioMantenimientos();
         setInterval(() => {
-            this.getTableSup();
-            this.getTableTec();
-            this.getContrata();
-            this.getRatioInstalaciones();
-            this.getRatioMantenimientos();
-        }, 30000);
+            this.updateDataIfChanged();
+        }, 300000);
     },
     methods:{
         onFilteredSup(filteredItems) {
@@ -108,9 +107,61 @@ export default {
             this.totalRowsTec = filteredItems.length;
             this.currentPageTec = 1;
         },
+        async updateDataIfChanged() {
+            await Promise.all([
+                this.UpdategetTableSup(),
+                this.UpdategetTableTec(),
+                this.getContrata(),
+                this.getRatioInstalaciones(),
+                this.getRatioMantenimientos()
+            ]);
+        },
+        async UpdategetTableSup() {
+            const response = await this.$http.get(this.$apiURL+'maintenance/childhoodbreakdownsmanagers/'+this.CiudadId3);
+            const currentData = {
+                series: response.data.series,
+                fields: response.data.fields
+            };
+
+            if (this.dataChanged(this.previousTableSupData, currentData)) {
+                this.tableDataSup.splice(0, this.tableDataSup.length);
+                this.fieldsSup.splice(0, this.fieldsSup.length);
+                response.data.series.map(i => this.tableDataSup.push({ ...i }));
+                response.data.fields.map(i => this.fieldsSup.push({ key: i, sortable : true }));
+                this.totalRowsSup = this.tableDataSup.length;
+                this.previousTableSupData = currentData;
+            }
+        },
+
+        async UpdategetTableTec() {
+            const response = await this.$http.get(this.$apiURL+'maintenance/childhoodbreakdownstechnicians/'+this.CiudadId4);
+            const currentData = {
+                series: response.data.series,
+                fields: response.data.fields
+            };
+
+            if (this.dataChanged(this.previousTableTecData, currentData)) {
+                this.tableDataTec.splice(0, this.tableDataTec.length);
+                this.fieldsTec.splice(0, this.fieldsTec.length);
+                response.data.series.map(i => this.tableDataTec.push({ ...i }));
+                response.data.fields.map(i => this.fieldsTec.push({ key: i, sortable : true }));
+                this.totalRowsTec = this.tableDataTec.length;
+                this.totalesTec = response.data.totales;
+                this.previousTableTecData = currentData;
+            }
+        },
+
+        dataChanged(previousData, currentData) {
+            return JSON.stringify(previousData) !== JSON.stringify(currentData);
+        },
+        //-------------------------------------------------------
         async getContrata(){
             this.$nextTick(async () => {
                 const response = await this.$http.get(this.$apiURL+'maintenance/ineffectivecontratagraphic/'+this.CiudadId1);
+                this.previousContrataData = {
+                    series: response.data.series,
+                    categories: response.data.categories
+                };
                 this.ContrataBar.series[0].data = response.data.series; 
                 this.ContrataBar.chartOptions.xaxis.categories = response.data.categories;
             })
@@ -120,7 +171,10 @@ export default {
                 this.tableDataSup.splice(0, this.tableDataSup.length);
                 this.fieldsSup.splice(0, this.fieldsSup.length);
                 const response = await this.$http.get(this.$apiURL+'maintenance/childhoodbreakdownsmanagers/'+this.CiudadId3);
-
+                this.previousTableSupData = {
+                    series: response.data.series,
+                    fields: response.data.fields
+                };
                 response.data.series.map(i => this.tableDataSup.push({ ...i }));
                 response.data.fields.map(i => this.fieldsSup.push({ key: i, sortable : true }));
 
@@ -133,6 +187,10 @@ export default {
                 this.fieldsTec.splice(0, this.fieldsTec.length);
 
                 const response = await this.$http.get(this.$apiURL+'maintenance/childhoodbreakdownstechnicians/'+this.CiudadId4);
+                this.previousTableTecData = {
+                    series: response.data.series,
+                    fields: response.data.fields
+                };
                 response.data.series.map(i => this.tableDataTec.push({ ...i }));
                 //this.fieldsTec.push({ key: "Ciudad", sortable : true })
                 response.data.fields.map(i => this.fieldsTec.push({ key: i, sortable : true }));
