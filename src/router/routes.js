@@ -137,6 +137,18 @@ export default [
     component: () => import("../views/pages/Mantenimiento/index")
   },
   {
+    path: "/infografias",
+    name: "infografias",
+    meta: { title: "infografias", authRequired: true },
+    component: () => import("../views/pages/infografias/index")
+  },
+  {
+    path: "/liquidacion",
+    name: "liquidacion",
+    meta: { title: "liquidacion", authRequired: true },
+    component: () => import("../views/pages/liquidacion/index")
+  },
+  {
     path: "/calidad",
     name: "Calidad",
     meta: { title: "Calidad", authRequired: true },

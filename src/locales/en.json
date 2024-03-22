@@ -84,6 +84,12 @@
     "calidad": {
       "text": "Calidad"
     },
+    "infografias": {
+      "text": "Infografias"
+    },
+    "liquidacion": {
+      "text": "Liquidacion Ordenes"
+    },
     "chat": {
       "text": "Chat",
       "badge": "New"

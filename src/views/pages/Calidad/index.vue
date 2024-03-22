@@ -143,7 +143,6 @@ export default {
                 this.UpdategetAvanceTec(),
                 this.UpdategetRescate(),
                 this.UpdategetErrorTec(),
-                this.UpdategetErrorCalidad()
             ]);
         },
         async UpdategetEfectividad(){
@@ -369,6 +368,12 @@ export default {
             const response = await this.$http.get(this.$apiURL+'manager/all');
                 response.data.data.map(i => this.Gestor.push( i.manager ));
         },
+        dataChanged(previousData, currentData) {
+            if (!previousData) {
+                return true;
+            }
+            return JSON.stringify(previousData) !== JSON.stringify(currentData);
+        }
 
     },
     middleware: "authentication"

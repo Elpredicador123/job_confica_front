@@ -189,6 +189,18 @@ export const menuItems = [
         icon: "uil-calender",
         link: "/calidad"
     },
+    {
+        id: 16,
+        label: "menuitems.infografias.text",
+        icon: "uil-calender",
+        link: "/infografias"
+    },
+    {
+        id: 17,
+        label: "menuitems.liquidacion.text",
+        icon: "uil-calender",
+        link: "/liquidacion"
+    },
 
     {
         id: 18,
