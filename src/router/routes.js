@@ -149,6 +149,12 @@ export default [
     component: () => import("../views/pages/liquidacion/index")
   },
   {
+    path: "/tecnicos",
+    name: "tecnicos",
+    meta: { title: "tecnicos", authRequired: true },
+    component: () => import("../views/pages/tecnicos/index")
+  },
+  {
     path: "/calidad",
     name: "Calidad",
     meta: { title: "Calidad", authRequired: true },

@@ -201,9 +201,15 @@ export const menuItems = [
         icon: "uil-calender",
         link: "/liquidacion"
     },
-
     {
         id: 18,
+        label: "menuitems.tecnicos.text",
+        icon: "uil-calender",
+        link: "/tecnicos"
+    },
+
+    {
+        id: 180,
         label: "menuitems.invoices.text",
         icon: "uil-invoice",
         subItems: [

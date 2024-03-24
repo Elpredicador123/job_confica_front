@@ -90,6 +90,9 @@
     "liquidacion": {
       "text": "Liquidacion Ordenes"
     },
+    "tecnicos": {
+      "text": "Maestra Técnicos"
+    },
     "chat": {
       "text": "Chat",
       "badge": "New"
