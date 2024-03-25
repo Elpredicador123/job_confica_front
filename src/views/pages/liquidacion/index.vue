@@ -11,16 +11,64 @@ export default {
     data( ){
         return{
             value: null,
-            options: [
-                "Alaska",
-                "Iowa"
+            requerimientos: [
+                "Alta",
+                "Averia"
             ],
+            cierres: [
+                "Completado",
+                "Suspendido",
+                "Devuelto",
+                "Pendiente",
+            ],
+            efectividades: [
+                "Efectiva",
+                "Inefectiva",
+                "Inefectiva recuperada",
+            ],
+            notas: [
+                "Detractor (0-5)",
+                "Neutro (6-7)",
+                "Promotor (8-9)",
+                "No aplica",
+            ],
+            posibles: [
+                "Si",
+                "No",
+                "No aplica",
+            ],
+
             form: {}
         }
+    },
+    methods: {
+        async getTecnicos(){
+            try {
+                this.$nextTick(async () => {
+                    console.log(this.form.cf_tecnico )
+                    const response = await this.$http.get(this.$apiURL+'technical/carnet/'+this.form.cf_tecnico);
+                    console.log(response)
+                    if(response.data.data){
+                        this.form.tecnico = response.data.data.Nombre_Completo
+                    }
+                    else{
+                        this.form.tecnico = null
+                    }
+                });
+            } catch (error) {
+                console.error(error);
+            }
+        },
     },
     middleware: "authentication"
 }
 </script>
+<style>
+.form-control:disabled {
+    background-color: #e9ecef;
+    opacity: 1;
+}
+</style>
 <template>
         <Layout>
         <PageHeader :title="title" :items="items" />
@@ -40,6 +88,7 @@ export default {
                                                 <BFormInput
                                                     type="text"
                                                     v-model="form.codigo"
+                                                    placeholder = "CÒDIGO SIN ESPACIOS"
                                                     id="formrow-firstname-input">
                                                 </BFormInput>
                                             </BFormGroup>
@@ -53,7 +102,7 @@ export default {
                                                 class="mb-12">
                                                 <Multiselect
                                                     v-model="form.requerimiento"
-                                                    :options="options"
+                                                    :options="requerimientos"
                                                     class="form-control p-0"
                                                 />
                                             </BFormGroup>
@@ -67,7 +116,7 @@ export default {
                                                 class="mb-12">
                                                 <Multiselect
                                                     v-model="form.cierre"
-                                                    :options="options"
+                                                    :options="cierres"
                                                     class="form-control p-0"
                                                 />
                                             </BFormGroup>
@@ -82,6 +131,7 @@ export default {
                                                 <BFormInput
                                                     v-model="form.cf_tecnico"
                                                     type="text"
+                                                    @input="getTecnicos()"
                                                     id="formrow-firstname-input">
                                                 </BFormInput>
                                             </BFormGroup>
@@ -97,7 +147,7 @@ export default {
                                                     v-model="form.tecnico"
                                                     type="text"
                                                     id="formrow-firstname-input"
-                                                    disabled>
+                                                    disabled="">
                                                 </BFormInput>
                                             </BFormGroup>
                                     </div>
@@ -139,7 +189,7 @@ export default {
                                                 class="mb-12">
                                                 <Multiselect
                                                     v-model="form.efectividad"
-                                                    :options="options"
+                                                    :options="efectividades"
                                                     class="form-control p-0"
                                                 />
                                             </BFormGroup>
@@ -153,7 +203,7 @@ export default {
                                                 class="mb-12">
                                                 <Multiselect
                                                     v-model="form.nota_nps"
-                                                    :options="options"
+                                                    :options="notas"
                                                     class="form-control p-0"
                                                 />
                                             </BFormGroup>
@@ -167,7 +217,7 @@ export default {
                                                 class="mb-12">
                                                 <Multiselect
                                                     v-model="form.detractor"
-                                                    :options="options"
+                                                    :options="posibles"
                                                     class="form-control p-0"
                                                 />
                                             </BFormGroup>
