@@ -2,6 +2,8 @@
 import Layout from "../../layouts/main";
 import PageHeader from "@/components/page-header";
 import Multiselect from "@vueform/multiselect";
+import moment from 'moment'
+
 export default {
     components: { 
         Layout,
@@ -41,24 +43,77 @@ export default {
             form: {}
         }
     },
+    mounted(){
+        this.initForm();
+    },
     methods: {
+        initForm (){
+            this.form = {
+                zonal : null,
+                tecnico : null,
+                cf: "",
+                codigo_requerimiento: null,
+                tipo_requerimiento: null,
+                tipo_cierre : null,
+                numero_referencia : null,
+                efectividad : null,
+                nota_nps : null,
+                detractor : null,
+                observaciones : null,
+                contrata : "",
+                usuario: "admin",
+                fecha : moment().format('YYYY-MM-DD'),
+            }
+        },
         async getTecnicos(){
             try {
                 this.$nextTick(async () => {
-                    console.log(this.form.cf_tecnico )
-                    const response = await this.$http.get(this.$apiURL+'technical/carnet/'+this.form.cf_tecnico);
-                    console.log(response)
-                    if(response.data.data){
-                        this.form.tecnico = response.data.data.Nombre_Completo
+                    console.log(this.form.cf )
+                    if(this.form.cf == ""){
+                        this.form.tecnico = null;
+                        this.form.zonal = null;
+                        this.form.contrata = null;
                     }
                     else{
-                        this.form.tecnico = null
+                        const response = await this.$http.get(this.$apiURL+'technical/carnet/'+this.form.cf);
+                        if (response.data != null && response.data.data) {
+                            this.form.tecnico = response.data.data.Nombre_Completo || null;
+                            this.form.zonal = response.data.data.Zonal || null;
+                            this.form.contrata = response.data.data.Contrata || null;
+                        } else {
+                            this.form.tecnico = null;
+                            this.form.zonal = null;
+                            this.form.contrata = null;
+                        }
                     }
                 });
             } catch (error) {
                 console.error(error);
             }
         },
+        async submit(){
+            this.$http.post(this.$apiURL+'order/store', this.form, {
+            }).then(response => {
+                if(response.status == 200){
+                  console.log(response);
+                  this.$swal({
+                      title: 'Completado!',
+                      text:  response.data.message,
+                      icon: 'success',
+                      confirmButtonColor: '#6457A2', // Cambiar el color del botón de confirmación
+                  });
+                  this.$swal('Completado!', response.data.message, 'success');
+                  this.initForm()
+                }
+            }).catch(error => {
+                console.error(error);
+                  this.$swal({
+                    icon: "error",
+                    title: "Oops...",
+                    text: error,
+                  });
+            });
+        }
     },
     middleware: "authentication"
 }
@@ -77,7 +132,9 @@ export default {
                 <BCard no-body>
                     <BCardBody>
                         <BCardTitle>Registro de ordenes</BCardTitle>
-                        <form>
+                            <form autocomplete="off"
+                                class="row no-gutters"
+                                @submit.prevent="submit">
                             <BRow>
                                 <BCol lg="4">
                                     <div class="mt-4">
@@ -87,8 +144,9 @@ export default {
                                                 class="mb-12">
                                                 <BFormInput
                                                     type="text"
-                                                    v-model="form.codigo"
+                                                    v-model="form.codigo_requerimiento"
                                                     placeholder = "CÒDIGO SIN ESPACIOS"
+                                                    required
                                                     id="formrow-firstname-input">
                                                 </BFormInput>
                                             </BFormGroup>
@@ -101,8 +159,9 @@ export default {
                                                 label-for="formrow-firstname-input"
                                                 class="mb-12">
                                                 <Multiselect
-                                                    v-model="form.requerimiento"
+                                                    v-model="form.tipo_requerimiento"
                                                     :options="requerimientos"
+                                                    required
                                                     class="form-control p-0"
                                                 />
                                             </BFormGroup>
@@ -115,7 +174,8 @@ export default {
                                                 label-for="formrow-firstname-input"
                                                 class="mb-12">
                                                 <Multiselect
-                                                    v-model="form.cierre"
+                                                    v-model="form.tipo_cierre"
+                                                    required
                                                     :options="cierres"
                                                     class="form-control p-0"
                                                 />
@@ -129,7 +189,8 @@ export default {
                                                 label-for="formrow-firstname-input"
                                                 class="mb-12">
                                                 <BFormInput
-                                                    v-model="form.cf_tecnico"
+                                                    v-model="form.cf"
+                                                    required
                                                     type="text"
                                                     @input="getTecnicos()"
                                                     id="formrow-firstname-input">
@@ -145,6 +206,7 @@ export default {
                                                 class="mb-12">
                                                 <BFormInput
                                                     v-model="form.tecnico"
+                                                    required
                                                     type="text"
                                                     id="formrow-firstname-input"
                                                     disabled="">
@@ -160,6 +222,7 @@ export default {
                                                 class="mb-12">
                                                 <BFormInput
                                                     type="text"
+                                                    required
                                                     v-model="form.zonal"
                                                     id="formrow-firstname-input"
                                                     disabled>
@@ -174,7 +237,8 @@ export default {
                                                 label-for="formrow-firstname-input"
                                                 class="mb-12">
                                                 <BFormInput
-                                                    v-model="form.nummero_referencia"
+                                                    v-model="form.numero_referencia"
+                                                    required
                                                     type="text"
                                                     id="formrow-firstname-input">
                                                 </BFormInput>
@@ -190,6 +254,7 @@ export default {
                                                 <Multiselect
                                                     v-model="form.efectividad"
                                                     :options="efectividades"
+                                                    required
                                                     class="form-control p-0"
                                                 />
                                             </BFormGroup>
@@ -203,6 +268,7 @@ export default {
                                                 class="mb-12">
                                                 <Multiselect
                                                     v-model="form.nota_nps"
+                                                    required
                                                     :options="notas"
                                                     class="form-control p-0"
                                                 />
@@ -217,6 +283,7 @@ export default {
                                                 class="mb-12">
                                                 <Multiselect
                                                     v-model="form.detractor"
+                                                    required
                                                     :options="posibles"
                                                     class="form-control p-0"
                                                 />
@@ -239,7 +306,7 @@ export default {
                                 </BCol>
                             </BRow>
                             <div class="mt-4">
-                                <BButton type="submit" variant="primary">Guardar</BButton>
+                                <BButton type="submit" variant="primary"  @submit.prevent="submit">Guardar</BButton>
                             </div>
                         </form>
                     </BCardBody>

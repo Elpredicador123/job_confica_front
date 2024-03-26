@@ -250,6 +250,8 @@ export default {
         },
 
         dataChanged(previousData, currentData) {
+            console.log(previousData)
+            console.log(currentData)
             return JSON.stringify(previousData) !== JSON.stringify(currentData);
         },
         async getGestorAgenda(){
