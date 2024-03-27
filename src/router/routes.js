@@ -149,6 +149,18 @@ export default [
     component: () => import("../views/pages/liquidacion/index")
   },
   {
+    path: "/liquidacion/index",
+    name: "Listado",
+    meta: { title: "Listado", authRequired: true },
+    component: () => import("../views/pages/liquidacion/index")
+  },
+  {
+    path: "/liquidacion/create",
+    name: "Liquidacion",
+    meta: { title: "Liquidacion", authRequired: true },
+    component: () => import("../views/pages/liquidacion/create")
+  },
+  {
     path: "/tecnicos",
     name: "tecnicos",
     meta: { title: "tecnicos", authRequired: true },

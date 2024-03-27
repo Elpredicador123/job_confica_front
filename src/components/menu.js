@@ -198,8 +198,21 @@ export const menuItems = [
     {
         id: 17,
         label: "menuitems.liquidacion.text",
-        icon: "uil-calender",
-        link: "/liquidacion"
+        icon: "uil-store",
+        subItems: [
+            {
+                id: 97,
+                label: "menuitems.liquidacion.list.index",
+                link: "/liquidacion/index",
+                parentId: 17
+            },
+            {
+                id: 98,
+                label: "menuitems.liquidacion.list.create",
+                link: "/liquidacion/create",
+                parentId: 17
+            }
+        ]
     },
     {
         id: 18,

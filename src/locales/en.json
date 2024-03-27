@@ -88,7 +88,11 @@
       "text": "Infografias"
     },
     "liquidacion": {
-      "text": "Liquidacion Ordenes"
+      "text": "Ordenes",
+      "list": {
+        "index": "Listado",
+        "create": "Crear"
+      }
     },
     "tecnicos": {
       "text": "Maestra Técnicos"
