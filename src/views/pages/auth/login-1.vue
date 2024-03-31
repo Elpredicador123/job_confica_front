@@ -3,6 +3,7 @@
 /**
  * Login-1 component
  */
+
 export default {
   mounted() {
     document.body.classList.add("authentication-bg");
@@ -10,7 +11,40 @@ export default {
   data() {
     return {
       title: "Log in",
+      form: {}
     };
+
+  },
+  methods: {
+      async submit() {
+        this.$http.post(this.$apiURL+'login', this.form, {
+            }).then(response => {
+              console.log(response)
+              localStorage.setItem('user-token', response.data.token); // Almacenar el token
+              this.$http.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
+              this.$store.dispatch('auth/logIn', response.data.token);
+              this.$router.push({ name: 'Listado' });
+            }).catch(error => {
+                console.error(error);
+                  this.$swal({
+                    icon: "error",
+                    title: "Oops...",
+                    text: error,
+                  });
+            });
+
+        // try {
+        //   const response = await axios.post(this.$apiURL+'login', this.form, {}).then(response => {
+        //         console.log(response)
+        //     });
+        //   localStorage.setItem('user-token', response.data.token); // Almacenar el token
+        //   axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
+        //   // Redirigir al usuario a la página de inicio o dashboard
+        // } catch (error) {
+        //   console.error(error.response.data);
+        //   // Manejo de errores (mostrar mensaje al usuario)
+        // }
+      }
   },
 };
 </script>
@@ -39,10 +73,10 @@ export default {
                   <p class="text-muted">Sign in to continue to Minible.</p>
                 </div>
                 <div class="p-2 mt-4">
-                  <BForm>
+                  <BForm @submit.prevent="submit">
                     <div class="mb-3">
                       <label for="username">Username</label>
-                      <input type="text" class="form-control" id="username" placeholder="Enter username" />
+                      <input type="text" class="form-control"  v-model="form.username" placeholder="Enter username" />
                     </div>
 
                     <div class="mb-3">
@@ -51,7 +85,7 @@ export default {
                           Forgot password?</router-link>
                       </div>
                       <label for="userpassword">Password</label>
-                      <input type="password" class="form-control" id="userpassword" placeholder="Enter password" />
+                      <input type="password" class="form-control" v-model="form.password" id="userpassword" placeholder="Enter password" />
                     </div>
 
                     <div class="form-check">

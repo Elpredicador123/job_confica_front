@@ -7,21 +7,21 @@ export const userService = {
     getAll,
 };
 
-function login(email, password) {
+function login(username, password) {
 
     const requestOptions = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ username, password })
     };
 
-    return fetch(`/users/authenticate`, requestOptions)
+    return fetch(`http://comfica_back.test:8084/api/login`, requestOptions)
         .then(handleResponse)
         .then(user => {
             // login successful if there's a jwt token in the response
             if (user.token) {
                 // store user details and jwt token in local storage to keep user logged in between page refreshes
-                localStorage.setItem('user', JSON.stringify(user));
+                localStorage.setItem('user-token', JSON.stringify(user));
             }
             return user;
         });
@@ -29,7 +29,8 @@ function login(email, password) {
 
 function logout() {
     // remove user from local storage to log user out
-    localStorage.removeItem('user');
+    localStorage.clear()
+    localStorage.removeItem('user-token');
 }
 
 function register(user) {

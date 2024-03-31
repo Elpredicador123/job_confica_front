@@ -50,32 +50,7 @@ export default {
       if (this.v$.$invalid) {
         return;
       } else {
-        if (process.env.VUE_APP_DEFAULT_AUTH === "firebase") {
-          this.tryingToLogIn = true;
-          // Reset the authError if it existed.
-          this.authError = null;
-          return this.$store
-            .dispatch("auth/logIn", {
-              email: this.email,
-              password: this.password
-            })
-            .then((token) => {
-              console.log("token", token);
-              this.tryingToLogIn = false;
-              this.isAuthError = false;
-              // Redirect to the originally requested page, or to the home page
-              this.$router.push(
-                this.$route.query.redirectFrom || {
-                  path: "/"
-                }
-              );
-            })
-            .catch((error) => {
-              this.tryingToLogIn = false;
-              this.authError = error ? error : "";
-              this.isAuthError = true;
-            });
-        } else if (process.env.VUE_APP_DEFAULT_AUTH === "fakebackend") {
+
           const { email, password } = this;
           if (email && password) {
             this.$store.dispatch("authfack/login", {
@@ -83,7 +58,6 @@ export default {
               password
             });
           }
-        }
       }
     }
   }
