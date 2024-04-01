@@ -1,22 +1,100 @@
 <script>
 import Layout from "../../layouts/main";
 import PageHeader from "@/components/page-header";
+
+/**
+ * Products component
+ */
 export default {
-    components: { 
-        Layout,
-        PageHeader
-    }, 
-    middleware: "authentication"
+  components: { Layout, PageHeader },
+    data() {
+        return {
+            tableData: [],
+            title: "Infografías",
+            items: [
+                {
+                text: "Infografías",
+                href: "/infografias/index"
+                },
+                {
+                text: "Listado",
+                active: true
+                }
+            ],
+            totalRows: 1,
+            currentPage: 1,
+            perPage: 10,
+            pageOptions: [10, 25, 50, 100],
+            filter: null,
+            filterOn: [],
+            sortBy: "age",
+            sortDesc: false,
+            fields: [
+                {
+                    key: "id",
+                    sortable: true
+                },
+                {
+                    key: "title",
+                    sortable: true
+                },
+                {
+                    key: "url",
+                    sortable: true
+                },
+                {
+                    key: "Autor",
+                    sortable: true
+                },
+                {
+                    key: "actions",
+                }
+            ]
+        }
+    },
+    // computed: {
+    //     /**
+    //      * Total no. of records
+    //      */
+    //     rows: function () {
+    //         return this.tableData.length;
+    //     }
+    // },
+    mounted() {
+        // Set the initial number of items
+        this.totalRows = this.items.length;
+        //obtener datos de la api
+        this.getData();
+    },
+    methods:{
+        onFiltered(filteredItems) {
+            // Trigger pagination to update the number of buttons/pages due to filtering
+            this.totalRows = filteredItems.length;
+            this.currentPage = 1;
+        },
+        async getData() {
+            try {
+                const response = await this.$http.get(this.$apiURL+'video/all');
+                response.data.data.map(i => this.tableData.push({ ...i }));
+                this.totalRows = this.tableData.length;
+            } catch (error) {
+                console.error(error);
+            }
+        },
+        editItem(item) {
+            console.log("Editar item", item);
+        },
+    }
 }
 </script>
+
 <template>
-        <Layout>
+    <Layout>
         <PageHeader :title="title" :items="items" />
         <BRow>
             <BCol cols="12">
                 <BCard no-body>
                     <BCardBody>
-                        <BCardTitle>Data Table</BCardTitle>
                         <BRow class="mt-4">
                             <BCol sm="12" md="6">
                                 <div id="tickets-table_length" class="dataTables_length">
@@ -64,21 +142,16 @@ export default {
                                 :filter-included-fields="filterOn"
                                 @filtered="onFiltered"
                             >
-                            <template #cell(is_active)="data">
-                                <b-button
-                                variant="success"
-                                v-if="data.item.is_active === 1"
-                                >
-                                Activo
-                                </b-button>
-                                <b-button
-                                variant="danger"
-                                v-else
-                                >
-                                Inactivo
-                                </b-button>
+                            <template #cell(url)="data">
+                                <a :href="`${this.$storageURL}/${data.item.url}`" target="_blank" rel="noopener noreferrer" download>
+                                    <i class="fas fa-download"></i> Descargar
+                                </a>
                             </template>
-                        </BTable>
+                            <template #cell(actions)="{ item }">
+                                <!-- Agregar botón de edición -->
+                                <BButton @click="editItem(item)" variant="info">Editar</BButton>
+                            </template>
+                            </BTable>
                         </div>
                         <BRow>
                             <BCol>

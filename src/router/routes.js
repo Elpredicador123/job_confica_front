@@ -67,11 +67,6 @@ export default [
     meta: {
       authRequired: true,
       beforeResolve(routeTo, routeFrom, next) {
-        if (process.env.VUE_APP_DEFAULT_AUTH === "firebase") {
-          store.dispatch("auth/logOut");
-        } else if (process.env.VUE_APP_DEFAULT_AUTH === "fakebackend") {
-          store.dispatch("authfack/logout");
-        }
         const authRequiredOnPreviousRoute = routeFrom.matched.some((route) =>
           route.push("/login")
         );
@@ -137,21 +132,21 @@ export default [
     component: () => import("../views/pages/Mantenimiento/index")
   },
   {
-    path: "/infografias",
-    name: "infografias",
-    meta: { title: "infografias", authRequired: true },
+    path: "/infografias/index",
+    name: "Listado de infografias",
+    meta: { title: "Listado de infografias", authRequired: true },
     component: () => import("../views/pages/infografias/index")
   },
   {
-    path: "/liquidacion",
-    name: "liquidacion",
-    meta: { title: "liquidacion", authRequired: true },
-    component: () => import("../views/pages/liquidacion/index")
+    path: "/infografias/create",
+    name: "Infografias",
+    meta: { title: "Infografias", authRequired: true },
+    component: () => import("../views/pages/infografias/create")
   },
   {
     path: "/liquidacion/index",
-    name: "Listado",
-    meta: { title: "Listado", authRequired: true },
+    name: "Liquidaciones",
+    meta: { title: "Liquidaciones", authRequired: true },
     component: () => import("../views/pages/liquidacion/index")
   },
   {

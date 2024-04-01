@@ -85,7 +85,11 @@
       "text": "Calidad"
     },
     "infografias": {
-      "text": "Infografias"
+      "text": "Infografias",
+      "list": {
+        "index": "Listado",
+        "create": "Crear"
+      }
     },
     "liquidacion": {
       "text": "Ordenes",

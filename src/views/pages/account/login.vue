@@ -1,6 +1,6 @@
 <script>
 import { useVuelidate } from "@vuelidate/core";
-import { required, email } from "@vuelidate/validators";
+import { required } from "@vuelidate/validators";
 
 /**
  * Login component
@@ -22,7 +22,7 @@ export default {
   validations: {
     email: {
       required,
-      email
+      
     },
     password: {
       required

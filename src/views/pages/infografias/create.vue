@@ -1,57 +1,54 @@
 <script>
-import CKEditor from "@ckeditor/ckeditor5-vue";
-import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import DropZone from "@/components/custom/Dropzone.vue";
 
 import Layout from "../../layouts/main";
 import PageHeader from "@/components/page-header";
-import VueDatePicker from "@vuepic/vue-datepicker";
-import "@vuepic/vue-datepicker/dist/main.css";
 import "flatpickr/dist/flatpickr.css";
+import moment from 'moment'
 
 /**
  * Editor component
  */
 export default {
     components: {
-        ckeditor: CKEditor.component,
         Layout,
         PageHeader,
         DropZone,
-        VueDatePicker
     },
     data() {
         return {
-            title: "NUEVA NOTICIA",
+            title: "NUEVA INFOGRAFÍA",
             items: [
                     {
-                        text: "Noticias",
-                        href: "/news/create"
+                        text: "Infografías",
+                        href: "/infografias/create"
                     },
                     {
-                        text: "Nueva Noticia",
+                        text: "Nueva Inforgrafía",
                         active: true
                     }
             ],
+            form: {},
             dPDefaultDate: null,
             galleryDropzoneFile: "",
             galleryFiles: [],
             DropFile : [],
-            editor_title: ClassicEditor,
-            editor_description: ClassicEditor,
-            news: {}
         };
   },
   async created(){
-    this.initForm()
+    this.initForm();
+
   },
     methods: {
         initForm(){
-          this.news = {
-                title:"<h3>Título de la notica</h3>",
-                description :"<h3>Descripción de la notica</h3>",
-                date: null,
-                user_id : 1
+          const user = JSON.parse(localStorage.getItem('user')); // Convertir los datos del usuario a JSON
+          console.log(user)
+          this.form = {
+                title: null,
+                Autor : user.username,
+                date : moment().format('YYYY-MM-DD HH:mm:ss'),
+                url : "aas",
+                
             };
             this.dPDefaultDate = null;
             this.galleryDropzoneFile = "";
@@ -97,21 +94,21 @@ export default {
         async submit(){
             let formData = new FormData();
             // Agrega los datos del formulario al objeto FormData
-            Object.keys(this.news).forEach(key => {
-                formData.append(key, this.news[key]);
+            Object.keys(this.form).forEach(key => {
+                formData.append(key, this.form[key]);
             });
 
             // Agrega los archivos
 
             if (this.DropFile && this.DropFile.length > 0) {
                 for (let i = 0; i < this.DropFile.length; i++) {
-                    formData.append("files[]", this.DropFile[i][0]);
+                    formData.append("file", this.DropFile[i][0]); // Utiliza "files" en lugar de "files[]"
                 }
             }          
 
             // Realiza la petición con Axios
             console.log(formData)
-            this.$http.post(this.$apiURL+'news/store', formData, {
+            this.$http.post(this.$apiURL+'video/store', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
@@ -147,49 +144,45 @@ export default {
     <form class="needs-validation" @submit.prevent="submit">
 
     <BRow>
-        <BCol lg="12">
-            <BCard no-body>
-          <BCardBody>
-
-            <div class="vuePicDatePicker">
-              <div class="form-group mb-3">
-                <label>Default Date Picker</label>
-                <br />
-            <VueDatePicker
-                  v-model="news.date"
-                  model-type="yyyy-MM-dd HH:mm:ss"
-                />
-              </div>
-            </div>
-        </BCardBody>
-            </BCard>
-        </BCol>
-        <BCol cols="6">
+        <BCol cols="12">
             <BCard no-body>
                 <BCardBody>
-                    <BCardTitle>Titulo</BCardTitle>
-                    <!-- Editor -->
-                    <ckeditor v-model="news.title" :editor="editor_title"></ckeditor>
+                  <BRow>
+                    <BCol lg="6">
+                      <BFormGroup
+                          label="Nombre de Infografía"
+                          label-for="formrow-firstname-input"
+                          class="mb-12">
+                          <BFormInput
+                              type="text"
+                              v-model="form.title"
+                              placeholder = "NOMBRE DE INFOGRAFÍA"
+                              required
+                              id="formrow-firstname-input">
+                          </BFormInput>
+                      </BFormGroup>
+                    </BCol>
+                    <BCol lg="6">
+                      <BFormGroup
+                          label="Autor"
+                          label-for="formrow-firstname-input"
+                          class="mb-12">
+                          <BFormInput
+                              v-model="form.Autor"
+                              required
+                              type="text"
+                              id="formrow-firstname-input"
+                              disabled="">
+                          </BFormInput>
+                      </BFormGroup>
+                    </BCol>
+                  </BRow>
                 </BCardBody>
             </BCard>
         </BCol>
-      <BCol cols="6">
-        <BCard no-body>
-          <BCardBody>
-            <BCardTitle>Descripción</BCardTitle>
-            <!-- Editor -->
-            <ckeditor v-model="news.description" :editor="editor_description"></ckeditor>
-          </BCardBody>
-        </BCard>
-      </BCol>
       <BCol lg="12">
           <BCard no-body>
             <BCardBody>
-              <BCardTitle class="mb-1">Dropzone</BCardTitle>
-              <p class="text-muted">
-                DropzoneJS is an open source library that provides drag’n’drop
-                file uploads with image previews.
-              </p>
               <div>
                 <DropZone
                   files="files"
@@ -248,8 +241,7 @@ export default {
           </BCard>
         </BCol>
         <BCol>
-            <BButton type="submit" variant="primary">Submit</BButton>
-
+            <BButton type="submit" variant="primary">Guardar</BButton>
         </BCol>
         
     </BRow>

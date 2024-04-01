@@ -1,317 +1,201 @@
 <script>
 import Layout from "../../layouts/main";
 import PageHeader from "@/components/page-header";
-import Multiselect from "@vueform/multiselect";
-import moment from 'moment'
+import LiquidacionModal from "./edit.vue";
 
+/**
+ * Products component
+ */
 export default {
-    components: { 
-        Layout,
-        PageHeader,
-        Multiselect
-    },
-    data( ){
-        return{
-            value: null,
-            requerimientos: [
-                "Alta",
-                "Averia"
+  components: { Layout, PageHeader,LiquidacionModal},
+    data() {
+        return {
+            tableData: [],
+            title: "Liquidaciones",
+            items: [
+                {
+                text: "Liquidaciones",
+                href: "/liquidacion/index"
+                },
+                {
+                text: "Listado",
+                active: true
+                }
             ],
-            cierres: [
-                "Completado",
-                "Suspendido",
-                "Devuelto",
-                "Pendiente",
-            ],
-            efectividades: [
-                "Efectiva",
-                "Inefectiva",
-                "Inefectiva recuperada",
-            ],
-            notas: [
-                "Detractor (0-5)",
-                "Neutro (6-7)",
-                "Promotor (8-9)",
-                "No aplica",
-            ],
-            posibles: [
-                "Si",
-                "No",
-                "No aplica",
-            ],
-
-            form: {}
+            totalRows: 1,
+            currentPage: 1,
+            perPage: 10,
+            pageOptions: [10, 25, 50, 100],
+            filter: null,
+            filterOn: [],
+            sortBy: "age",
+            sortDesc: false,
+            fields: [
+                {
+                    key: "codigo_requerimiento",
+                    sortable: true
+                },
+                {
+                    key: "tipo_requerimiento",
+                    sortable: true
+                },
+                {
+                    key: "tipo_cierre",
+                    sortable: true
+                },
+                {
+                    key: "tecnico",
+                    sortable: true
+                },
+                {
+                    key: "zonal",
+                    sortable: true
+                },
+                {
+                    key: "contrata",
+                    sortable: true
+                },
+                {
+                    key: "fecha",
+                    sortable: true
+                },
+                {
+                    key: "efectividad",
+                    sortable: true
+                },
+                {
+                    key: "nota_nps",
+                    sortable: true
+                },
+                {
+                    key: "detractor",
+                    sortable: true
+                },
+                {
+                    key: "actions",
+                }
+            ]
         }
     },
-    mounted(){
-        this.initForm();
+    // computed: {
+    //     /**
+    //      * Total no. of records
+    //      */
+    //     rows: function () {
+    //         return this.tableData.length;
+    //     }
+    // },
+    mounted() {
+        // Set the initial number of items
+        this.totalRows = this.items.length;
+        //obtener datos de la api
+        this.getData();
     },
-    methods: {
-        initForm (){
-            this.form = {
-                zonal : null,
-                tecnico : null,
-                cf: "",
-                codigo_requerimiento: null,
-                tipo_requerimiento: null,
-                tipo_cierre : null,
-                numero_referencia : null,
-                efectividad : null,
-                nota_nps : null,
-                detractor : null,
-                observaciones : null,
-                contrata : "",
-                usuario: "admin",
-                fecha : moment().format('YYYY-MM-DD'),
-            }
+    methods:{
+        onFiltered(filteredItems) {
+            // Trigger pagination to update the number of buttons/pages due to filtering
+            this.totalRows = filteredItems.length;
+            this.currentPage = 1;
         },
-        async getTecnicos(){
+        async getData() {
             try {
-                this.$nextTick(async () => {
-                    console.log(this.form.cf )
-                    if(this.form.cf == ""){
-                        this.form.tecnico = null;
-                        this.form.zonal = null;
-                        this.form.contrata = null;
-                    }
-                    else{
-                        const response = await this.$http.get(this.$apiURL+'technical/carnet/'+this.form.cf);
-                        if (response.data != null && response.data.data) {
-                            this.form.tecnico = response.data.data.Nombre_Completo || null;
-                            this.form.zonal = response.data.data.Zonal || null;
-                            this.form.contrata = response.data.data.Contrata || null;
-                        } else {
-                            this.form.tecnico = null;
-                            this.form.zonal = null;
-                            this.form.contrata = null;
-                        }
-                    }
-                });
+                const response = await this.$http.get(this.$apiURL+'order/all');
+                response.data.data.map(i => this.tableData.push({ ...i }));
+                this.totalRows = this.tableData.length;
             } catch (error) {
                 console.error(error);
             }
         },
-        async submit(){
-            this.$http.post(this.$apiURL+'order/store', this.form, {
-            }).then(response => {
-                if(response.status == 200){
-                  console.log(response);
-                  this.$swal({
-                      title: 'Completado!',
-                      text:  response.data.message,
-                      icon: 'success',
-                      confirmButtonColor: '#6457A2', // Cambiar el color del botón de confirmación
-                  });
-                  this.$swal('Completado!', response.data.message, 'success');
-                  this.initForm()
-                }
-            }).catch(error => {
-                console.error(error);
-                  this.$swal({
-                    icon: "error",
-                    title: "Oops...",
-                    text: error,
-                  });
-            });
+        editItem(item) {
+            console.log("Editar item", item);
+            this.selectedItem = JSON.parse(JSON.stringify(item)); // Realiza una copia profunda del ítem
+            this.$refs.LiquidacionModal.open(this.selectedItem);
         }
-    },
-    middleware: "authentication"
+    }
 }
 </script>
-<style>
-.form-control:disabled {
-    background-color: #e9ecef;
-    opacity: 1;
-}
-</style>
+
 <template>
-        <Layout>
+    <Layout>
         <PageHeader :title="title" :items="items" />
         <BRow>
             <BCol cols="12">
                 <BCard no-body>
                     <BCardBody>
-                        <BCardTitle>Registro de ordenes</BCardTitle>
-                            <form autocomplete="off"
-                                class="row no-gutters"
-                                @submit.prevent="submit">
-                            <BRow>
-                                <BCol lg="4">
-                                    <div class="mt-4">
-                                            <BFormGroup
-                                                label="Codigo de requerimiento"
-                                                label-for="formrow-firstname-input"
-                                                class="mb-12">
-                                                <BFormInput
-                                                    type="text"
-                                                    v-model="form.codigo_requerimiento"
-                                                    placeholder = "CÒDIGO SIN ESPACIOS"
-                                                    required
-                                                    id="formrow-firstname-input">
-                                                </BFormInput>
-                                            </BFormGroup>
-                                    </div>
-                                </BCol>
-                                <BCol lg="4">
-                                    <div class="mt-4">
-                                            <BFormGroup
-                                                label="Tipo de requerimiento"
-                                                label-for="formrow-firstname-input"
-                                                class="mb-12">
-                                                <Multiselect
-                                                    v-model="form.tipo_requerimiento"
-                                                    :options="requerimientos"
-                                                    required
-                                                    class="form-control p-0"
-                                                />
-                                            </BFormGroup>
-                                    </div>
-                                </BCol>
-                                <BCol lg="4">
-                                    <div class="mt-4">
-                                            <BFormGroup
-                                                label="Tipo de cierre"
-                                                label-for="formrow-firstname-input"
-                                                class="mb-12">
-                                                <Multiselect
-                                                    v-model="form.tipo_cierre"
-                                                    required
-                                                    :options="cierres"
-                                                    class="form-control p-0"
-                                                />
-                                            </BFormGroup>
-                                    </div>
-                                </BCol>
-                                <BCol lg="4">
-                                    <div class="mt-4">
-                                            <BFormGroup
-                                                label="CF Técnico"
-                                                label-for="formrow-firstname-input"
-                                                class="mb-12">
-                                                <BFormInput
-                                                    v-model="form.cf"
-                                                    required
-                                                    type="text"
-                                                    @input="getTecnicos()"
-                                                    id="formrow-firstname-input">
-                                                </BFormInput>
-                                            </BFormGroup>
-                                    </div>
-                                </BCol>
-                                <BCol lg="4">
-                                    <div class="mt-4">
-                                            <BFormGroup
-                                                label="Técnico"
-                                                label-for="formrow-firstname-input"
-                                                class="mb-12">
-                                                <BFormInput
-                                                    v-model="form.tecnico"
-                                                    required
-                                                    type="text"
-                                                    id="formrow-firstname-input"
-                                                    disabled="">
-                                                </BFormInput>
-                                            </BFormGroup>
-                                    </div>
-                                </BCol>
-                                <BCol lg="4">
-                                    <div class="mt-4">
-                                            <BFormGroup
-                                                label="Zonal"
-                                                label-for="formrow-firstname-input"
-                                                class="mb-12">
-                                                <BFormInput
-                                                    type="text"
-                                                    required
-                                                    v-model="form.zonal"
-                                                    id="formrow-firstname-input"
-                                                    disabled>
-                                                </BFormInput>
-                                            </BFormGroup>
-                                    </div>
-                                </BCol>
-                                <BCol lg="3">
-                                    <div class="mt-4">
-                                            <BFormGroup
-                                                label="Número de referencia"
-                                                label-for="formrow-firstname-input"
-                                                class="mb-12">
-                                                <BFormInput
-                                                    v-model="form.numero_referencia"
-                                                    required
-                                                    type="text"
-                                                    id="formrow-firstname-input">
-                                                </BFormInput>
-                                            </BFormGroup>
-                                    </div>
-                                </BCol>
-                                <BCol lg="3">
-                                    <div class="mt-4">
-                                            <BFormGroup
-                                                label="Efectividad"
-                                                label-for="formrow-firstname-input"
-                                                class="mb-12">
-                                                <Multiselect
-                                                    v-model="form.efectividad"
-                                                    :options="efectividades"
-                                                    required
-                                                    class="form-control p-0"
-                                                />
-                                            </BFormGroup>
-                                    </div>
-                                </BCol>
-                                <BCol lg="3">
-                                    <div class="mt-4">
-                                            <BFormGroup
-                                                label="Nota NPS"
-                                                label-for="formrow-firstname-input"
-                                                class="mb-12">
-                                                <Multiselect
-                                                    v-model="form.nota_nps"
-                                                    required
-                                                    :options="notas"
-                                                    class="form-control p-0"
-                                                />
-                                            </BFormGroup>
-                                    </div>
-                                </BCol>
-                                <BCol lg="3">
-                                    <div class="mt-4">
-                                            <BFormGroup
-                                                label="Posible detractor"
-                                                label-for="formrow-firstname-input"
-                                                class="mb-12">
-                                                <Multiselect
-                                                    v-model="form.detractor"
-                                                    required
-                                                    :options="posibles"
-                                                    class="form-control p-0"
-                                                />
-                                            </BFormGroup>
-                                    </div>
-                                </BCol>
-                                <BCol lg="12">
-                                    <div class="mt-4">
-                                            <BFormGroup
-                                                label="Tipo de cierre"
-                                                label-for="formrow-firstname-input"
-                                                class="mb-12">
-                                                <textarea
-                                                    id="message"
-                                                    v-model="form.observaciones"
-                                                    class="form-control"
-                                                ></textarea>
-                                            </BFormGroup>
-                                    </div>
-                                </BCol>
-                            </BRow>
-                            <div class="mt-4">
-                                <BButton type="submit" variant="primary"  @submit.prevent="submit">Guardar</BButton>
+                        <BCardTitle>Data Table</BCardTitle>
+                        <BRow class="mt-4">
+                            <BCol sm="12" md="6">
+                                <div id="tickets-table_length" class="dataTables_length">
+                                <label class="d-inline-flex align-items-center">
+                                    Show&nbsp;
+                                    <BFormSelect
+                                    v-model="perPage"
+                                    size="sm"
+                                    :options="pageOptions"
+                                    ></BFormSelect
+                                    >&nbsp;entries
+                                </label>
+                                </div>
+                            </BCol>
+                            <!-- Search -->
+                            <div class="col-sm-12 col-md-6">
+                                <div
+                                id="tickets-table_filter"
+                                class="dataTables_filter text-md-end"
+                                >
+                                <label class="d-inline-flex align-items-center">
+                                    Search:
+                                    <BFormInput
+                                    v-model="filter"
+                                    type="search"
+                                    placeholder="Search..."
+                                    class="form-control form-control-sm ms-2"
+                                    ></BFormInput>
+                                </label>
+                                </div>
                             </div>
-                        </form>
+                            <!-- End search -->
+                        </BRow>
+                        <!-- Table -->
+                        <div class="table-responsive mb-0">
+                            <BTable
+                                :items="tableData"
+                                :fields="fields"
+                                responsive="sm"
+                                :per-page="perPage"
+                                :current-page="currentPage"
+                                :sort-by.sync="sortBy"
+                                :sort-desc.sync="sortDesc"
+                                :filter="filter"
+                                :filter-included-fields="filterOn"
+                                @filtered="onFiltered"
+                            >
+                            <template #cell(actions)="{ item }">
+                                <!-- Agregar botón de edición -->
+                                <BButton @click="editItem(item)" variant="info">Editar</BButton>
+                            </template>
+                            </BTable>
+                        </div>
+                        <BRow>
+                            <BCol>
+                                <div
+                                class="dataTables_paginate paging_simple_numbers float-end"
+                                >
+                                <ul class="pagination pagination-rounded mb-0">
+                                    <!-- pagination -->
+                                    <BPagination
+                                    v-model="currentPage"
+                                    :total-rows="totalRows"
+                                    :per-page="perPage"
+                                    ></BPagination>
+                                </ul>
+                                </div>
+                            </BCol>
+                        </BRow>
                     </BCardBody>
                 </BCard>
             </BCol>
         </BRow>
+        <LiquidacionModal ref="LiquidacionModal"></LiquidacionModal>
     </Layout>
 </template>

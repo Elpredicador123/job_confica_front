@@ -192,8 +192,21 @@ export const menuItems = [
     {
         id: 16,
         label: "menuitems.infografias.text",
-        icon: "uil-calender",
-        link: "/infografias"
+        icon: "uil-store",
+        subItems: [
+            {
+                id: 99,
+                label: "menuitems.infografias.list.index",
+                link: "/infografias/index",
+                parentId: 16
+            },
+            {
+                id: 100,
+                label: "menuitems.infografias.list.create",
+                link: "/infografias/create",
+                parentId: 16
+            }
+        ]
     },
     {
         id: 17,
