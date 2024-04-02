@@ -70,10 +70,8 @@ export default {
             
         },
         gallerySelectedFile() {
-            this.galleryDropzoneFile = document.querySelector(
-                ".galleryDropzoneFile"
-            ).files;
-            this.DropFile.push(this.galleryDropzoneFile)
+            this.galleryDropzoneFile = document.querySelector(".galleryDropzoneFile").files;
+            this.DropFile = []; // Eliminar los archivos existentes
             const finalFile = Object.values(this.galleryDropzoneFile).map((file) => {
                 return {
                     name: file.name,
@@ -83,14 +81,9 @@ export default {
                     size: file.size
                 };
             });
-            this.galleryFiles.push(...finalFile);
-            this.galleryFiles = this.galleryFiles.map((data, index) => {
-                return {
-                id: index + 1,
-                ...data
-                };
-            });
+            this.galleryFiles = finalFile;
         },
+
         async submit(){
             let formData = new FormData();
             // Agrega los datos del formulario al objeto FormData
@@ -188,7 +181,7 @@ export default {
                   files="files"
                   cloudIcon="remix"
                   dropzoneFile="galleryDropzoneFile"
-                  :isMultiple="true"
+                  :isMultiple="false"
                   @drop.prevent="galleryDrop($event)"
                   @change="gallerySelectedFile"
                   @dragenter.prevent

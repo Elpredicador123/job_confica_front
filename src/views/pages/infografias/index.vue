@@ -1,12 +1,13 @@
 <script>
 import Layout from "../../layouts/main";
 import PageHeader from "@/components/page-header";
+import InfografiaModal from "./edit.vue";
 
 /**
  * Products component
  */
 export default {
-  components: { Layout, PageHeader },
+  components: { Layout, PageHeader,InfografiaModal },
     data() {
         return {
             tableData: [],
@@ -83,6 +84,8 @@ export default {
         },
         editItem(item) {
             console.log("Editar item", item);
+            this.selectedItem = JSON.parse(JSON.stringify(item)); // Realiza una copia profunda del ítem
+            this.$refs.InfografiaModal.open(this.selectedItem);
         },
     }
 }
@@ -173,5 +176,6 @@ export default {
                 </BCard>
             </BCol>
         </BRow>
+        <InfografiaModal ref="InfografiaModal"></InfografiaModal>
     </Layout>
 </template>

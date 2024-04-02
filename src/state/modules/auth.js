@@ -2,24 +2,32 @@ import { getFirebaseBackend } from '../../helpers/firebase/authUtils'
 
 export const state = {
     currentUser: sessionStorage.getItem('authUser'),
+    userPermissions: [], 
 }
 
 export const mutations = {
     SET_CURRENT_USER(state, newValue) {
         state.currentUser = newValue
         saveState('auth.currentUser', newValue)
-    }
+    },
+    SET_USER_PERMISSIONS(state, permissions) {
+        state.userPermissions = permissions.map(permission => permission.key);
+    },
 }
 
 export const getters = {
     // Whether the user is currently logged in.
     loggedIn(state) {
         return !!state.currentUser
-    }
+    },
+    userPermissions: (state) => state.userPermissions,
+    hasPermission: (state) => (permissionKey) => {
+        return state.userPermissions.includes(permissionKey);
+    },
+
 }
 
 export const actions = {
-    // This is automatically run in `src/state/store.js` when the app
     // starts, along with any other actions named `init` in other modules.
     // eslint-disable-next-line no-unused-vars
     init({ state, dispatch }) {
@@ -28,15 +36,25 @@ export const actions = {
 
     // Logs in the current user.
     logIn({ commit, dispatch, getters }, { email, password } = {}) {
+        // Si el usuario ya está logueado, valida el usuario actual.
         if (getters.loggedIn) return dispatch('validate')
-
+    
+        // Llamada al backend de Firebase para iniciar sesión.
         return getFirebaseBackend().loginUser(email, password).then((response) => {
             const user = response
-            commit('SET_CURRENT_USER', user)
-            return user
+            // Asumiendo que 'response' es un objeto que contiene el usuario y los permisos.
+            // Realiza el commit de los datos del usuario.
+            commit('SET_CURRENT_USER', user);
+    
+            // También realiza el commit de los permisos si están presentes en la respuesta.
+            if (response.permissions) {
+                commit('SET_USER_PERMISSIONS', response.permissions);
+            }
+    
+            // Devuelve el usuario para la promesa.
+            return user;
         });
     },
-
     // Logs out the current user.
     logOut({ commit }) {
         // eslint-disable-next-line no-unused-vars

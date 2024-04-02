@@ -1,4 +1,5 @@
 import { authHeader } from './auth-header';
+import store from '@/state/store';
 
 export const userService = {
     login,
@@ -18,13 +19,16 @@ function login(username, password) {
     return fetch(`http://comfica_back.test:8084/api/login`, requestOptions)
         .then(handleResponse)
         .then(user => {
-            // login successful if there's a jwt token in the response
             if (user.token) {
-                // store user details and jwt token in local storage to keep user logged in between page refreshes
                 localStorage.setItem('user-token', JSON.stringify(user.token));
             }
-            if(user.user){
+            if (user.user) {
                 localStorage.setItem('user', JSON.stringify(user.user));
+                // Guardar roles y permisos
+                localStorage.setItem('user-roles', JSON.stringify(user.user.roles));
+                localStorage.setItem('user-permissions', JSON.stringify(user.user.roles[0].permissions));
+                // Actualiza el estado en Vuex
+                store.commit('auth/SET_USER_PERMISSIONS', user.user.roles[0].permissions);
             }
             return user;
         });

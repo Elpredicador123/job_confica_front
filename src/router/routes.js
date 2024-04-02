@@ -92,7 +92,7 @@ export default [
   {
     path: "/calendar",
     name: "calendar",
-    meta: { title: "Calendar", authRequired: true },
+    meta: { title: "Calendar", authRequired: true, permissions: ['C_PERMISSION']},
     component: () => import("../views/pages/calendar/index")
   },
   {
