@@ -1,12 +1,13 @@
 <script>
 import Layout from "../../layouts/main";
 import PageHeader from "@/components/page-header";
+import NewsModal from "./edit.vue";
 
 /**
  * Products component
  */
 export default {
-  components: { Layout, PageHeader },
+  components: { Layout, PageHeader,NewsModal },
     data() {
         return {
             tableData: [],
@@ -90,13 +91,9 @@ export default {
             }
         },
         editItem(item) {
-            // Acción al hacer clic en editar. Por ejemplo:
-            // redirigir a la pagina de create con el id del item 
-
-            
-
             console.log("Editar item", item);
-            // Aquí puedes abrir un modal de edición o navegar a una página de edición
+            this.selectedItem = JSON.parse(JSON.stringify(item)); // Realiza una copia profunda del ítem
+            this.$refs.NewsModal.open(this.selectedItem);
         },
     }
 }
@@ -157,31 +154,10 @@ export default {
                                 :filter-included-fields="filterOn"
                                 @filtered="onFiltered"
                             >
-                                <template #cell(title)="data">
-                                    <div v-html="data.item.title"></div>
-                                </template>
-                                <template #cell(description)="data">
-                                    <div v-html="data.item.description"></div>
-                                </template>
-                                <template #cell(actions)="{item}">
-                                    <router-link :to="'/news/edit/' + item.id" class="logo logo-dark">
-                                        Editar
-                                    </router-link>
-                                </template>
-                                <template #cell(is_active)="data">
-                                    <b-button
-                                    variant="success"
-                                    v-if="data.item.is_active === 1"
-                                    >
-                                    Activo
-                                    </b-button>
-                                    <b-button
-                                    variant="danger"
-                                    v-else
-                                    >
-                                    Inactivo
-                                    </b-button>
-                                </template>
+                            <template #cell(actions)="{ item }">
+                                <!-- Agregar botón de edición -->
+                                <BButton @click="editItem(item)" variant="info">Editar</BButton>
+                            </template>
                             </BTable>
                         </div>
                         <BRow>
@@ -204,5 +180,6 @@ export default {
                 </BCard>
             </BCol>
         </BRow>
+        <NewsModal ref="NewsModal"></NewsModal>
     </Layout>
 </template>
