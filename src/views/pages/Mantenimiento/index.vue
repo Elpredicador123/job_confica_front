@@ -118,56 +118,66 @@ export default {
             ]);
         },
         async UpdategetTableSup() {
-            const response = await this.$http.get(this.$apiURL+'maintenance/childhoodbreakdownsmanagers/'+this.CiudadId3);
-            const currentData = {
-                series: response.data.series,
-                fields: response.data.fields
-            };
+            if(this.CiudadId3 != null){
+                this.$nextTick(async () => {
+                    const response = await this.$http.get(this.$apiURL+'maintenance/childhoodbreakdownsmanagers/'+this.CiudadId3);
+                    const currentData = {
+                        series: response.data.series,
+                        fields: response.data.fields
+                    };
 
-            if (this.dataChanged(this.previousTableSupData, currentData)) {
-                this.tableDataSup.splice(0, this.tableDataSup.length);
-                this.fieldsSup.splice(0, this.fieldsSup.length);
-                response.data.series.map(i => this.tableDataSup.push({ ...i }));
-                response.data.fields.map(i => this.fieldsSup.push({ key: i, sortable : true }));
-                this.totalRowsSup = this.tableDataSup.length;
-                this.previousTableSupData = currentData;
+                    if (this.dataChanged(this.previousTableSupData, currentData)) {
+                        this.tableDataSup.splice(0, this.tableDataSup.length);
+                        this.fieldsSup.splice(0, this.fieldsSup.length);
+                        response.data.series.map(i => this.tableDataSup.push({ ...i }));
+                        response.data.fields.map(i => this.fieldsSup.push({ key: i, sortable : true }));
+                        this.totalRowsSup = this.tableDataSup.length;
+                        this.previousTableSupData = currentData;
+                    }
+                })
             }
         },
 
         async UpdategetTableTec() {
-            const response = await this.$http.get(this.$apiURL+'maintenance/childhoodbreakdownstechnicians/'+this.CiudadId4);
-            const currentData = {
-                series: response.data.series,
-                fields: response.data.fields
-            };
+            if(this.CiudadId4 != null){
+                this.$nextTick(async () => {
+                    const response = await this.$http.get(this.$apiURL+'maintenance/childhoodbreakdownstechnicians/'+this.CiudadId4);
+                    const currentData = {
+                        series: response.data.series,
+                        fields: response.data.fields
+                    };
 
-            if (this.dataChanged(this.previousTableTecData, currentData)) {
-                this.tableDataTec.splice(0, this.tableDataTec.length);
-                this.fieldsTec.splice(0, this.fieldsTec.length);
-                response.data.series.map(i => this.tableDataTec.push({ ...i }));
-                response.data.fields.map(i => this.fieldsTec.push({ key: i, sortable : true }));
-                this.totalRowsTec = this.tableDataTec.length;
-                this.totalesTec = response.data.totales;
-                this.previousTableTecData = currentData;
+                    if (this.dataChanged(this.previousTableTecData, currentData)) {
+                        this.tableDataTec.splice(0, this.tableDataTec.length);
+                        this.fieldsTec.splice(0, this.fieldsTec.length);
+                        response.data.series.map(i => this.tableDataTec.push({ ...i }));
+                        response.data.fields.map(i => this.fieldsTec.push({ key: i, sortable : true }));
+                        this.totalRowsTec = this.tableDataTec.length;
+                        this.totalesTec = response.data.totales;
+                        this.previousTableTecData = currentData;
+                    }
+                })
             }
         },
         async updateContrata(){
-            this.$nextTick(async () => {
-                const response = await this.$http.get(this.$apiURL+'maintenance/ineffectivecontratagraphic/'+this.CiudadId1);
-                const currentData = {
-                    series: response.data.series,
-                    categories: response.data.categories
-                };
-                if (this.dataChanged(this.previousContrataData, currentData)) {
-                    this.previousContrataData = {
-                        series: this.ContrataBar.series,
-                        labels: this.ContrataBar.categories
+            if(this.CiudadId1 != null){
+                this.$nextTick(async () => {
+                    const response = await this.$http.get(this.$apiURL+'maintenance/ineffectivecontratagraphic/'+this.CiudadId1);
+                    const currentData = {
+                        series: response.data.series,
+                        categories: response.data.categories
                     };
-                    this.ContrataBar =  barChart;
-                    this.ContrataBar.series[0].data = currentData.series;
-                    this.ContrataBar.chartOptions.xaxis.categories = currentData.categories;
-                }
-            })
+                    if (this.dataChanged(this.previousContrataData, currentData)) {
+                        this.previousContrataData = {
+                            series: this.ContrataBar.series,
+                            labels: this.ContrataBar.categories
+                        };
+                        this.ContrataBar =  barChart;
+                        this.ContrataBar.series[0].data = currentData.series;
+                        this.ContrataBar.chartOptions.xaxis.categories = currentData.categories;
+                    }
+                })
+            }
         },
         async updateRatioInstalaciones(){
             try {
@@ -217,47 +227,53 @@ export default {
         },
         //-------------------------------------------------------
         async getContrata(){
-            this.$nextTick(async () => {
-                const response = await this.$http.get(this.$apiURL+'maintenance/ineffectivecontratagraphic/'+this.CiudadId1);
-                this.previousContrataData = {
-                    series : response.data.series,
-                    categories : response.data.categories
-                }
-                this.ContrataBar.series[0].data = response.data.series;
-                this.ContrataBar.chartOptions.xaxis.categories = response.data.categories;
-            })
+            if(this.CiudadId1 != null){
+                this.$nextTick(async () => {
+                    const response = await this.$http.get(this.$apiURL+'maintenance/ineffectivecontratagraphic/'+this.CiudadId1);
+                    this.previousContrataData = {
+                        series : response.data.series,
+                        categories : response.data.categories
+                    }
+                    this.ContrataBar.series[0].data = response.data.series;
+                    this.ContrataBar.chartOptions.xaxis.categories = response.data.categories;
+                })
+            }
         },
         async getTableSup(){
-            this.$nextTick(async () => {
-                this.tableDataSup.splice(0, this.tableDataSup.length);
-                this.fieldsSup.splice(0, this.fieldsSup.length);
-                const response = await this.$http.get(this.$apiURL+'maintenance/childhoodbreakdownsmanagers/'+this.CiudadId3);
-                this.previousTableSupData = {
-                    series: response.data.series,
-                    fields: response.data.fields
-                };
-                response.data.series.map(i => this.tableDataSup.push({ ...i }));
-                response.data.fields.map(i => this.fieldsSup.push({ key: i, sortable : true }));
+            if(this.CiudadId3 != null){
+                this.$nextTick(async () => {
+                    this.tableDataSup.splice(0, this.tableDataSup.length);
+                    this.fieldsSup.splice(0, this.fieldsSup.length);
+                    const response = await this.$http.get(this.$apiURL+'maintenance/childhoodbreakdownsmanagers/'+this.CiudadId3);
+                    this.previousTableSupData = {
+                        series: response.data.series,
+                        fields: response.data.fields
+                    };
+                    response.data.series.map(i => this.tableDataSup.push({ ...i }));
+                    response.data.fields.map(i => this.fieldsSup.push({ key: i, sortable : true }));
 
-                this.totalRowsSup = this.tableDataSup.length;
-            });
+                    this.totalRowsSup = this.tableDataSup.length;
+                });
+            }
         },
         async getTableTec(){
-            this.$nextTick(async () => {
-                this.tableDataTec.splice(0, this.tableDataTec.length);
-                this.fieldsTec.splice(0, this.fieldsTec.length);
+            if(this.CiudadId4 != null){
+                this.$nextTick(async () => {
+                    this.tableDataTec.splice(0, this.tableDataTec.length);
+                    this.fieldsTec.splice(0, this.fieldsTec.length);
 
-                const response = await this.$http.get(this.$apiURL+'maintenance/childhoodbreakdownstechnicians/'+this.CiudadId4);
-                this.previousTableTecData = {
-                    series: response.data.series,
-                    fields: response.data.fields
-                };
-                response.data.series.map(i => this.tableDataTec.push({ ...i }));
-                //this.fieldsTec.push({ key: "Ciudad", sortable : true })
-                response.data.fields.map(i => this.fieldsTec.push({ key: i, sortable : true }));
-                this.totalRowsTec = this.tableDataTec.length;
-                this.totalesTec = response.data.totales;
-            });
+                    const response = await this.$http.get(this.$apiURL+'maintenance/childhoodbreakdownstechnicians/'+this.CiudadId4);
+                    this.previousTableTecData = {
+                        series: response.data.series,
+                        fields: response.data.fields
+                    };
+                    response.data.series.map(i => this.tableDataTec.push({ ...i }));
+                    //this.fieldsTec.push({ key: "Ciudad", sortable : true })
+                    response.data.fields.map(i => this.fieldsTec.push({ key: i, sortable : true }));
+                    this.totalRowsTec = this.tableDataTec.length;
+                    this.totalesTec = response.data.totales;
+                });
+            }
         },
         async getCity(){ 
             const response = await this.$http.get(this.$apiURL+'city/all');

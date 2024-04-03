@@ -162,13 +162,6 @@ export default [
     component: () => import("../views/pages/news/create")
   },
   {
-    path: "/news/edit/:id",
-    name: "Noticias Editar",
-    props: true,
-    meta: { title: "Noticias Editar", authRequired: true },
-    component: () => import("../views/pages/news/edit")
-  },
-  {
     path: "/birthday/index",
     name: "Listado Cumpleaños",
     meta: { title: "Listado Cumpleaños", authRequired: true, permissions: ['BIRTHDAY'] },
