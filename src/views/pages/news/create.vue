@@ -47,11 +47,12 @@ export default {
   },
     methods: {
         initForm(){
+          const user = JSON.parse(localStorage.getItem('user')); // Convertir los datos del usuario a JSON
           this.news = {
                 title:"<h3>Título de la notica</h3>",
                 description :"<h3>Descripción de la notica</h3>",
                 date: null,
-                user_id : 1
+                user_id : user.id,
             };
             this.dPDefaultDate = null;
             this.galleryDropzoneFile = "";

@@ -159,41 +159,35 @@ export default {
             editor_description: ClassicEditor,
       };
   },
-  async created(){
-      this.initForm();
-  },
-  
   methods: {
       open(item) {
           // Abrir el modal y establecer los datos del elemento seleccionado
+          const user = JSON.parse(localStorage.getItem('user')); // Convertir los datos del usuario a JSON
           this.isOpen = true;
-          this.news = item;
+          this.news.title = item.title;
+          this.news.description = item.description;
+          this.news.date = item.date;
+          this.news.id = item.id;
+          this.news.user_id = user.id;
           this.galleryFiles = [];
 
-          // Construir el objeto de archivo utilizando la URL proporcionada en item
-          const archivo = {
-              name: item.title, // Usar el título como nombre de archivo
-          };
+          // Iterar sobre los enlaces de los archivos en item.images
+          item.images.forEach((image, index) => {
+              // Construir el objeto de archivo utilizando el enlace proporcionado en item.images
+              const archivo = {
+                  id: index + 1, // Asignar un ID único al archivo
+                  name: image.url, // Usar el enlace como nombre de archivo
+                  size: null, // Establecer el tamaño como nulo ya que no se proporciona
+              };
 
-          // Agregar el objeto de archivo a la lista galleryFiles
-          this.galleryFiles.push(archivo);
+              // Agregar el objeto de archivo a la lista galleryFiles
+              this.galleryFiles.push(archivo);
+          });
       },
       close() {
           // Cerrar el modal y restablecer los datos
           this.isOpen = false;
           this.selectedItem = null;
-      },
-      initForm(){
-        this.news = {
-              title:null,
-              description :null,
-              date: null,
-              user_id : 1
-          };
-          this.dPDefaultDate = null;
-          this.galleryDropzoneFile = "";
-          this.galleryFiles = [];
-          this.DropFile = [];
       },
       deleteRecord(ele) {
           console.log("call Delet");
@@ -243,7 +237,7 @@ export default {
 
           if (this.DropFile && this.DropFile.length > 0) {
               for (let i = 0; i < this.DropFile.length; i++) {
-                  formData.append("file", this.DropFile[i][0]); // Utiliza "files" en lugar de "files[]"
+                  formData.append("files", this.DropFile[i][0]);
               }
           }          
 
@@ -263,7 +257,6 @@ export default {
                     confirmButtonColor: '#6457A2', // Cambiar el color del botón de confirmación
                 });
                 this.$swal('Completado!', response.data.message, 'success');
-                this.initForm()
               }
           }).catch(error => {
               console.error(error);
