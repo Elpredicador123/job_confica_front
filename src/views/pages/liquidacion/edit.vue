@@ -1,6 +1,6 @@
 <template>
     <!-- Modal de edición -->
-    <BModal v-model="isOpen" size="xl">
+    <BModal v-model="isOpen" size="xl" hide-footer>
         <BRow>
             <BCol cols="12">
                 <BCard no-body>

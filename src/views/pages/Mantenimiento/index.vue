@@ -30,10 +30,10 @@ export default {
             GestorAgendaId: null,
             GestorOrdenId: null,
             Ciudades : [],
-            CiudadId1: "LIMA",
-            CiudadId2: "LIMA",
-            CiudadId3: "LIMA",
-            CiudadId4: "LIMA",
+            CiudadId1: null,
+            CiudadId2: null,
+            CiudadId3: null,
+            CiudadId4: null,
             itemsSup: [
                 {
                     text: "Charts",
@@ -108,12 +108,13 @@ export default {
             this.currentPageTec = 1;
         },
         async updateDataIfChanged() {
+            console.log("cambios")
             await Promise.all([
                 this.UpdategetTableSup(),
                 this.UpdategetTableTec(),
-                this.getContrata(),
-                this.getRatioInstalaciones(),
-                this.getRatioMantenimientos()
+                this.updateContrata(),
+                this.updateRatioInstalaciones(),
+                this.updateRatioMantenimientos()
             ]);
         },
         async UpdategetTableSup() {
@@ -150,8 +151,66 @@ export default {
                 this.previousTableTecData = currentData;
             }
         },
-
+        async updateContrata(){
+            this.$nextTick(async () => {
+                const response = await this.$http.get(this.$apiURL+'maintenance/ineffectivecontratagraphic/'+this.CiudadId1);
+                const currentData = {
+                    series: response.data.series,
+                    categories: response.data.categories
+                };
+                if (this.dataChanged(this.previousContrataData, currentData)) {
+                    this.previousContrataData = {
+                        series: this.ContrataBar.series,
+                        labels: this.ContrataBar.categories
+                    };
+                    this.ContrataBar =  barChart;
+                    this.ContrataBar.series[0].data = currentData.series;
+                    this.ContrataBar.chartOptions.xaxis.categories = currentData.categories;
+                }
+            })
+        },
+        async updateRatioInstalaciones(){
+            try {
+                const response = await this.$http.get(this.$apiURL+'maintenance/childhoodbreakdownsgeneral');
+                const currentData = {
+                    series: response.data.series,
+                    labels: response.data.categories
+                };
+                if (this.dataChanged(this.previousRatioInstalacionesData, currentData)) {
+                    this.previousRatioInstalacionesData = {
+                        series: this.pieChart.series,
+                        labels: this.pieChart.categories
+                    };
+                    this.pieChart =  pieChart;
+                    this.pieChart.series = currentData.series;
+                    this.pieChart.chartOptions.labels = currentData.categories;
+                }
+            } catch (error) {
+                console.error(error);  
+            }
+        },
+        async updateRatioMantenimientos(){
+            try {
+                const response = await this.$http.get(this.$apiURL+'maintenance/ineffectivedistributionratiographic');
+                const currentData = {
+                    series: response.data.series,
+                    labels: response.data.categories
+                };
+                if (this.dataChanged(this.previousRatioMantenimientoData, currentData)) {
+                    this.previousRatioMantenimientoData = {
+                        series: this.pieChart2.series,
+                        labels: this.pieChart2.categories
+                    };
+                    this.pieChart2 =  pieChart2;
+                    this.pieChart2.series = currentData.series;
+                    this.pieChart2.chartOptions.labels = currentData.categories;
+                }
+            } catch (error) {
+                console.error(error);
+            }
+        },
         dataChanged(previousData, currentData) {
+            if(currentData == undefined){ return false}
             console.log(previousData)
             console.log(currentData)
             return JSON.stringify(previousData) !== JSON.stringify(currentData);
@@ -161,10 +220,10 @@ export default {
             this.$nextTick(async () => {
                 const response = await this.$http.get(this.$apiURL+'maintenance/ineffectivecontratagraphic/'+this.CiudadId1);
                 this.previousContrataData = {
-                    series: response.data.series,
-                    categories: response.data.categories
-                };
-                this.ContrataBar.series[0].data = response.data.series; 
+                    series : response.data.series,
+                    categories : response.data.categories
+                }
+                this.ContrataBar.series[0].data = response.data.series;
                 this.ContrataBar.chartOptions.xaxis.categories = response.data.categories;
             })
         },
@@ -202,15 +261,19 @@ export default {
         },
         async getCity(){ 
             const response = await this.$http.get(this.$apiURL+'city/all');
-                console.log(response)
                 response.data.data.map(i => this.Ciudades.push( i.name ));
-                console.log(this.Ciudades)
+                this.CiudadId1 = this.Ciudades[0]
+                this.CiudadId2 = this.Ciudades[0]
+                this.CiudadId3 = this.Ciudades[0]
+                this.CiudadId4 = this.Ciudades[0]
         },
         async getRatioInstalaciones(){
             try {
-                this.pieChart=pieChart;
-
                 const response = await this.$http.get(this.$apiURL+'maintenance/childhoodbreakdownsgeneral');
+                this.previousRatioInstalacionesData = {
+                    series : response.data.series,
+                    labels : response.data.categories
+                }
                 this.pieChart.series = response.data.series;
                 this.pieChart.chartOptions.labels = response.data.categories;
             } catch (error) {
@@ -221,8 +284,12 @@ export default {
             try {
                 this.pieChart2=pieChart2;
                 const response = await this.$http.get(this.$apiURL+'maintenance/ineffectivedistributionratiographic');
+                this.previousRatioMantenimientoData = {
+                    series : response.data.series,
+                    labels : response.data.categories
+                }
                 this.pieChart2.series = response.data.series;
-                this.pieChart2.chartOptions.labels = response.data.categories ;
+                this.pieChart2.chartOptions.labels = response.data.categories;
             } catch (error) {
                 console.error(error);
             }

@@ -362,16 +362,19 @@ export default {
             const response = await this.$http.get(this.$apiURL+'city/all');
                 console.log(response)
                 response.data.data.map(i => this.Ciudades.push( i.name ));
-                console.log(this.Ciudades)
+                this.CiudadId1 = this.Ciudades[0]
+                this.CiudadId2 = this.Ciudades[0]
+                this.CiudadId3 = this.Ciudades[0]
+                this.CiudadId4 = this.Ciudades[0]
         },
         async getGestor(){
             const response = await this.$http.get(this.$apiURL+'manager/all');
                 response.data.data.map(i => this.Gestor.push( i.manager ));
+                this.ManagerId1 = this.Gestor[0]
+                this.ManagerId2 = this.Gestor[0]
         },
         dataChanged(previousData, currentData) {
-            if (!previousData) {
-                return true;
-            }
+            if(currentData == undefined){ return false}
             return JSON.stringify(previousData) !== JSON.stringify(currentData);
         }
 

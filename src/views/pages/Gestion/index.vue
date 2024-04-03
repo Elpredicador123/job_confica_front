@@ -21,8 +21,8 @@ export default {
             tableDataOrder: [],
             GestorAgenda: [],
             Ciudades : [],
-            CiudadId: "LIMA",
-            CiudadId2: "LIMA",
+            ciudadId: null,
+            ciudadId2: null,
             OrdenesGestor: [],
             GestorOrdenes: [],
             GestorAgendaId: null,
@@ -163,6 +163,7 @@ export default {
             this.currentPageOrder = 1;
         },
         async updateDataIfChanged() {
+            console.log("cambio")
             await Promise.all([
                 this.updateTableMantenimientos(),
                 this.updateTableInstalaciones(),
@@ -173,7 +174,7 @@ export default {
         async updateTableMantenimientos() {
             this.$nextTick(async () => {
 
-                const response = await this.$http.get(this.$apiURL+'management/maintenanceprogresstable/'+this.CiudadId2);
+                const response = await this.$http.get(this.$apiURL+'management/maintenanceprogresstable/'+this.ciudadId2);
                 const currentData = {
                     series: response.data.series,
                     fields: response.data.fields
@@ -192,7 +193,7 @@ export default {
 
         async updateTableInstalaciones() {
             this.$nextTick(async () => {
-                const response = await this.$http.get(this.$apiURL+'management/installationprogresstable/'+this.CiudadId);
+                const response = await this.$http.get(this.$apiURL+'management/installationprogresstable/'+this.ciudadId);
                 const currentData = {
                     series: response.data.series,
                     fields: response.data.fields
@@ -250,34 +251,33 @@ export default {
         },
 
         dataChanged(previousData, currentData) {
+            if( currentData == undefined){ return false}
             console.log(previousData)
             console.log(currentData)
             return JSON.stringify(previousData) !== JSON.stringify(currentData);
         },
         async getGestorAgenda(){
             const response = await this.$http.get(this.$apiURL+'manager/managersaltas');
-                console.log(response)
                 response.data.data.map(i => this.GestorAgenda.push( i.manager ));
-                console.log(this.GestorAgenda)
+                this.GestorAgendaId = this.GestorAgenda[0]
         },
         async getCity(){
             const response = await this.$http.get(this.$apiURL+'city/all');
-                console.log(response)
                 response.data.data.map(i => this.Ciudades.push( i.name ));
-                console.log(this.Ciudades)
+                this.ciudadId = this.Ciudades[0]
+                this.ciudadId2 = this.Ciudades[0]
         },
         async getOrdenesGestor(){
             const response = await this.$http.get(this.$apiURL+'manager/managersaverias');
-                console.log(response)
                 response.data.data.map(i => this.OrdenesGestor.push( i.manager ));
-                console.log(this.OrdenesGestor)
+                this.OrdenesGestorId = this.OrdenesGestor[0]
         },
         async getTableMantenimientos() {
             try {
                 this.$nextTick(async () => {
                     this.tableMantenimiento.splice(0, this.tableMantenimiento.length);
                     this.fieldsMantenimiento.splice(0, this.fieldsMantenimiento.length);
-                    const response = await this.$http.get(this.$apiURL+'management/maintenanceprogresstable/'+this.CiudadId2);
+                    const response = await this.$http.get(this.$apiURL+'management/maintenanceprogresstable/'+this.ciudadId2);
                     this.previousTableMantenimientosData = {
                         series: response.data.series,
                         fields: response.data.fields
@@ -297,7 +297,7 @@ export default {
                     this.TableInstalaciones.splice(0, this.TableInstalaciones.length);
                     this.fields.splice(0, this.fields.length);
 
-                    const response = await this.$http.get(this.$apiURL+'management/installationprogresstable/'+this.CiudadId);
+                    const response = await this.$http.get(this.$apiURL+'management/installationprogresstable/'+this.ciudadId);
                     this.previousTableInstalacionesData = {
                         series: response.data.series,
                         fields: response.data.fields
@@ -372,7 +372,7 @@ export default {
                         <BCol cols="5">
                             Filtrar por:
                             <Multiselect
-                                v-model="CiudadId"
+                                v-model="ciudadId"
                                 :options="Ciudades"
                                 @change="getTableInstalaciones()"
                                 placeholder="Seleccionar Ciudad"
@@ -549,7 +549,7 @@ export default {
                         <BCol cols="5">
                             Filtrar por:
                             <Multiselect
-                                v-model="CiudadId2"
+                                v-model="ciudadId2"
                                 :options="Ciudades"
                                 @change="getTableMantenimientos()"
                                 placeholder="Seleccionar Ciudad"

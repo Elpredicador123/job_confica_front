@@ -28,10 +28,11 @@ export default {
             GestorAgendaId: null,
             GestorOrdenId: null,
             Ciudades : [],
-            CiudadId1: "LIMA",
-            CiudadId2: "LIMA",
-            CiudadId3: "LIMA",
-            CiudadId4: "LIMA",
+            ciudades_form: {},
+            ciudadId1: null,
+            ciudadId2: null,
+            ciudadId3: null,
+            ciudadId4: null,
             itemsSup: [
                 {
                     text: "Charts",
@@ -108,39 +109,45 @@ export default {
         },
         async updateContrataData() {
             this.$nextTick(async () => {
-                const response = await this.$http.get(this.$apiURL + 'provision/diarycontratagraphic/' + this.CiudadId1);
+                const response = await this.$http.get(this.$apiURL + 'provision/diarycontratagraphic/' + this.ciudadId1);
                 const currentData = {
                     series: response.data.series,
                     categories: response.data.categories
                 };
-
                 if (this.dataChanged(this.previousContrataData, currentData)) {
+                    this.previousContrataData = {
+                        series: this.ContrataBar.series,
+                        labels: this.ContrataBar.categories
+                    };
+                    this.ContrataBar =  barChart;
                     this.ContrataBar.series[0].data = currentData.series;
                     this.ContrataBar.chartOptions.xaxis.categories = currentData.categories;
-                    this.previousContrataData = currentData;
                 }
             });
         },
 
         async updateGestorData() {
             this.$nextTick(async () => {
-                const response = await this.$http.get(this.$apiURL + 'provision/diarymanagergraphic/' + this.CiudadId2);
+                const response = await this.$http.get(this.$apiURL + 'provision/diarymanagergraphic/' + this.ciudadId2);
                 const currentData = {
                     series: response.data.series,
                     categories: response.data.categories
                 };
-
                 if (this.dataChanged(this.previousGestorData, currentData)) {
+                    this.previousGestorData = {
+                        series: this.GestorBar.series,
+                        labels: this.GestorBar.categories
+                    };
+                    this.GestorBar =  barChart;
                     this.GestorBar.series[0].data = currentData.series;
                     this.GestorBar.chartOptions.xaxis.categories = currentData.categories;
-                    this.previousGestorData = currentData;
                 }
             });
         },
 
         async updateTableSupData() {
             this.$nextTick(async () => {
-                const response = await this.$http.get(this.$apiURL + 'provision/childhoodbreakdownsmanagers/' + this.CiudadId3);
+                const response = await this.$http.get(this.$apiURL + 'provision/childhoodbreakdownsmanagers/' + this.ciudadId3);
                 const currentData = {
                     series: response.data.series,
                     fields: response.data.fields
@@ -160,7 +167,7 @@ export default {
 
         async updateTableTecData() {
             this.$nextTick(async () => {
-                const response = await this.$http.get(this.$apiURL + 'provision/childhoodbreakdownstechnicians/' + this.CiudadId4);
+                const response = await this.$http.get(this.$apiURL + 'provision/childhoodbreakdownstechnicians/' + this.ciudadId4);
                 const currentData = {
                     series: response.data.series,
                     fields: response.data.fields
@@ -177,6 +184,7 @@ export default {
             });
         },
         dataChanged(previousData, currentData) {
+            if(currentData == undefined){ return false}
             console.log(previousData)
             console.log(currentData)
             return JSON.stringify(previousData) !== JSON.stringify(currentData);
@@ -194,7 +202,7 @@ export default {
         async getContrata(){
             this.$nextTick(async () => {
                 this.ContrataBar = barChart;
-                const response = await this.$http.get(this.$apiURL+'provision/diarycontratagraphic/'+this.CiudadId1);
+                const response = await this.$http.get(this.$apiURL+'provision/diarycontratagraphic/'+this.ciudadId1);
                 this.previousContrataData = {
                     series: response.data.series,
                     categories: response.data.categories
@@ -208,7 +216,7 @@ export default {
                 this.$nextTick(async () => {
                     this.GestorBar = barChart2;
 
-                    const response = await this.$http.get(this.$apiURL+'provision/diarymanagergraphic/'+this.CiudadId2);
+                    const response = await this.$http.get(this.$apiURL+'provision/diarymanagergraphic/'+this.ciudadId2);
                     this.previousGestorData = {
                         series: response.data.series,
                         categories: response.data.categories
@@ -226,10 +234,10 @@ export default {
                     this.tableDataSup.splice(0, this.tableDataSup.length);
                     this.fieldsSup.splice(0, this.fieldsSup.length);
 
-                    const response = await this.$http.get(this.$apiURL+'provision/childhoodbreakdownsmanagers/'+this.CiudadId3);
+                    const response = await this.$http.get(this.$apiURL+'provision/childhoodbreakdownsmanagers/'+this.ciudadId3);
                     this.previousTableSupData = {
                         series: response.data.series,
-                        categories: response.data.categories
+                        fields: response.data.fields
                     };
                     response.data.series.map(i => this.tableDataSup.push({ ...i }));
                     //this.fieldsGestor.push({ key: "Ciudad", sortable : true })
@@ -243,14 +251,15 @@ export default {
         },
         async getTableTec(){
             try {
+                console.log("sss")
                 this.$nextTick(async () => { 
                     this.tableDataTec.splice(0, this.tableDataTec.length);
                     this.fieldsTec.splice(0, this.fieldsTec.length);
 
-                    const response = await this.$http.get(this.$apiURL+'provision/childhoodbreakdownstechnicians/'+this.CiudadId4);
+                    const response = await this.$http.get(this.$apiURL+'provision/childhoodbreakdownstechnicians/'+this.ciudadId4);
                     this.previousTableTecData = {
                         series: response.data.series,
-                        categories: response.data.categories
+                        fields: response.data.fields
                     };
                     response.data.series.map(i => this.tableDataTec.push({ ...i }));
                     //this.fieldsTec.push({ key: "Ciudad", sortable : true })
@@ -263,10 +272,16 @@ export default {
             }
         },
         async getCity(){
+            try {
             const response = await this.$http.get(this.$apiURL+'city/all');
-                console.log(response)
                 response.data.data.map(i => this.Ciudades.push( i.name ));
-                console.log(this.Ciudades)
+                this.ciudadId1 = this.Ciudades[0]
+                this.ciudadId2 = this.Ciudades[0]
+                this.ciudadId3 = this.Ciudades[0]
+                this.ciudadId4 = this.Ciudades[0]
+            } catch (error) {
+                console.error(error);
+            }
         },
     },
     middleware: "authentication"
@@ -288,7 +303,7 @@ export default {
                         <BCol cols="5">
                             Filtrar por:
                             <Multiselect
-                                v-model="CiudadId1"
+                                v-model="ciudadId1"
                                 :options="Ciudades"
                                 @change="getContrata()"
                                 placeholder="Seleccionar Ciudad"
@@ -318,7 +333,7 @@ export default {
                         <BCol cols="5">
                             Filtrar por:
                             <Multiselect
-                                v-model="CiudadId2"
+                                v-model="ciudadId2"
                                 :options="Ciudades"
                                 @change="getGestor()"
                                 placeholder="Seleccionar Ciudad"
@@ -348,7 +363,7 @@ export default {
                         <BCol cols="5">
                             Filtrar por:
                             <Multiselect
-                                v-model="CiudadId3"
+                                v-model="ciudadId3"
                                 :options="Ciudades"
                                 @change="getTableSup()"
                                 placeholder="Seleccionar Ciudad"
@@ -434,7 +449,7 @@ export default {
                         <BCol cols="5">
                             Filtrar por:
                             <Multiselect
-                                v-model="CiudadId4"
+                                v-model="ciudadId4"
                                 :options="Ciudades"
                                 @change="getTableTec()"
                                 placeholder="Seleccionar Ciudad"

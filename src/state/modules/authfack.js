@@ -15,7 +15,7 @@ export const actions = {
             .then(
                 user => {
                     commit('loginSuccess', user);
-                    router.push('/');
+                    router.push('/principal');
                 },
                 error => {
                     commit('loginFailure', error);
