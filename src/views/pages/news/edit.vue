@@ -249,7 +249,7 @@ export default {
 
           // Realiza la petición con Axios
           console.log(formData)
-          this.$http.put(this.$apiURL+'video/update/'+this.news.id, formData, {
+          this.$http.put(this.$apiURL+'news/update/'+this.news.id, formData, {
               headers: {
                   'Content-Type': 'multipart/form-data'
               }
