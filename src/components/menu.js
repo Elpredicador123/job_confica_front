@@ -22,12 +22,6 @@ export const menuItems = [
                 meta: {
                     permissions: ['C_NEWS'] // Permisos necesarios para acceder a este elemento del menú
                 }
-            },
-            {
-                id: 93,
-                label: "menuitems.news.list.edit",
-                link: "/news/edit/:id",
-                parentId: 7
             }
         ],
         meta: {

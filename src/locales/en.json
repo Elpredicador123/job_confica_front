@@ -122,8 +122,7 @@
       "text": "Noticias",
       "list": {
         "index": "Listado",
-        "create": "Crear",
-        "edit": "Editar"
+        "create": "Crear"
       }
     },
     "birthday": {
