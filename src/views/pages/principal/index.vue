@@ -146,7 +146,7 @@ export default {
     },
     getFullImageUrl(relativeUrl) {
         console.log(relativeUrl)
-      return 'http://comfica_back.test:8084/storage/' + relativeUrl;
+      return this.$storageURL+"/" + relativeUrl;
     },
     async getData() {
         try {
