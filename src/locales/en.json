@@ -98,9 +98,6 @@
         "create": "Crear"
       }
     },
-    "tecnicos": {
-      "text": "Maestra Técnicos"
-    },
     "chat": {
       "text": "Chat",
       "badge": "New"
@@ -120,6 +117,13 @@
     },
     "news": {
       "text": "Noticias",
+      "list": {
+        "index": "Listado",
+        "create": "Crear"
+      }
+    },
+    "tecnicos": {
+      "text": "Maestra Técnicos",
       "list": {
         "index": "Listado",
         "create": "Crear"

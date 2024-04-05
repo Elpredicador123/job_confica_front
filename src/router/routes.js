@@ -138,10 +138,16 @@ export default [
     component: () => import("../views/pages/liquidacion/create")
   },
   {
-    path: "/tecnicos",
-    name: "tecnicos",
-    meta: { title: "tecnicos", authRequired: true , permissions: ['TECHNICAL']},
+    path: "/tecnicos/index",
+    name: "Listado de técnicos",
+    meta: { title: "Listado de técnicos", authRequired: true , permissions: ['TECHNICAL']},
     component: () => import("../views/pages/tecnicos/index")
+  },
+  {
+    path: "/tecnicos/create",
+    name: "Crear Técnicos",
+    meta: { title: "Crear Técnicos", authRequired: true , permissions: ['C_TECHNICAL']},
+    component: () => import("../views/pages/tecnicos/create")
   },
   {
     path: "/calidad",

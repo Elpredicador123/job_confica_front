@@ -1,10 +1,12 @@
 <script>
 import Layout from "../../layouts/main";
 import PageHeader from "@/components/page-header";
+import TecnicosModal from "./edit.vue";
 export default {
     components: { 
         Layout,
-        PageHeader
+        PageHeader,
+        TecnicosModal
     },
     data(){
         return {
@@ -28,8 +30,67 @@ export default {
             filterTec: null,
             sortByTec: "age",
             sortDescTec: false,
-            fieldsTec: [],
-            totalesTec : 0,
+            fieldsTec: [
+                {
+                    key: "Documento",
+                    sortable: true
+                },
+                {
+                    key: "Nro_Documento",
+                    sortable: true
+                },
+                {
+                    key: "Apellido_paterno",
+                    sortable: true
+                },
+                {
+                    key: "Apellido_materno",
+                    sortable: true
+                },
+                {
+                    key: "Nombres",
+                    sortable: true
+                },
+                {
+                    key: "Fecha_Nacimiento",
+                    sortable: true
+                },
+                {
+                    key: "Nacionalidad",
+                    sortable: true
+                },
+                {
+                    key: "Cargo",
+                    sortable: true
+                },
+                {
+                    key: "Genero",
+                    sortable: true
+                },
+                {
+                    key: "Contrata",
+                    sortable: true
+                },
+                {
+                    key: "Estado",
+                    sortable: true
+                },
+                {
+                    key: "Carnet",
+                    sortable: true
+                },
+                {
+                    key: "Nombre_Completo",
+                    sortable: true
+                },
+                {
+                    key: "Zonal",
+                    sortable: true
+                },
+                {
+                    key: "actions",
+                }
+            ],
         }
     },
     mounted(){
@@ -44,23 +105,19 @@ export default {
         },
         async getTableTec(){
             try {
-                this.$nextTick(async () => { 
-                    this.tableDataTec.splice(0, this.tableDataTec.length);
-                    this.fieldsTec.splice(0, this.fieldsTec.length);
-
-                    const response = await this.$http.get(this.$apiURL+'technical/all');
-                    this.previousTableTecData = {
-                        series: response.data.data,
-                    };
-                    response.data.data.map(i => this.tableDataTec.push({ ...i }));
-                    //this.fieldsTec.push({ key: "Ciudad", sortable : true })
-                    this.totalRowsTec = this.tableDataTec.length;
-                    this.totalesTec = response.data.totales;
-                });
+                const response = await this.$http.get(this.$apiURL+'technical/all');
+                response.data.data.map(i => this.tableDataTec.push({ ...i }));
+                //this.fieldsTec.push({ key: "Ciudad", sortable : true })
+                this.totalRowsTec = this.tableDataTec.length;
             } catch (error) {
                 console.error(error);
             }
         },
+        editItem(item) {
+            console.log("Editar item", item);
+            this.selectedItem = JSON.parse(JSON.stringify(item)); // Realiza una copia profunda del ítem
+            this.$refs.TecnicosModal.open(this.selectedItem);
+        }
     },
     middleware: "authentication"
 }
@@ -116,7 +173,11 @@ export default {
                                 :filter="filterTec"
                                 :filter-included-fields="filterOnTec"
                                 @filtered="onFilteredTec"
-                            >                    
+                            >
+                            <template #cell(actions)="{ item }">
+                                <!-- Agregar botón de edición -->
+                                <BButton @click="editItem(item)" variant="info">Editar</BButton>
+                            </template>
                             </BTable>
                         </div>
                     <BRow>
@@ -137,5 +198,6 @@ export default {
                 </BCard>
             </BCol>
         </BRow>
+        <TecnicosModal ref="TecnicosModal"></TecnicosModal>
     </Layout>
 </template>

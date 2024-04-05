@@ -198,7 +198,26 @@ export const menuItems = [
         id: 18,
         label: "menuitems.tecnicos.text",
         icon: "uil-calender",
-        link: "/tecnicos",
+        subItems: [
+            {
+                id: 30,
+                label: "menuitems.tecnicos.list.index",
+                link: "/tecnicos/index",
+                parentId: 18,
+                meta: {
+                    permissions: ['L_TECHNICAL'] // Permisos necesarios para acceder a este elemento del menú
+                }
+            },
+            {
+                id: 31,
+                label: "menuitems.tecnicos.list.create",
+                link: "/tecnicos/create",
+                parentId: 18,
+                meta: {
+                    permissions: ['C_TECHNICAL'] // Permisos necesarios para acceder a este elemento del menú
+                }
+            }
+        ],
         meta: {
             permissions: ['TECHNICAL'] // Permisos necesarios para acceder a este elemento del menú
         }

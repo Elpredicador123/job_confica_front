@@ -1,12 +1,8 @@
 <script>
-import Layout from "../../layouts/main";
-import PageHeader from "@/components/page-header";
 import Multiselect from "@vueform/multiselect";
 
 export default {
     components: { 
-        Layout,
-        PageHeader,
         Multiselect
     },
     data( ){
@@ -28,7 +24,8 @@ export default {
                 "BAJA",
                 "OK"
             ],
-            form: {}
+            form: {},
+            isOpen: false,
         }
     },
     mounted(){
@@ -55,18 +52,18 @@ export default {
         },
         async submit(){
             this.form.Nombre_Completo = this.form.Apellido_paterno + this.form.Apellido_materno + this.form.Nombres
-            this.$http.post(this.$apiURL+'technical/store', this.form, {
+            this.$http.put(this.$apiURL+'technical/update', this.form, {
             }).then(response => {
-                if(response.status == 200){                  
+                if(response.status == 200){
+                    this.form = {}
+                  this.initForm()
                   this.$swal({
-                      title: 'Completado!',
+                      title: 'Actualizado!',
                       text:  response.data.message,
                       icon: 'success',
                       confirmButtonColor: '#6457A2', // Cambiar el color del botón de confirmación
                   });
-                  setTimeout(() => {
-                        window.location.reload();
-                    }, 2000);
+                  this.$swal('Completado!', response.data.message, 'success');
                 }
             }).catch(error => {
                 console.error(error);
@@ -76,7 +73,23 @@ export default {
                     text: error,
                   });
             });
-        }
+        },
+        open(item) {
+            // Abrir el modal y establecer los datos del elemento seleccionado
+            this.isOpen = true;
+            this.form = item;
+        },
+        saveChanges() {
+            // Lógica para guardar los cambios y emitir un evento con los datos actualizados
+            // Por ejemplo:
+            this.$emit("edit-complete", this.selectedItem);
+            this.close();
+        },
+        close() {
+            // Cerrar el modal y restablecer los datos
+            this.isOpen = false;
+            this.selectedItem = null;
+        },
     },
     middleware: "authentication"
 }
@@ -88,13 +101,12 @@ export default {
 }
 </style>
 <template>
-        <Layout>
-        <PageHeader :title="title" :items="items" />
+    <BModal v-model="isOpen" size="xl" hide-footer>
         <BRow>
             <BCol cols="12">
                 <BCard no-body>
                     <BCardBody>
-                        <BCardTitle>Registro de técnicos</BCardTitle>
+                        <BCardTitle>Editar técnicos</BCardTitle>
                             <form autocomplete="off"
                                 class="row no-gutters"
                                 @submit.prevent="submit">
@@ -304,5 +316,5 @@ export default {
                 </BCard>
             </BCol>
         </BRow>
-    </Layout>
+    </BModal>
 </template>
