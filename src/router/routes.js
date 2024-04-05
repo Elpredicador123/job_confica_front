@@ -84,8 +84,14 @@ export default [
     }
   },
   {
-    path: "/principal",
+    path: "",
     name: "Principal",
+    meta: { title: "Principal", authRequired: true},
+    component: () => import("../views/pages/principal/index")
+  },
+  {
+    path: "/principal",
+    name: "Inicio",
     meta: { title: "Principal", authRequired: true},
     component: () => import("../views/pages/principal/index")
   },
@@ -190,5 +196,17 @@ export default [
     name: "Reservaciones",
     meta: { title: "Reservaciones", authRequired: true, permissions: ['C_RESERVATION'] },
     component: () => import("../views/pages/reservation/create")
+  },
+  {
+    path: "/usuarios/index",
+    name: "Listado Usuarios",
+    meta: { title: "Listado Usuarios", authRequired: true, permissions: ['USER'] },
+    component: () => import("../views/pages/usuarios/index")
+  },
+  {
+    path: "/register",
+    name: "Usuarios",
+    meta: { title: "Usuarios", authRequired: true },
+    component: () => import("../views/pages/account/register")
   },
 ];

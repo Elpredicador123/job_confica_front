@@ -222,4 +222,32 @@ export const menuItems = [
             permissions: ['TECHNICAL'] // Permisos necesarios para acceder a este elemento del menú
         }
     },
+    {
+        id: 19,
+        label: "menuitems.usuarios.text",
+        icon: "uil-calender",
+        subItems: [
+            {
+                id: 32,
+                label: "menuitems.usuarios.list.index",
+                link: "/usuarios/index",
+                parentId: 19,
+                meta: {
+                    permissions: ['L_USER'] // Permisos necesarios para acceder a este elemento del menú
+                }
+            },
+            {
+                id: 33,
+                label: "menuitems.usuarios.list.create",
+                link: "/register",
+                parentId: 19,
+                meta: {
+                    permissions: ['C_USER'] // Permisos necesarios para acceder a este elemento del menú
+                }
+            }
+        ],
+        meta: {
+            permissions: ['USER'] // Permisos necesarios para acceder a este elemento del menú
+        }
+    },
 ];

@@ -122,6 +122,13 @@
         "create": "Crear"
       }
     },
+    "usuarios": {
+      "text": "Usuarios",
+      "list": {
+        "index": "Listado",
+        "create": "Crear"
+      }
+    },
     "tecnicos": {
       "text": "Maestra Técnicos",
       "list": {

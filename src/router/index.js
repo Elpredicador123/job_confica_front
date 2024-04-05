@@ -3,7 +3,7 @@ import routes from './routes';
 import appConfig from "../app.config.json";
 
 const router = createRouter({
-    history: createWebHistory("/minible/v-dark"),
+    history: createWebHistory(""),
     routes,
     mode: 'history',
     scrollBehavior(to, from, savedPosition) {

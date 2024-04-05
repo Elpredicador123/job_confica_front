@@ -51,8 +51,8 @@ export default {
             }
         },
         async submit(){
-            this.form.Nombre_Completo = this.form.Apellido_paterno + this.form.Apellido_materno + this.form.Nombres
-            this.$http.put(this.$apiURL+'technical/update', this.form, {
+            this.form.Nombre_Completo = this.form.Apellido_paterno + " " +this.form.Apellido_materno + " "+ this.form.Nombres
+            this.$http.put(this.$apiURL+'technical/update/'+this.form.id, this.form, {
             }).then(response => {
                 if(response.status == 200){
                     this.form = {}
@@ -63,7 +63,9 @@ export default {
                       icon: 'success',
                       confirmButtonColor: '#6457A2', // Cambiar el color del botón de confirmación
                   });
-                  this.$swal('Completado!', response.data.message, 'success');
+                  setTimeout(() => {
+                        window.location.reload();
+                    }, 2000);
                 }
             }).catch(error => {
                 console.error(error);

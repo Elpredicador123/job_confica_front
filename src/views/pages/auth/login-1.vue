@@ -69,8 +69,8 @@ export default {
             <BCard no-body>
               <BCardBody class="p-4">
                 <div class="text-center mt-2">
-                  <h5 class="text-primary">Welcome Back !</h5>
-                  <p class="text-muted">Sign in to continue to Minible.</p>
+                  <h5 class="text-primary">Bienvenido</h5>
+                  <p class="text-muted">Ingresa para continuar.</p>
                 </div>
                 <div class="p-2 mt-4">
                   <BForm @submit.prevent="submit">

@@ -54,7 +54,7 @@ export default {
             }
         },
         async submit(){
-            this.form.Nombre_Completo = this.form.Apellido_paterno + this.form.Apellido_materno + this.form.Nombres
+            this.form.Nombre_Completo = this.form.Apellido_paterno + " " +this.form.Apellido_materno + " "+ this.form.Nombres
             this.$http.post(this.$apiURL+'technical/store', this.form, {
             }).then(response => {
                 if(response.status == 200){                  

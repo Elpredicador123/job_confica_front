@@ -93,8 +93,8 @@ export default {
             <BCard no-body>
               <BCardBody class="p-4">
                 <div class="text-center mt-2">
-                  <h5 class="text-primary">Welcome Back !</h5>
-                  <p class="text-muted">Sign in to continue to Minible.</p>
+                  <h5 class="text-primary">Bienvenido</h5>
+                  <p class="text-muted">Ingresa para continuar.</p>
                 </div>
                 <div class="p-2 mt-4">
                   <div
@@ -116,14 +116,14 @@ export default {
                     <BFormGroup
                       id="input-group-1"
                       class="mb-3"
-                      label="Email"
+                      label="Usuario"
                       label-for="input-1"
                     >
                       <BFormInput
                         id="input-1"
                         v-model="email"
                         type="text"
-                        placeholder="Enter email"
+                        placeholder="Ingresa usuario"
                         :class="{ 'is-invalid': submitted && v$.email.$error }"
                       ></BFormInput>
                       <div
@@ -131,10 +131,10 @@ export default {
                         class="invalid-feedback"
                       >
                         <span v-if="v$.email.required.$invalid"
-                          >Email is required.</span
+                          >Usuario es requerido.</span
                         >
                         <span v-if="v$.email.email.$invalid"
-                          >Please enter valid email.</span
+                          >Ingresa un usuario valido.</span
                         >
                       </div>
                     </BFormGroup>
@@ -144,15 +144,15 @@ export default {
                         <router-link
                           to="/forgot-password"
                           class="text-muted"
-                          >Forgot password?</router-link
+                          >Olvidaste tu contraseña?</router-link
                         >
                       </div>
-                      <label for="input-2">Password</label>
+                      <label for="input-2">Contraseña</label>
                       <BFormInput
                         id="input-2"
                         v-model="password"
                         type="password"
-                        placeholder="Enter password"
+                        placeholder="Ingresa contraseña"
                         :class="{
                           'is-invalid': submitted && v$.password.$error
                         }"
@@ -161,7 +161,7 @@ export default {
                         v-if="submitted && v$.password.required.$invalid"
                         class="invalid-feedback"
                       >
-                        Password is required.
+                        Contraseña es requerido.
                       </div>
                     </BFormGroup>
                     <div class="form-check">
@@ -171,7 +171,7 @@ export default {
                         id="auth-remember-check"
                       />
                       <label class="form-check-label" for="auth-remember-check"
-                        >Remember me</label
+                        >Recuérdame</label
                       >
                     </div>
                     <div class="mt-3 text-end">
@@ -179,51 +179,8 @@ export default {
                         variant="primary"
                         class="w-sm"
                         @click="tryToLogIn"
-                        >Log In</BButton
+                        >Ingresar</BButton
                       >
-                    </div>
-                    <div class="mt-4 text-center">
-                      <div class="signin-other-title">
-                        <h5 class="font-size-14 mb-3 title">Sign in with</h5>
-                      </div>
-
-                      <ul class="list-inline">
-                        <li class="list-inline-item">
-                          <a
-                            href="javascript:void()"
-                            class="social-list-item bg-primary text-white border-primary"
-                          >
-                            <i class="mdi mdi-facebook"></i>
-                          </a>
-                        </li>
-                        <li class="list-inline-item">
-                          <a
-                            href="javascript:void()"
-                            class="social-list-item bg-info text-white border-info"
-                          >
-                            <i class="mdi mdi-twitter"></i>
-                          </a>
-                        </li>
-                        <li class="list-inline-item">
-                          <a
-                            href="javascript:void()"
-                            class="social-list-item bg-danger text-white border-danger"
-                          >
-                            <i class="mdi mdi-google"></i>
-                          </a>
-                        </li>
-                      </ul>
-                    </div>
-
-                    <div class="mt-4 text-center">
-                      <p class="mb-0">
-                        Don't have an account ?
-                        <router-link
-                          to="/register"
-                          class="fw-medium text-primary"
-                          >Signup now</router-link
-                        >
-                      </p>
                     </div>
                   </BForm>
                 </div>
@@ -231,12 +188,6 @@ export default {
               </BCardBody>
               <!-- end card -->
             </BCard>
-            <div class="mt-5 text-center">
-              <p>
-                © {{ new Date().getFullYear() }} Minible. Crafted with
-                <i class="mdi mdi-heart text-danger"></i> by Themesbrand
-              </p>
-            </div>
             <!-- end row -->
           </BCol>
           <!-- end col -->
