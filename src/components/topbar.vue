@@ -91,10 +91,9 @@ export default {
       this.flag = flag;
     },
     logoutUser() {
-      this.logout();
-      this.$router.push({
-        path: "/login"
-      });
+      this.$store.dispatch("authfack/logout", {
+            });
+      this.$router.push({ path: "/login" }); // Redirige al usuario a la página de login
     }
   }
 };
@@ -466,14 +465,11 @@ export default {
               $t("navbar.dropdown.marcus.list.lockscreen")
             }}</span>
           </a>
-          <a class="dropdown-item" href="/logout">
-            <i
-              class="uil uil-sign-out-alt font-size-18 align-middle me-1 text-muted"
-            ></i>
-            <span class="align-middle">{{
-              $t("navbar.dropdown.marcus.list.logout")
-            }}</span>
+          <a class="dropdown-item" @click="logoutUser">
+            <i class="uil uil-sign-out-alt font-size-18 align-middle me-1 text-muted"></i>
+            <span class="align-middle">{{ $t("navbar.dropdown.marcus.list.logout") }}</span>
           </a>
+
         </BDropdown>
 
         <div class="dropdown d-inline-block">

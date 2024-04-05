@@ -1,0 +1,5 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/sistemas/public_html/front.sistemastest.xyz
+    - /bin/cp -a /home/sistemas/repositories/comfica_front/dist/* $DEPLOYPATH

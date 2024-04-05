@@ -19,10 +19,10 @@ export default {
             title: "Gestión",
             Ciudades : [],
             Gestor: [],
-            CiudadId1: "LIMA",
-            CiudadId2: "LIMA",
-            CiudadId3: "LIMA",
-            CiudadId4: "LIMA",
+            CiudadId1: null,
+            CiudadId2: null,
+            CiudadId3: null,
+            CiudadId4: null,
             ManagerId1: null,
             ManagerId2: null,
             //-------------------
@@ -125,6 +125,9 @@ export default {
         this.getRescate();
         this.getErrorTec();
         this.getErrorCalidad();
+        setInterval(() => {
+            this.updateDataIfChanged();
+        }, 300000);
     },
     methods:{
         onFilteredEfectividad(filteredItems) {
@@ -132,83 +135,258 @@ export default {
             this.totalRowsEfectividad = filteredItems.length;
             this.currentPageEfectividad = 1;
         },
+        async updateDataIfChanged() {
+            await Promise.all([
+                this.UpdategetEfectividad(),
+                this.UpdategetAuditoria(),
+                this.UpdategetInspeccionesTec(),
+                this.UpdategetAvanceTec(),
+                this.UpdategetRescate(),
+                this.UpdategetErrorTec(),
+            ]);
+        },
+        async UpdategetEfectividad(){
+            if(this.CiudadId1 != null){
+                this.$nextTick(async () => {
+                    const response = await this.$http.get(this.$apiURL+'quality/inspectioneffectivenesstable/'+this.CiudadId1);
+                    const currentData = {
+                        series: response.data.series,
+                        categories: response.data.categories
+                    };
+                    if (this.dataChanged(this.previousTableDataEfectividad, currentData)) {
+                        this.tableDataEfectividad.splice(0, this.tableDataEfectividad.length);
+                        this.fieldsEfectividad.splice(0, this.fieldsEfectividad.length);
+                        response.data.series.map(i => this.tableDataEfectividad.push({ ...i }));
+                        response.data.categories.map(i => this.fieldsEfectividad.push({ key: i, sortable : true }));
+                        this.totalRowsEfectividad = this.tableDataEfectividad.length;
+                        this.totalesEfectividad = response.data.totales;
+                        this.previousTableDataEfectividad = currentData;
+                    }
+                })
+            }
+        },
+
+        async UpdategetAuditoria(){
+            if(this.CiudadId2 != null){
+                this.$nextTick(async () => {
+                    const response = await this.$http.get(this.$apiURL+'quality/auditsprogresstable/' + this.CiudadId2);
+                    const currentData = {
+                        series: response.data.series,
+                        categories: response.data.categories
+                    };
+
+                    if (this.dataChanged(this.previousTableDataAuditoria, currentData)) {
+                        this.tableDataAuditoria.splice(0, this.tableDataAuditoria.length);
+                        this.fieldsAuditoria.splice(0, this.fieldsAuditoria.length);
+                        response.data.series.map(i => this.tableDataAuditoria.push({ ...i }));
+                        response.data.categories.map(i => this.fieldsAuditoria.push({ key: i, sortable : true }));
+                        this.totalRowsAuditoria = this.tableDataAuditoria.length;
+                        this.totalesAuditoria = response.data.totales;
+                        this.previousTableDataAuditoria = currentData;
+                    }
+                })
+            }
+        },
+        async UpdategetInspeccionesTec(){
+            if(this.ManagerId1 != null){
+                this.$nextTick(async () => {
+                    const response = await this.$http.get(this.$apiURL+'quality/inspectioneffectivenessbytectable/'+this.ManagerId1);
+                    const currentData = {
+                        series: response.data.series,
+                        categories: response.data.categories
+                    };
+
+                    if (this.dataChanged(this.previousTableDataInspeccionesTec, currentData)) {
+                        this.tableDataInspeccionesTec.splice(0, this.tableDataInspeccionesTec.length);
+                        this.fieldsInspeccionesTec.splice(0, this.fieldsInspeccionesTec.length);
+                        response.data.series.map(i => this.tableDataInspeccionesTec.push({ ...i }));
+                        response.data.categories.map(i => this.fieldsInspeccionesTec.push({ key: i, sortable : true }));
+                        this.totalRowsInspeccionesTec = this.tableDataInspeccionesTec.length;
+                        this.totalesInspeccionesTec = response.data.totales;
+                        this.previousTableDataInspeccionesTec = currentData;
+                    }
+                })
+            }
+        },
+        async UpdategetAvanceTec(){
+            if(this.ManagerId2 != null){
+                this.$nextTick(async () => {
+                    const response = await this.$http.get(this.$apiURL+'quality/auditsprogressbytectable/'+this.ManagerId2);
+                    const currentData = {
+                        series: response.data.series,
+                        categories: response.data.categories
+                    };
+
+                    if (this.dataChanged(this.previousTableDataAvanceTec, currentData)) {
+                        this.tableDataAvanceTec.splice(0, this.tableDataAvanceTec.length);
+                        this.fieldsAvanceTec.splice(0, this.fieldsAvanceTec.length);
+                        response.data.series.map(i => this.tableDataAvanceTec.push({ ...i }));
+                        response.data.categories.map(i => this.fieldsAvanceTec.push({ key: i, sortable : true }));
+                        this.totalRowsAvanceTec = this.tableDataAvanceTec.length;
+                        this.totalesAvanceTec = response.data.totales;
+                        this.previousTableDataAvanceTec = currentData;
+                    }
+                })
+            }
+        },
+        async UpdategetRescate(){
+            if(this.CiudadId3 != null){
+                this.$nextTick(async () => {
+                    const response = await this.$http.get(this.$apiURL+'quality/errorsevidencetable/'+this.CiudadId3);
+                    const currentData = {
+                        series: response.data.series,
+                        categories: response.data.categories
+                    };
+
+                    if (this.dataChanged(this.previousTableDataRescate, currentData)) {
+                        this.tableDataRescate.splice(0, this.tableDataRescate.length);
+                        this.fieldsRescate.splice(0, this.fieldsRescate.length);
+                        response.data.series.map(i => this.tableDataRescate.push({ ...i }));
+                        response.data.categories.map(i => this.fieldsRescate.push({ key: i, sortable : true }));
+                        this.totalRowsRescate = this.tableDataRescate.length;
+                        this.totalesRescate = response.data.totales;
+                        this.previousTableDataRescate = currentData;
+                    }
+                })
+            }
+        },
+
+        async UpdategetErrorTec(){
+            if(this.CiudadId4 != null){
+                this.$nextTick(async () => {
+                    const response = await this.$http.get(this.$apiURL+'quality/errorsevidencebytectable/'+this.CiudadId4);
+                    const currentData = {
+                        series: response.data.series,
+                        categories: response.data.categories
+                    };
+
+                    if (this.dataChanged(this.previousTableDataErrorTec, currentData)) {
+                        this.tableDataErrorTec.splice(0, this.tableDataErrorTec.length);
+                        this.fieldsErrorTec.splice(0, this.fieldsErrorTec.length);
+                        response.data.series.map(i => this.tableDataErrorTec.push({ ...i }));
+                        response.data.categories.map(i => this.fieldsErrorTec.push({ key: i, sortable : true }));
+                        this.totalRowsErrorTec = this.tableDataErrorTec.length;
+                        this.totalesErrorTec = response.data.totales;
+                        this.previousTableDataErrorTec = currentData;
+                    }
+                })
+            }
+        },
+        //---------------------------------------
         async getEfectividad(){
-            this.$nextTick(async () => {
+            if(this.CiudadId1 != null){
+                this.$nextTick(async () => {
 
-                this.tableDataEfectividad.splice(0, this.tableDataEfectividad.length);
-                this.fieldsEfectividad.splice(0, this.fieldsEfectividad.length);
+                    this.tableDataEfectividad.splice(0, this.tableDataEfectividad.length);
+                    this.fieldsEfectividad.splice(0, this.fieldsEfectividad.length);
 
-                const response = await this.$http.get(this.$apiURL+'quality/inspectioneffectivenesstable/'+this.CiudadId1);
-                response.data.series.map(i => this.tableDataEfectividad.push({ ...i }));
-                //this.fieldsEfectividad.push({ key: "Ciudad", sortable : true })
-                response.data.categories.map(i => this.fieldsEfectividad.push({ key: i, sortable : true }));
-                this.totalRowsEfectividad = this.tableDataEfectividad.length;
-                this.totalesEfectividad = response.data.totales;
-            });
+                    const response = await this.$http.get(this.$apiURL+'quality/inspectioneffectivenesstable/'+this.CiudadId1);
+                    this.previousTableDataEfectividad = {
+                        series: response.data.series,
+                        categories: response.data.categories
+                    };
+
+                    response.data.series.map(i => this.tableDataEfectividad.push({ ...i }));
+                    //this.fieldsEfectividad.push({ key: "Ciudad", sortable : true })
+                    response.data.categories.map(i => this.fieldsEfectividad.push({ key: i, sortable : true }));
+                    this.totalRowsEfectividad = this.tableDataEfectividad.length;
+                    this.totalesEfectividad = response.data.totales;
+                });
+            }
         },
         async getAuditoria(){
-            this.$nextTick(async () => {
-                this.tableDataAuditoria.splice(0, this.tableDataAuditoria.length);
-                this.fieldsAuditoria.splice(0, this.fieldsAuditoria.length);
+            if(this.CiudadId2 != null){
+                this.$nextTick(async () => {
+                    this.tableDataAuditoria.splice(0, this.tableDataAuditoria.length);
+                    this.fieldsAuditoria.splice(0, this.fieldsAuditoria.length);
 
-                const response = await this.$http.get(this.$apiURL+'quality/auditsprogresstable/' + this.CiudadId2);
-                response.data.series.map(i => this.tableDataAuditoria.push({ ...i }));
-                //this.fieldsAuditoria.push({ key: "Ciudad", sortable : true })
-                response.data.categories.map(i => this.fieldsAuditoria.push({ key: i, sortable : true }));
-                this.totalRowsAuditoria = this.tableDataAuditoria.length;
-                this.totalesAuditoria = response.data.totales;
-            });
+                    const response = await this.$http.get(this.$apiURL+'quality/auditsprogresstable/' + this.CiudadId2);
+                    this.previousTableDataAuditoria = {
+                        series: response.data.series,
+                        categories: response.data.categories
+                    };
+                    response.data.series.map(i => this.tableDataAuditoria.push({ ...i }));
+                    //this.fieldsAuditoria.push({ key: "Ciudad", sortable : true })
+                    response.data.categories.map(i => this.fieldsAuditoria.push({ key: i, sortable : true }));
+                    this.totalRowsAuditoria = this.tableDataAuditoria.length;
+                    this.totalesAuditoria = response.data.totales;
+                });
+            }
         },
         async getInspeccionesTec(){
-            this.$nextTick(async () => {
-                this.tableDataInspeccionesTec.splice(0, this.tableDataInspeccionesTec.length);
-                this.fieldsInspeccionesTec.splice(0, this.fieldsInspeccionesTec.length);
+            if(this.ManagerId1 != null){
+                this.$nextTick(async () => {
+                    this.tableDataInspeccionesTec.splice(0, this.tableDataInspeccionesTec.length);
+                    this.fieldsInspeccionesTec.splice(0, this.fieldsInspeccionesTec.length);
 
-                const response = await this.$http.get(this.$apiURL+'quality/inspectioneffectivenessbytectable/'+this.ManagerId1);
-                response.data.series.map(i => this.tableDataInspeccionesTec.push({ ...i }));
-                //this.fieldsInspeccionesTec.push({ key: "Ciudad", sortable : true })
-                response.data.categories.map(i => this.fieldsInspeccionesTec.push({ key: i, sortable : true }));
-                this.totalRowsInspeccionesTec = this.tableDataInspeccionesTec.length;
-                this.totalesInspeccionesTec = response.data.totales;
-            });
+                    const response = await this.$http.get(this.$apiURL+'quality/inspectioneffectivenessbytectable/'+this.ManagerId1);
+                    this.previousTableDataInspeccionesTec = {
+                        series: response.data.series,
+                        categories: response.data.categories
+                    };
+                    response.data.series.map(i => this.tableDataInspeccionesTec.push({ ...i }));
+                    //this.fieldsInspeccionesTec.push({ key: "Ciudad", sortable : true })
+                    response.data.categories.map(i => this.fieldsInspeccionesTec.push({ key: i, sortable : true }));
+                    this.totalRowsInspeccionesTec = this.tableDataInspeccionesTec.length;
+                    this.totalesInspeccionesTec = response.data.totales;
+                });
+            }
         },
         async getAvanceTec(){
-            this.$nextTick(async () => {
-                this.tableDataAvanceTec.splice(0, this.tableDataAvanceTec.length);
-                this.fieldsAvanceTec.splice(0, this.fieldsAvanceTec.length);
+            if(this.ManagerId2 != null){
+                this.$nextTick(async () => {
+                    this.tableDataAvanceTec.splice(0, this.tableDataAvanceTec.length);
+                    this.fieldsAvanceTec.splice(0, this.fieldsAvanceTec.length);
 
-                const response = await this.$http.get(this.$apiURL+'quality/auditsprogressbytectable/'+this.ManagerId2);
-                response.data.series.map(i => this.tableDataAvanceTec.push({ ...i }));
-                response.data.categories.map(i => this.fieldsAvanceTec.push({ key: i, sortable : true }));
-                this.totalRowsAvanceTec = this.tableDataAvanceTec.length;
-                this.totalesAvanceTec = response.data.totales;
-            });
+                    const response = await this.$http.get(this.$apiURL+'quality/auditsprogressbytectable/'+this.ManagerId2);
+                    this.previousTableDataAvanceTec = {
+                        series: response.data.series,
+                        categories: response.data.categories
+                    };
+                    response.data.series.map(i => this.tableDataAvanceTec.push({ ...i }));
+                    response.data.categories.map(i => this.fieldsAvanceTec.push({ key: i, sortable : true }));
+                    this.totalRowsAvanceTec = this.tableDataAvanceTec.length;
+                    this.totalesAvanceTec = response.data.totales;
+                });
+            }
         },
         async getRescate(){
-            this.$nextTick(async () => {
-                this.tableDataRescate.splice(0, this.tableDataRescate.length);
-                this.fieldsRescate.splice(0, this.fieldsRescate.length);
+            if(this.CiudadId3 != null){
+                this.$nextTick(async () => {
+                    this.tableDataRescate.splice(0, this.tableDataRescate.length);
+                    this.fieldsRescate.splice(0, this.fieldsRescate.length);
 
-                const response = await this.$http.get(this.$apiURL+'quality/errorsevidencetable/'+this.CiudadId3);
-                response.data.series.map(i => this.tableDataRescate.push({ ...i }));
-                //this.fieldsRescate.push({ key: "Ciudad", sortable : true })
-                response.data.categories.map(i => this.fieldsRescate.push({ key: i, sortable : true }));
-                this.totalRowsRescate = this.tableDataRescate.length;
-                this.totalesRescate = response.data.totales;
-            });
+                    const response = await this.$http.get(this.$apiURL+'quality/errorsevidencetable/'+this.CiudadId3);
+                    this.previousTableDataRescate = {
+                        series: response.data.series,
+                        categories: response.data.categories
+                    };
+                    response.data.series.map(i => this.tableDataRescate.push({ ...i }));
+                    //this.fieldsRescate.push({ key: "Ciudad", sortable : true })
+                    response.data.categories.map(i => this.fieldsRescate.push({ key: i, sortable : true }));
+                    this.totalRowsRescate = this.tableDataRescate.length;
+                    this.totalesRescate = response.data.totales;
+                });
+            }
         },
         async getErrorTec(){
-            this.$nextTick(async () => {
-                this.tableDataErrorTec.splice(0, this.tableDataErrorTec.length);
-                this.fieldsErrorTec.splice(0, this.fieldsErrorTec.length);
+            if(this.CiudadId4 != null){
+                this.$nextTick(async () => {
+                    this.tableDataErrorTec.splice(0, this.tableDataErrorTec.length);
+                    this.fieldsErrorTec.splice(0, this.fieldsErrorTec.length);
 
-                const response = await this.$http.get(this.$apiURL+'quality/errorsevidencebytectable/'+this.CiudadId4);
-                response.data.series.map(i => this.tableDataErrorTec.push({ ...i }));
-                //this.fieldsErrorTec.push({ key: "Ciudad", sortable : true })
-                response.data.categories.map(i => this.fieldsErrorTec.push({ key: i, sortable : true }));
-                this.totalRowsErrorTec = this.tableDataErrorTec.length;
-                this.totalesErrorTec = response.data.totales;
-            });
+                    const response = await this.$http.get(this.$apiURL+'quality/errorsevidencebytectable/'+this.CiudadId4);
+                    this.previousTableDataErrorTec = {
+                        series: response.data.series,
+                        categories: response.data.categories
+                    };
+                    response.data.series.map(i => this.tableDataErrorTec.push({ ...i }));
+                    //this.fieldsErrorTec.push({ key: "Ciudad", sortable : true })
+                    response.data.categories.map(i => this.fieldsErrorTec.push({ key: i, sortable : true }));
+                    this.totalRowsErrorTec = this.tableDataErrorTec.length;
+                    this.totalesErrorTec = response.data.totales;
+                });
+            }
         },
         async getErrorCalidad(){
                 const response = await this.$http.get(this.$apiURL+'quality/errorinspectionratiotable');
@@ -219,12 +397,21 @@ export default {
             const response = await this.$http.get(this.$apiURL+'city/all');
                 console.log(response)
                 response.data.data.map(i => this.Ciudades.push( i.name ));
-                console.log(this.Ciudades)
+                this.CiudadId1 = this.Ciudades[0]
+                this.CiudadId2 = this.Ciudades[0]
+                this.CiudadId3 = this.Ciudades[0]
+                this.CiudadId4 = this.Ciudades[0]
         },
         async getGestor(){
             const response = await this.$http.get(this.$apiURL+'manager/all');
                 response.data.data.map(i => this.Gestor.push( i.manager ));
+                this.ManagerId1 = this.Gestor[0]
+                this.ManagerId2 = this.Gestor[0]
         },
+        dataChanged(previousData, currentData) {
+            if(currentData == undefined){ return false}
+            return JSON.stringify(previousData) !== JSON.stringify(currentData);
+        }
 
     },
     middleware: "authentication"

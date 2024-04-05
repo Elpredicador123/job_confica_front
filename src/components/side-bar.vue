@@ -10,7 +10,8 @@ import MetisMenu from "metismenujs";
 export default {
   data() {
     return {
-      menuItems
+      menuItems: this.filterMenuItemsByPermissions(menuItems),
+
     };
   },
   props: {
@@ -105,6 +106,51 @@ export default {
     /**
      * Toggle menu
      */
+     filterMenuItemsByPermissions(menuItems) {
+        const filteredItems = [];
+        const permissions = JSON.parse(localStorage.getItem('user-permissions')) || [];
+
+        // Iterar sobre cada elemento del menú
+        menuItems.forEach(menuItem => {
+                let shouldAdd = false;
+
+                // Verificar si el elemento tiene la propiedad 'meta' y 'permissions'
+                if (menuItem.meta && menuItem.meta.permissions) {
+                    // Iterar sobre los permisos
+                    menuItem.meta.permissions.forEach(permission => {
+                        // Verificar si el permiso está presente en los permisos proporcionados
+                        if (permissions.find(item => item.key === permission)) {
+                            shouldAdd = true;
+                        }
+                    });
+                }
+
+                // Verificar los subelementos si existen
+                if (menuItem.subItems) {
+                    const filteredSubItems = menuItem.subItems.filter(subItem => {
+                        if (subItem.meta && subItem.meta.permissions) {
+                            // Iterar sobre los permisos
+                            return subItem.meta.permissions.some(permission => {
+                                // Verificar si el permiso está presente en los permisos proporcionados
+                                return permissions.find(item => item.key === permission);
+                            });
+                        }
+                        return false;
+                    });
+
+                    if (filteredSubItems.length > 0) {
+                        shouldAdd = true;
+                        menuItem.subItems = filteredSubItems;
+                    }
+                }
+
+                if (shouldAdd) {
+                    filteredItems.push(menuItem);
+                }
+            });
+
+          return filteredItems;
+    },
     toggleMenu() {
       this.$parent.toggleMenu();
     },

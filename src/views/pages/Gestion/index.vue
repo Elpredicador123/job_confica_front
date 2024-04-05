@@ -21,8 +21,8 @@ export default {
             tableDataOrder: [],
             GestorAgenda: [],
             Ciudades : [],
-            CiudadId: "LIMA",
-            CiudadId2: "LIMA",
+            ciudadId: null,
+            ciudadId2: null,
             OrdenesGestor: [],
             GestorOrdenes: [],
             GestorAgendaId: null,
@@ -112,9 +112,14 @@ export default {
             sortDescOrder: false,
             fieldsOrder: [],
             totalesOrder : 0,
+            //-----------------------
+            previousTableMantenimientosData: {},
+            previousTableInstalacionesData : {},
+            previousTableGestorData: {},
+            previousTableOrderData: { },
         };
     },
-    async created() {
+    mounted() {
         // Set the initial number of items
         this.totalRows = this.items.length;
         this.totalRows2 = this.items2.length;
@@ -122,13 +127,17 @@ export default {
         this.totalRowsOrder = this.itemsOrder.length;
 
         //obtener datos de la api
-        this.getTableGestor();
         this.getTableMantenimientos();
         this.getTableInstalaciones();
         this.getTableOrder();
         this.getGestorAgenda();
         this.getOrdenesGestor();
         this.getCity();
+
+        // Establecer intervalo para obtener datos de la API cada 5 minutos
+        setInterval(() => {
+            this.updateDataIfChanged();
+        }, 300000);
     },
     methods:{
         onFiltered(filteredItems) {
@@ -153,34 +162,138 @@ export default {
             this.totalRowsOrder = filteredItems.length;
             this.currentPageOrder = 1;
         },
+        async updateDataIfChanged() {
+            console.log("cambio")
+            await Promise.all([
+                this.updateTableMantenimientos(),
+                this.updateTableInstalaciones(),
+                this.updateTableGestor(),
+                this.updateTableOrder(),
+            ]);
+        },
+        async updateTableMantenimientos() {
+            if(this.ciudadId2 != null){
+                this.$nextTick(async () => {
+
+                    const response = await this.$http.get(this.$apiURL+'management/maintenanceprogresstable/'+this.ciudadId2);
+                    const currentData = {
+                        series: response.data.series,
+                        fields: response.data.fields
+                    };
+
+                    if (this.dataChanged(this.previousTableMantenimientosData, currentData)) {
+                        this.tableMantenimiento.splice(0, this.tableMantenimiento.length);
+                        this.fieldsMantenimiento.splice(0, this.fieldsMantenimiento.length);
+                        currentData.series.map(i => this.tableMantenimiento.push({ ...i }));
+                        currentData.fields.map(i => this.fieldsMantenimiento.push({ key: i, sortable : true }));
+                        this.totalRows2 = this.tableMantenimiento.length;
+                        this.previousTableMantenimientosData = currentData;
+                    }
+                });
+            }
+        },
+
+        async updateTableInstalaciones() {
+            if(this.ciudadId != null){
+                this.$nextTick(async () => {
+                    const response = await this.$http.get(this.$apiURL+'management/installationprogresstable/'+this.ciudadId);
+                    const currentData = {
+                        series: response.data.series,
+                        fields: response.data.fields
+                    };
+                    if (this.dataChanged(this.previousTableInstalacionesData, currentData)) {
+                        this.TableInstalaciones.splice(0, this.TableInstalaciones.length);
+                        this.fields.splice(0, this.fields.length);
+                        currentData.series.map(i => this.TableInstalaciones.push({ ...i }));
+                        currentData.fields.map(i => this.fields.push({ key: i, sortable : true }));
+                        this.totalRows = this.TableInstalaciones.length;
+                        this.previousTableInstalacionesData = currentData;
+                    }
+                });
+            }
+        },
+
+        async updateTableGestor() {
+            if(this.GestorAgendaId != null){
+                this.$nextTick(async () => {
+                    const response = await this.$http.get(this.$apiURL+'management/installationlogmanagertable/'+this.GestorAgendaId);
+                    const currentData = {
+                        series: response.data.series,
+                        fields: response.data.fields
+                    };
+                    if (this.dataChanged(this.previousTableGestorData, currentData)) {
+                        this.tableDataGestor.splice(0, this.tableDataGestor.length);
+                        this.fieldsGestor.splice(0, this.fieldsGestor.length);
+                        currentData.series.map(i => this.tableDataGestor.push({ ...i }));
+                        currentData.fields.map(i => this.fieldsGestor.push({ key: i, sortable : true }));
+                        this.totalRowsGestor = this.tableDataGestor.length;
+                        this.totalesGestor = response.data.totales;
+                        this.previousTableGestorData = currentData;
+                    }
+                });
+            }
+        },
+
+        async updateTableOrder() {
+            if(this.OrdenesGestorId != null){ 
+                this.$nextTick(async () => {
+                    const response = await this.$http.get(this.$apiURL+'management/ordermanagertable/'+this.OrdenesGestorId);
+                    const currentData = {
+                        series: response.data.series,
+                        fields: response.data.fields
+                    };
+
+                    if (this.dataChanged(this.previousTableOrderData, currentData)) {
+                        this.tableDataOrder.splice(0, this.tableDataOrder.length);
+                        this.fieldsOrder.splice(0, this.fieldsOrder.length);
+                        currentData.series.map(i => this.tableDataOrder.push({ ...i }));
+                        currentData.fields.map(i => this.fieldsOrder.push({ key: i, sortable : true }));
+                        this.totalRowsOrder = this.tableDataOrder.length;
+                        this.totalesOrder = response.data.totales;
+                        this.previousTableOrderData = currentData;
+                    }
+                });
+            }
+        },
+
+        dataChanged(previousData, currentData) {
+            if( currentData == undefined){ return false}
+            console.log(previousData)
+            console.log(currentData)
+            return JSON.stringify(previousData) !== JSON.stringify(currentData);
+        },
         async getGestorAgenda(){
             const response = await this.$http.get(this.$apiURL+'manager/managersaltas');
-                console.log(response)
                 response.data.data.map(i => this.GestorAgenda.push( i.manager ));
-                console.log(this.GestorAgenda)
+                this.GestorAgendaId = this.GestorAgenda[0]
         },
         async getCity(){
             const response = await this.$http.get(this.$apiURL+'city/all');
-                console.log(response)
                 response.data.data.map(i => this.Ciudades.push( i.name ));
-                console.log(this.Ciudades)
+                this.ciudadId = this.Ciudades[0]
+                this.ciudadId2 = this.Ciudades[0]
         },
         async getOrdenesGestor(){
             const response = await this.$http.get(this.$apiURL+'manager/managersaverias');
-                console.log(response)
                 response.data.data.map(i => this.OrdenesGestor.push( i.manager ));
-                console.log(this.OrdenesGestor)
+                this.OrdenesGestorId = this.OrdenesGestor[0]
         },
         async getTableMantenimientos() {
             try {
-                this.$nextTick(async () => {
-                    this.tableMantenimiento.splice(0, this.tableMantenimiento.length);
-                    this.fieldsMantenimiento.splice(0, this.fieldsMantenimiento.length);
-                    const response = await this.$http.get(this.$apiURL+'management/maintenanceprogresstable/'+this.CiudadId2);
-                    response.data.series.map(i => this.tableMantenimiento.push({ ...i }));
-                    response.data.fields.map(i => this.fieldsMantenimiento.push({ key: i, sortable : true }));
-                    this.totalRows2 = this.tableMantenimiento.length;
-                });
+                if(this.ciudadId2 != null){
+                    this.$nextTick(async () => {
+                        this.tableMantenimiento.splice(0, this.tableMantenimiento.length);
+                        this.fieldsMantenimiento.splice(0, this.fieldsMantenimiento.length);
+                        const response = await this.$http.get(this.$apiURL+'management/maintenanceprogresstable/'+this.ciudadId2);
+                        this.previousTableMantenimientosData = {
+                            series: response.data.series,
+                            fields: response.data.fields
+                        };
+                        response.data.series.map(i => this.tableMantenimiento.push({ ...i }));
+                        response.data.fields.map(i => this.fieldsMantenimiento.push({ key: i, sortable : true }));
+                        this.totalRows2 = this.tableMantenimiento.length;
+                    });
+                }
             } catch (error) {
                 console.error(error);
             }
@@ -188,49 +301,67 @@ export default {
 
         async getTableInstalaciones() {
             try {
-                this.$nextTick(async () => {
-                    this.TableInstalaciones.splice(0, this.TableInstalaciones.length);
-                    this.fields.splice(0, this.fields.length);
+                if(this.ciudadId != null){
+                    this.$nextTick(async () => {
+                        this.TableInstalaciones.splice(0, this.TableInstalaciones.length);
+                        this.fields.splice(0, this.fields.length);
 
-                    const response = await this.$http.get(this.$apiURL+'management/installationprogresstable/'+this.CiudadId);
-                    response.data.series.map(i => this.TableInstalaciones.push({ ...i }));
-                    response.data.fields.map(i => this.fields.push({ key: i, sortable : true }));
-                    this.totalRows = this.TableInstalaciones.length;
-                });
+                        const response = await this.$http.get(this.$apiURL+'management/installationprogresstable/'+this.ciudadId);
+                        this.previousTableInstalacionesData = {
+                            series: response.data.series,
+                            fields: response.data.fields
+                        };
+                        response.data.series.map(i => this.TableInstalaciones.push({ ...i }));
+                        response.data.fields.map(i => this.fields.push({ key: i, sortable : true }));
+                        this.totalRows = this.TableInstalaciones.length;
+                    });
+                }
             } catch (error) {
                 console.error(error);
             }
         },
         async getTableGestor(){
             try {
-                this.$nextTick(async () => {
-                    this.tableDataGestor.splice(0, this.tableDataGestor.length);
-                    this.fieldsGestor.splice(0, this.fieldsGestor.length);
+                if(this.GestorAgendaId != null){
+                    this.$nextTick(async () => {
+                        this.tableDataGestor.splice(0, this.tableDataGestor.length);
+                        this.fieldsGestor.splice(0, this.fieldsGestor.length);
 
-                    const response = await this.$http.get(this.$apiURL+'management/installationlogmanagertable/'+this.GestorAgendaId);
-                    response.data.series.map(i => this.tableDataGestor.push({ ...i }));
-                    //this.fieldsGestor.push({ key: "Ciudad", sortable : true })
-                    response.data.categories.map(i => this.fieldsGestor.push({ key: i, sortable : true }));
-                    this.totalRowsGestor = this.tableDataGestor.length;
-                    this.totalesGestor = response.data.totales;
-                });
+                        const response = await this.$http.get(this.$apiURL+'management/installationlogmanagertable/'+this.GestorAgendaId);
+                        this.previousTableGestorData = {
+                            series: response.data.series,
+                            fields: response.data.fields
+                        };
+                        response.data.series.map(i => this.tableDataGestor.push({ ...i }));
+                        //this.fieldsGestor.push({ key: "Ciudad", sortable : true })
+                        response.data.categories.map(i => this.fieldsGestor.push({ key: i, sortable : true }));
+                        this.totalRowsGestor = this.tableDataGestor.length;
+                        this.totalesGestor = response.data.totales;
+                    });
+                }
             } catch (error) {
                 console.error(error);
             }
         },
         async getTableOrder(){
             try {
-                this.$nextTick(async () => {
-                    this.tableDataOrder.splice(0, this.tableDataOrder.length);
-                    this.fieldsOrder.splice(0, this.fieldsOrder.length);
+                if(this.OrdenesGestorId != null){
+                    this.$nextTick(async () => {
+                        this.tableDataOrder.splice(0, this.tableDataOrder.length);
+                        this.fieldsOrder.splice(0, this.fieldsOrder.length);
 
-                    const response = await this.$http.get(this.$apiURL+'management/ordermanagertable/'+this.OrdenesGestorId);
-                    response.data.series.map(i => this.tableDataOrder.push({ ...i }));
-                    //this.fieldsOrder.push({ key: "Ciudad", sortable : true })
-                    response.data.categories.map(i => this.fieldsOrder.push({ key: i, sortable : true }));
-                    this.totalRowsOrder = this.tableDataOrder.length;
-                    this.totalesOrder = response.data.totales;
-                });
+                        const response = await this.$http.get(this.$apiURL+'management/ordermanagertable/'+this.OrdenesGestorId);
+                        this.previousTableOrderData = {
+                            series: response.data.series,
+                            fields: response.data.fields
+                        };
+                        response.data.series.map(i => this.tableDataOrder.push({ ...i }));
+                        //this.fieldsOrder.push({ key: "Ciudad", sortable : true })
+                        response.data.categories.map(i => this.fieldsOrder.push({ key: i, sortable : true }));
+                        this.totalRowsOrder = this.tableDataOrder.length;
+                        this.totalesOrder = response.data.totales;
+                    });
+                }
             } catch (error) {
                 console.error(error);
             }
@@ -255,7 +386,7 @@ export default {
                         <BCol cols="5">
                             Filtrar por:
                             <Multiselect
-                                v-model="CiudadId"
+                                v-model="ciudadId"
                                 :options="Ciudades"
                                 @change="getTableInstalaciones()"
                                 placeholder="Seleccionar Ciudad"
@@ -432,7 +563,7 @@ export default {
                         <BCol cols="5">
                             Filtrar por:
                             <Multiselect
-                                v-model="CiudadId2"
+                                v-model="ciudadId2"
                                 :options="Ciudades"
                                 @change="getTableMantenimientos()"
                                 placeholder="Seleccionar Ciudad"

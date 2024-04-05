@@ -11,7 +11,7 @@ const columnChart = {
     plotOptions: {
       bar: {
         horizontal: false,
-        columnWidth: "45%",
+        columnWidth: "40%",
         endingShape: "rounded"
       }
     },

@@ -84,6 +84,20 @@
     "calidad": {
       "text": "Calidad"
     },
+    "infografias": {
+      "text": "Infografias",
+      "list": {
+        "index": "Listado",
+        "create": "Crear"
+      }
+    },
+    "liquidacion": {
+      "text": "Ordenes",
+      "list": {
+        "index": "Listado",
+        "create": "Crear"
+      }
+    },
     "chat": {
       "text": "Chat",
       "badge": "New"
@@ -105,8 +119,21 @@
       "text": "Noticias",
       "list": {
         "index": "Listado",
-        "create": "Crear",
-        "edit": "Editar"
+        "create": "Crear"
+      }
+    },
+    "usuarios": {
+      "text": "Usuarios",
+      "list": {
+        "index": "Listado",
+        "create": "Crear"
+      }
+    },
+    "tecnicos": {
+      "text": "Maestra Técnicos",
+      "list": {
+        "index": "Listado",
+        "create": "Crear"
       }
     },
     "birthday": {

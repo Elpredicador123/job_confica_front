@@ -30,10 +30,10 @@ export default {
             GestorAgendaId: null,
             GestorOrdenId: null,
             Ciudades : [],
-            CiudadId1: "LIMA",
-            CiudadId2: "LIMA",
-            CiudadId3: "LIMA",
-            CiudadId4: "LIMA",
+            CiudadId1: null,
+            CiudadId2: null,
+            CiudadId3: null,
+            CiudadId4: null,
             itemsSup: [
                 {
                     text: "Charts",
@@ -75,6 +75,9 @@ export default {
             sortDescTec: false,
             fieldsTec: [],
             totalesTec : 0,
+            //--------------------
+            previousTableSupData: {},
+            previousTableTecData: {},
         };
     },
     mounted() {
@@ -89,6 +92,9 @@ export default {
         this.getContrata();
         this.getRatioInstalaciones();
         this.getRatioMantenimientos();
+        setInterval(() => {
+            this.updateDataIfChanged();
+        }, 300000);
     },
     methods:{
         onFilteredSup(filteredItems) {
@@ -101,49 +107,189 @@ export default {
             this.totalRowsTec = filteredItems.length;
             this.currentPageTec = 1;
         },
+        async updateDataIfChanged() {
+            console.log("cambios")
+            await Promise.all([
+                this.UpdategetTableSup(),
+                this.UpdategetTableTec(),
+                this.updateContrata(),
+                this.updateRatioInstalaciones(),
+                this.updateRatioMantenimientos()
+            ]);
+        },
+        async UpdategetTableSup() {
+            if(this.CiudadId3 != null){
+                this.$nextTick(async () => {
+                    const response = await this.$http.get(this.$apiURL+'maintenance/childhoodbreakdownsmanagers/'+this.CiudadId3);
+                    const currentData = {
+                        series: response.data.series,
+                        fields: response.data.fields
+                    };
+
+                    if (this.dataChanged(this.previousTableSupData, currentData)) {
+                        this.tableDataSup.splice(0, this.tableDataSup.length);
+                        this.fieldsSup.splice(0, this.fieldsSup.length);
+                        response.data.series.map(i => this.tableDataSup.push({ ...i }));
+                        response.data.fields.map(i => this.fieldsSup.push({ key: i, sortable : true }));
+                        this.totalRowsSup = this.tableDataSup.length;
+                        this.previousTableSupData = currentData;
+                    }
+                })
+            }
+        },
+
+        async UpdategetTableTec() {
+            if(this.CiudadId4 != null){
+                this.$nextTick(async () => {
+                    const response = await this.$http.get(this.$apiURL+'maintenance/childhoodbreakdownstechnicians/'+this.CiudadId4);
+                    const currentData = {
+                        series: response.data.series,
+                        fields: response.data.fields
+                    };
+
+                    if (this.dataChanged(this.previousTableTecData, currentData)) {
+                        this.tableDataTec.splice(0, this.tableDataTec.length);
+                        this.fieldsTec.splice(0, this.fieldsTec.length);
+                        response.data.series.map(i => this.tableDataTec.push({ ...i }));
+                        response.data.fields.map(i => this.fieldsTec.push({ key: i, sortable : true }));
+                        this.totalRowsTec = this.tableDataTec.length;
+                        this.totalesTec = response.data.totales;
+                        this.previousTableTecData = currentData;
+                    }
+                })
+            }
+        },
+        async updateContrata(){
+            if(this.CiudadId1 != null){
+                this.$nextTick(async () => {
+                    const response = await this.$http.get(this.$apiURL+'maintenance/ineffectivecontratagraphic/'+this.CiudadId1);
+                    const currentData = {
+                        series: response.data.series,
+                        categories: response.data.categories
+                    };
+                    if (this.dataChanged(this.previousContrataData, currentData)) {
+                        this.previousContrataData = {
+                            series: this.ContrataBar.series,
+                            labels: this.ContrataBar.categories
+                        };
+                        this.ContrataBar =  barChart;
+                        this.ContrataBar.series[0].data = currentData.series;
+                        this.ContrataBar.chartOptions.xaxis.categories = currentData.categories;
+                    }
+                })
+            }
+        },
+        async updateRatioInstalaciones(){
+            try {
+                const response = await this.$http.get(this.$apiURL+'maintenance/childhoodbreakdownsgeneral');
+                const currentData = {
+                    series: response.data.series,
+                    labels: response.data.categories
+                };
+                if (this.dataChanged(this.previousRatioInstalacionesData, currentData)) {
+                    this.previousRatioInstalacionesData = {
+                        series: this.pieChart.series,
+                        labels: this.pieChart.categories
+                    };
+                    this.pieChart =  pieChart;
+                    this.pieChart.series = currentData.series;
+                    this.pieChart.chartOptions.labels = currentData.categories;
+                }
+            } catch (error) {
+                console.error(error);  
+            }
+        },
+        async updateRatioMantenimientos(){
+            try {
+                const response = await this.$http.get(this.$apiURL+'maintenance/ineffectivedistributionratiographic');
+                const currentData = {
+                    series: response.data.series,
+                    labels: response.data.categories
+                };
+                if (this.dataChanged(this.previousRatioMantenimientoData, currentData)) {
+                    this.previousRatioMantenimientoData = {
+                        series: this.pieChart2.series,
+                        labels: this.pieChart2.categories
+                    };
+                    this.pieChart2 =  pieChart2;
+                    this.pieChart2.series = currentData.series;
+                    this.pieChart2.chartOptions.labels = currentData.categories;
+                }
+            } catch (error) {
+                console.error(error);
+            }
+        },
+        dataChanged(previousData, currentData) {
+            if(currentData == undefined){ return false}
+            console.log(previousData)
+            console.log(currentData)
+            return JSON.stringify(previousData) !== JSON.stringify(currentData);
+        },
+        //-------------------------------------------------------
         async getContrata(){
-            this.$nextTick(async () => {
-                const response = await this.$http.get(this.$apiURL+'maintenance/ineffectivecontratagraphic/'+this.CiudadId1);
-                this.ContrataBar.series[0].data = response.data.series; 
-                this.ContrataBar.chartOptions.xaxis.categories = response.data.categories;
-            })
+            if(this.CiudadId1 != null){
+                this.$nextTick(async () => {
+                    const response = await this.$http.get(this.$apiURL+'maintenance/ineffectivecontratagraphic/'+this.CiudadId1);
+                    this.previousContrataData = {
+                        series : response.data.series,
+                        categories : response.data.categories
+                    }
+                    this.ContrataBar.series[0].data = response.data.series;
+                    this.ContrataBar.chartOptions.xaxis.categories = response.data.categories;
+                })
+            }
         },
         async getTableSup(){
-            this.$nextTick(async () => {
-                this.tableDataSup.splice(0, this.tableDataSup.length);
-                this.fieldsSup.splice(0, this.fieldsSup.length);
-                const response = await this.$http.get(this.$apiURL+'maintenance/childhoodbreakdownsmanagers/'+this.CiudadId3);
+            if(this.CiudadId3 != null){
+                this.$nextTick(async () => {
+                    this.tableDataSup.splice(0, this.tableDataSup.length);
+                    this.fieldsSup.splice(0, this.fieldsSup.length);
+                    const response = await this.$http.get(this.$apiURL+'maintenance/childhoodbreakdownsmanagers/'+this.CiudadId3);
+                    this.previousTableSupData = {
+                        series: response.data.series,
+                        fields: response.data.fields
+                    };
+                    response.data.series.map(i => this.tableDataSup.push({ ...i }));
+                    response.data.fields.map(i => this.fieldsSup.push({ key: i, sortable : true }));
 
-                response.data.series.map(i => this.tableDataSup.push({ ...i }));
-                response.data.fields.map(i => this.fieldsSup.push({ key: i, sortable : true }));
-
-                this.totalRowsSup = this.tableDataSup.length;
-            });
+                    this.totalRowsSup = this.tableDataSup.length;
+                });
+            }
         },
         async getTableTec(){
-            this.$nextTick(async () => {
-                this.tableDataTec.splice(0, this.tableDataTec.length);
-                this.fieldsTec.splice(0, this.fieldsTec.length);
+            if(this.CiudadId4 != null){
+                this.$nextTick(async () => {
+                    this.tableDataTec.splice(0, this.tableDataTec.length);
+                    this.fieldsTec.splice(0, this.fieldsTec.length);
 
-                const response = await this.$http.get(this.$apiURL+'maintenance/childhoodbreakdownstechnicians/'+this.CiudadId4);
-                response.data.series.map(i => this.tableDataTec.push({ ...i }));
-                //this.fieldsTec.push({ key: "Ciudad", sortable : true })
-                response.data.fields.map(i => this.fieldsTec.push({ key: i, sortable : true }));
-                this.totalRowsTec = this.tableDataTec.length;
-                this.totalesTec = response.data.totales;
-            });
+                    const response = await this.$http.get(this.$apiURL+'maintenance/childhoodbreakdownstechnicians/'+this.CiudadId4);
+                    this.previousTableTecData = {
+                        series: response.data.series,
+                        fields: response.data.fields
+                    };
+                    response.data.series.map(i => this.tableDataTec.push({ ...i }));
+                    //this.fieldsTec.push({ key: "Ciudad", sortable : true })
+                    response.data.fields.map(i => this.fieldsTec.push({ key: i, sortable : true }));
+                    this.totalRowsTec = this.tableDataTec.length;
+                    this.totalesTec = response.data.totales;
+                });
+            }
         },
         async getCity(){ 
             const response = await this.$http.get(this.$apiURL+'city/all');
-                console.log(response)
                 response.data.data.map(i => this.Ciudades.push( i.name ));
-                console.log(this.Ciudades)
+                this.CiudadId1 = this.Ciudades[0]
+                this.CiudadId2 = this.Ciudades[0]
+                this.CiudadId3 = this.Ciudades[0]
+                this.CiudadId4 = this.Ciudades[0]
         },
         async getRatioInstalaciones(){
             try {
-                this.pieChart=pieChart;
-
                 const response = await this.$http.get(this.$apiURL+'maintenance/childhoodbreakdownsgeneral');
+                this.previousRatioInstalacionesData = {
+                    series : response.data.series,
+                    labels : response.data.categories
+                }
                 this.pieChart.series = response.data.series;
                 this.pieChart.chartOptions.labels = response.data.categories;
             } catch (error) {
@@ -154,8 +300,12 @@ export default {
             try {
                 this.pieChart2=pieChart2;
                 const response = await this.$http.get(this.$apiURL+'maintenance/ineffectivedistributionratiographic');
+                this.previousRatioMantenimientoData = {
+                    series : response.data.series,
+                    labels : response.data.categories
+                }
                 this.pieChart2.series = response.data.series;
-                this.pieChart2.chartOptions.labels = response.data.categories ;
+                this.pieChart2.chartOptions.labels = response.data.categories;
             } catch (error) {
                 console.error(error);
             }

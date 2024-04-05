@@ -107,7 +107,7 @@ methods: {
      */
     async getData() {
         try {
-            const response = await this.$http.get('http://comfica_back.test:8084/api/reservation/all');
+            const response = await this.$http.get(this.$apiURL+'reservation/all');
             this.calendarOptions.events  = response.data.data;
             this.event.category = "Danger"
             console.log(this.calendarOptions.events)
@@ -178,7 +178,7 @@ methods: {
         console.log(eventData)
 
         // Aquí realizas la solicitud POST a tu API
-        this.$http.post('http://comfica_back.test:8084/api/reservation/store', eventData)
+        this.$http.post(this.$apiURL+'reservation/store', eventData)
             .then(response => {
                 console.log(response);
                 this.successmsg();

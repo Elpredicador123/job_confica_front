@@ -146,7 +146,7 @@ export default {
     },
     getFullImageUrl(relativeUrl) {
         console.log(relativeUrl)
-      return 'http://comfica_back.test:8084/storage/' + relativeUrl;
+      return this.$storageURL+"/" + relativeUrl;
     },
     async getData() {
         try {
@@ -160,7 +160,7 @@ export default {
     },
     async getData2() {
         try {
-            const response = await this.$http.get('http://comfica_back.test:8084/api/reservation/all');
+            const response = await this.$http.get(this.$apiURL+'reservation/all');
             this.calendarOptions2.events  = response.data.data;
             console.log(this.calendarOptions2.events)
             

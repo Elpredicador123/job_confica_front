@@ -1,5 +1,5 @@
 const { defineConfig } = require("@vue/cli-service");
-module.exports = {
+module.exports = defineConfig({
   transpileDependencies: ["@vueform"],
-  publicPath: "/minible/v-dark"
-};
+  publicPath: "/"
+});

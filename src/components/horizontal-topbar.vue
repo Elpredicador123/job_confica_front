@@ -1,5 +1,5 @@
 <script>
-import { menuItems } from "./horizontal-menu";
+import { filteredMenuItems } from "./horizontal-menu";
 
 import { layoutComputed, authFackMethods } from "@/state/helpers";
 
@@ -20,7 +20,7 @@ export default {
   },
   data() {
     return {
-      menuItems: menuItems,
+      menuItems: filteredMenuItems ,
       languages: [
         {
           flag: require("@/assets/images/flags/us.jpg"),

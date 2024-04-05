@@ -9,6 +9,7 @@ import VueApexCharts from "vue3-apexcharts";
 import CKEditor from "@ckeditor/ckeditor5-vue";
 import BootstrapVueNext from "bootstrap-vue-next";
 import VueSweetalert2 from 'vue-sweetalert2';
+
 import "simplebar";
 
 import { initFirebaseBackend } from "./helpers/firebase/authUtils";
