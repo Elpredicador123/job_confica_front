@@ -2,13 +2,16 @@
 import { useVuelidate } from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
 import Multiselect from "@vueform/multiselect";
-
+import Layout from "../../layouts/main";
+import PageHeader from "@/components/page-header";
 /**
  * Register component
  */
 export default {
   components: { 
-        Multiselect
+        Multiselect,
+        Layout,
+        PageHeader
     },
   setup() {
     return { v$: useVuelidate() };
@@ -17,7 +20,8 @@ export default {
     return {
       user: {
         username: "",
-        password: ""
+        password: "",
+        role_id : null,
       },
       roles: [],
       submitted: false,
@@ -32,6 +36,9 @@ export default {
         required
       },
       password: {
+        required
+      },
+      role_id: { 
         required
       }
     }
@@ -54,7 +61,7 @@ export default {
         const response = await this.$http.get(this.$apiURL + 'role/all');
         const rolesData = response.data.data;
             rolesData.forEach(role => {
-                this.roles.push(role.description);
+                this.roles.push(role);
             });
             console.log(this.roles)
     } catch (error) {
@@ -103,129 +110,127 @@ export default {
 </script>
 
 <template>
-  <div>
-    <div class="account-pages my-5 pt-sm-5">
-      <BContainer>
-        <BRow>
-          <BCol lg="12">
-            <div class="text-center">
-              <router-link to="/" class="mb-5 d-block auth-logo">
-                <img
-                  src="@/assets/images/logo-dark.png"
-                  alt
-                  height="22"
-                  class="logo logo-dark"
-                />
-                <img
-                  src="@/assets/images/logo-light.png"
-                  alt
-                  height="22"
-                  class="logo logo-light"
-                />
-              </router-link>
-            </div>
-          </BCol>
-        </BRow>
-        <BRow class="align-items-center justify-content-center">
-          <BCol md="8" lg="6" class="col-xl-5">
-            <BCard no-body>
-              <BCardBody class="p-4">
-                <div class="text-center mt-2">
-                  <h5 class="text-primary">Regístrate</h5>
-                </div>
-                <div class="p-2 mt-4">
-                  <div
-                    v-if="notification.message"
-                    :class="'alert ' + notification.type"
-                  >
-                    {{ notification.message }}
+  <Layout>
+    <PageHeader :title="title"/>
+        <BContainer>
+          <BRow>
+            <BCol lg="12">
+              <div class="text-center">
+                <router-link to="/" class="mb-5 d-block auth-logo">
+                  <img
+                    src="@/assets/images/logo-dark.png"
+                    alt
+                    height="22"
+                    class="logo logo-dark"
+                  />
+                  <img
+                    src="@/assets/images/logo-light.png"
+                    alt
+                    height="22"
+                    class="logo logo-light"
+                  />
+                </router-link>
+              </div>
+            </BCol>
+          </BRow>
+          <BRow class="align-items-center justify-content-center">
+            <BCol md="8" lg="6" class="col-xl-5">
+              <BCard no-body>
+                <BCardBody class="p-4">
+                  <div class="text-center mt-2">
+                    <h5 class="text-primary">Regístrate</h5>
                   </div>
-
-                  <BForm>
-                    <BFormGroup
-                      id="email-group"
-                      label="Usuario"
-                      class="mb-3"
-                      label-for="username"
+                  <div class="p-2 mt-4">
+                    <div
+                      v-if="notification.message"
+                      :class="'alert ' + notification.type"
                     >
-                      <BFormInput
-                        id="username"
-                        v-model="user.username"
-                        type="text"
-                        placeholder="Ingresar usuario"
-                        :class="{
-                          'is-invalid': submitted && v$.user.username.$error
-                        }"
-                      ></BFormInput>
-                      <div
-                        v-if="submitted && v$.user.username.required.$invalid"
-                        class="invalid-feedback"
-                      >
-                        Usuario es requerido.
-                      </div>
-                    </BFormGroup>
-
-                    <BFormGroup
-                      id="password-group"
-                      label="Contraseña"
-                      class="mb-3"
-                      label-for="password"
-                    >
-                      <BFormInput
-                        id="password"
-                        v-model="user.password"
-                        type="password"
-                        placeholder="Ingresar contraseña"
-                        :class="{
-                          'is-invalid': submitted && v$.user.password.$error
-                        }"
-                      ></BFormInput>
-                      <div
-                        v-if="submitted && v$.user.password.required.$invalid"
-                        class="invalid-feedback"
-                      >
-                        Contraseña es requerida.
-                      </div>
-                    </BFormGroup>
-                    <BFormGroup
-                      label="Rol"
-                      label-for="formrow-firstname-input"
-                      class="mb-12">
-                      <Multiselect
-                          v-model="user.rol"
-                          required
-                          :options="roles"
-                          class="form-control p-0"
-                      />
-                    </BFormGroup>
-                    <div class="mt-3 text-end">
-                      <BButton
-                        variant="primary"
-                        class="w-sm"
-                        @click="tryToRegisterIn"
-                        >Register</BButton
-                      >
+                      {{ notification.message }}
                     </div>
 
-                    <div class="mt-4 text-center">
-                      <p class="text-muted mb-0">
-                        Already have an account ?
-                        <router-link to="/login" class="fw-medium text-primary"
-                          >Login</router-link
+                    <BForm>
+                      <BFormGroup
+                        id="email-group"
+                        label="Usuario"
+                        class="mb-3"
+                        label-for="username"
+                      >
+                        <BFormInput
+                          id="username"
+                          v-model="user.username"
+                          type="text"
+                          placeholder="Ingresar usuario"
+                          :class="{
+                            'is-invalid': submitted && v$.user.username.$error
+                          }"
+                        ></BFormInput>
+                        <div
+                          v-if="submitted && v$.user.username.required.$invalid"
+                          class="invalid-feedback"
                         >
-                      </p>
-                    </div>
-                  </BForm>
-                </div>
-                <!-- end card-body -->
-              </BCardBody>
-              <!-- end card -->
-            </BCard>
-          </BCol>
-          <!-- end col -->
-        </BRow>
-      </BContainer>
-    </div>
-    <!-- end row -->
-  </div>
+                          Usuario es requerido.
+                        </div>
+                      </BFormGroup>
+
+                      <BFormGroup
+                        id="password-group"
+                        label="Contraseña"
+                        class="mb-3"
+                        label-for="password"
+                      >
+                        <BFormInput
+                          id="password"
+                          v-model="user.password"
+                          type="password"
+                          placeholder="Ingresar contraseña"
+                          :class="{
+                            'is-invalid': submitted && v$.user.password.$error
+                          }"
+                        ></BFormInput>
+                        <div
+                          v-if="submitted && v$.user.password.required.$invalid"
+                          class="invalid-feedback"
+                        >
+                          Contraseña es requerida.
+                        </div>
+                      </BFormGroup>
+                      <BFormGroup
+                        label="Rol"
+                        label-for="formrow-firstname-input"
+                        class="mb-12">
+                        <Multiselect
+                            v-model="user.role_id"
+                            required
+                            :options="roles.map(role => ({ value: role.id, label: role.description }))"
+                            class="form-control p-0"
+                        />
+                      </BFormGroup>
+                      <div class="mt-3 text-end">
+                        <BButton
+                          variant="primary"
+                          class="w-sm"
+                          @click="tryToRegisterIn"
+                          >Register</BButton
+                        >
+                      </div>
+
+                      <div class="mt-4 text-center">
+                        <p class="text-muted mb-0">
+                          Already have an account ?
+                          <router-link to="/login" class="fw-medium text-primary"
+                            >Login</router-link
+                          >
+                        </p>
+                      </div>
+                    </BForm>
+                  </div>
+                  <!-- end card-body -->
+                </BCardBody>
+                <!-- end card -->
+              </BCard>
+            </BCol>
+            <!-- end col -->
+          </BRow>
+        </BContainer>
+  </Layout>
 </template>

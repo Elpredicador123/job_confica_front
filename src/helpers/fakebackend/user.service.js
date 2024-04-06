@@ -25,10 +25,10 @@ function login(username, password) {
             if (user.user) {
                 localStorage.setItem('user', JSON.stringify(user.user));
                 // Guardar roles y permisos
-                localStorage.setItem('user-roles', JSON.stringify(user.user.roles));
-                localStorage.setItem('user-permissions', JSON.stringify(user.user.roles[0].permissions));
+                localStorage.setItem('user-roles', JSON.stringify(user.roles));
+                localStorage.setItem('user-permissions', JSON.stringify(user.permissions));
                 // Actualiza el estado en Vuex
-                store.commit('auth/SET_USER_PERMISSIONS', user.user.roles[0].permissions);
+                store.commit('auth/SET_USER_PERMISSIONS', user.permissions);
             }
             return user;
         });
