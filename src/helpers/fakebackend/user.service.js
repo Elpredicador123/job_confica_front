@@ -16,7 +16,8 @@ function login(username, password) {
         body: JSON.stringify({ username, password })
     };
 
-    return fetch(`http://comfica_back.test:8084/api/login`, requestOptions)
+    //return fetch(`http://comfica_back.test:8084/api/login`, requestOptions)
+    return fetch(`http://localhost:8000/api/login`, requestOptions)
         .then(handleResponse)
         .then(user => {
             if (user.token) {
