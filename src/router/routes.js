@@ -22,26 +22,6 @@ export default [
     }
   },
   {
-    path: "/register",
-    name: "register",
-    component: () => import("../views/pages/account/register"),
-    meta: {
-      title: "Register",
-      beforeResolve(routeTo, routeFrom, next) {
-        // If the user is already logged in
-        if (store.getters["auth/loggedIn"]) {
-          // Redirect to the home page instead
-          next({
-            name: "home"
-          });
-        } else {
-          // Continue to the login page
-          next();
-        }
-      }
-    }
-  },
-  {
     path: "/forgot-password",
     name: "Forgot-password",
     component: () => import("../views/pages/account/forgot-password"),
@@ -204,9 +184,9 @@ export default [
     component: () => import("../views/pages/usuarios/index")
   },
   {
-    path: "/register",
-    name: "Usuarios",
-    meta: { title: "Usuarios", authRequired: true },
-    component: () => import("../views/pages/account/register")
+    path: "/usuarios/create",
+    name: "Registrar usuario",
+    meta: { title: "Registrar usuario", authRequired: true,permissions: ['C_USER'] },
+    component: () => import("../views/pages/usuarios/create")
   },
 ];

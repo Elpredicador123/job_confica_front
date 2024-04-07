@@ -239,7 +239,7 @@ export const menuItems = [
             {
                 id: 33,
                 label: "menuitems.usuarios.list.create",
-                link: "/register",
+                link: "/usuarios/create",
                 parentId: 19,
                 meta: {
                     permissions: ['C_USER'] // Permisos necesarios para acceder a este elemento del menú

@@ -137,7 +137,7 @@ export default {
         // Establecer intervalo para obtener datos de la API cada 5 minutos
         setInterval(() => {
             this.updateDataIfChanged();
-        }, 300000);
+        }, 100000);
     },
     methods:{
         onFiltered(filteredItems) {
@@ -258,8 +258,8 @@ export default {
 
         dataChanged(previousData, currentData) {
             if( currentData == undefined){ return false}
-            console.log(previousData)
-            console.log(currentData)
+            console.log(JSON.stringify(previousData))
+            console.log(JSON.stringify(currentData))
             return JSON.stringify(previousData) !== JSON.stringify(currentData);
         },
         async getGestorAgenda(){

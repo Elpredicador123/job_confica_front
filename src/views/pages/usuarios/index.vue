@@ -1,231 +1,161 @@
 <script>
-import { useVuelidate } from "@vuelidate/core";
-import { required } from "@vuelidate/validators";
-import Multiselect from "@vueform/multiselect";
-
-/**
- * Register component
- */
+import Layout from "../../layouts/main";
+import PageHeader from "@/components/page-header";
+import UserModal from "./edit.vue";
 export default {
-  components: { 
-        Multiselect
+    components: { 
+        Layout,
+        PageHeader,
+        UserModal
     },
-  setup() {
-    return { v$: useVuelidate() };
-  },
-  data() {
-    return {
-      user: {
-        username: "",
-        password: ""
-      },
-      roles: [],
-      submitted: false,
-      tryingToRegister: false,
-      isRegisterError: false,
-      title: "Register"
-    };
-  },
-  validations: {
-    user: {
-      username: {
-        required
-      },
-      password: {
-        required
-      }
-    }
-  },
-  computed: {
-    notification() {
-      return this.$store ? this.$store.state.notification : null;
-    },
-    notificationAutoCloseDuration() {
-      return this.$store && this.$store.state.notification ? 5 : 0;
-    }
-  },
-  mounted() {
-    document.body.classList.add("authentication-bg");
-    this.getRol();
-  },
-  methods: {
-    async getRol(){
-      try {
-        const response = await this.$http.get(this.$apiURL + 'role/all');
-        const rolesData = response.data.data;
-            rolesData.forEach(role => {
-                this.roles.push(role.description);
-            });
-            console.log(this.roles)
-    } catch (error) {
-        console.error('Error fetching roles:', error);
-    }
-    },
-    // Try to register the user in with the email, username
-    // and password they provided.
-    tryToRegisterIn() {
-      this.submitted = true;
-      // stop here if form is invalid
-      this.v$.$touch();
-
-      if (this.v$.$invalid) {
-        return;
-      } else {
-          const { username, password } = this.user;
-          if (username && password) {
-            this.$http.post(this.$apiURL+'user/store', this.user, {
-            }).then(response => {
-                if(response.status == 200){                  
-                  this.$swal({
-                      title: 'Completado!',
-                      text:  response.data.message,
-                      icon: 'success',
-                      confirmButtonColor: '#6457A2', // Cambiar el color del botón de confirmación
-                  });
-                  setTimeout(() => {
-                        window.location.reload();
-                    }, 2000);
+    data(){
+        return {
+            //--------------------
+            itemsUser: [
+                {
+                    text: "Charts",
+                    href: "/"
+                },
+                {
+                    text: "Apex",
+                    active: true
                 }
-            }).catch(error => {
+            ],
+            tableDataUser: [],
+            totalRowsUser: 1,
+            currentPageUser: 1,
+            perPageUser: 25,
+            pageOptionsUser: [10,25,50,100],
+            filterOnUser: [],
+            filterUser: null,
+            sortByUser: "age",
+            sortDescUser: false,
+            fieldsUser: [
+                {
+                    key: "id",
+                    sortable: true
+                },
+                {
+                    key: "username",
+                    sortable: true
+                },
+                {
+                    key: "rol",
+                    sortable: true
+                },
+                {
+                    key: "actions",
+                    sortable: true
+                }
+            ],
+        }
+    },
+    mounted(){
+        this.totalRowsUser = this.itemsUser.length;
+        this.getTableUser();
+    },
+    methods: {
+        onFilteredUser(filteredItems) {
+            // Trigger pagination to update the number of buttons/pages due to filtering
+            this.totalRowsUser = filteredItems.length;
+            this.currentPageUser = 1;
+        },
+        async getTableUser(){
+          console.log("hola")
+            try {
+                const response = await this.$http.get(this.$apiURL+'user/all');
+                console.log(response)
+                response.data.data.map(i => this.tableDataUser.push({ ...i }));
+                //this.fieldsUser.push({ key: "Ciudad", sortable : true })
+                this.totalRowsUser = this.tableDataUser.length;
+            } catch (error) {
                 console.error(error);
-                  this.$swal({
-                    icon: "error",
-                    title: "Oops...",
-                    text: error,
-                  });
-            });
-          }
-          
-      }
-    }
-  }
-};
+            }
+        },
+        editItem(item) {
+            console.log("Editar item", item);
+            this.selectedItem = JSON.parse(JSON.stringify(item)); // Realiza una copia profunda del ítem
+            this.$refs.UserModal.open(this.selectedItem);
+        }
+    },
+    middleware: "authentication"
+}
 </script>
-
 <template>
-  <div>
-    <div class="account-pages my-5 pt-sm-5">
-      <BContainer>
+        <Layout>
+        <PageHeader :title="title" :items="items" />
         <BRow>
-          <BCol lg="12">
-            <div class="text-center">
-              <router-link to="/" class="mb-5 d-block auth-logo">
-                <img
-                  src="@/assets/images/logo-dark.png"
-                  alt
-                  height="22"
-                  class="logo logo-dark"
-                />
-                <img
-                  src="@/assets/images/logo-light.png"
-                  alt
-                  height="22"
-                  class="logo logo-light"
-                />
-              </router-link>
-            </div>
-          </BCol>
+            <BCol cols="12">
+                <BCard no-body>
+                    <BCardBody>
+                        <BCardTitle>Listado de Usuarios</BCardTitle>
+                        <BRow class="mt-4">
+                            <BCol sm="12" md="6">
+                                <div id="tickets-table_length" class="dataTables_length">
+                                    <label class="d-inline-flex align-items-center">
+                                        Show&nbsp;
+                                        <BFormSelect
+                                            v-model="perPageUser"
+                                            size="sm"
+                                            :options="pageOptionsUser"
+                                        ></BFormSelect
+                                        >&nbsp;entries
+                                    </label>
+                                </div>
+                            </BCol>
+                            <!-- Search -->
+                            <div class="col-sm-12 col-md-6">
+                                <div id="tickets-table_filter" class="dataTables_filter text-md-end">
+                                    <label class="d-inline-flex align-items-center">
+                                        Search:
+                                        <BFormInput
+                                        v-model="filterUser"
+                                        type="search"
+                                        placeholder="Search..."
+                                        class="form-control form-control-sm ms-2"
+                                        ></BFormInput>
+                                    </label>
+                                </div>
+                            </div>
+                            <!-- End search -->
+                        </BRow>
+                        <!-- Table -->
+                        <div class="table-responsive mb-0">
+                            <BTable
+                                :items="tableDataUser"
+                                :fields="fieldsUser"
+                                responsive="sm"
+                                :per-page="perPageUser"
+                                :current-page="currentPageUser"
+                                :sort-by.sync="sortByUser"
+                                :sort-desc.sync="sortDescUser"
+                                :filter="filterUser"
+                                :filter-included-fields="filterOnUser"
+                                @filtered="onFilteredUser">
+                              <template #cell(actions)="{ item }">
+                                  <!-- Agregar botón de edición -->
+                                  <BButton @click="editItem(item)" variant="info">Editar</BButton>
+                              </template>
+                            </BTable>
+                        </div>
+                    <BRow>
+                        <BCol>
+                            <div class="dataTables_paginate paging_simple_numbers float-end">
+                                <ul class="pagination pagination-rounded mb-0">
+                                    <!-- pagination -->
+                                    <BPagination
+                                        v-model="currentPageUser"
+                                        :total-rows="totalRowsUser"
+                                        :per-page="perPageUser"
+                                    ></BPagination>
+                                </ul>
+                            </div>
+                        </BCol>
+                    </BRow>
+                    </BCardBody>
+                </BCard>
+            </BCol>
         </BRow>
-        <BRow class="align-items-center justify-content-center">
-          <BCol md="8" lg="6" class="col-xl-5">
-            <BCard no-body>
-              <BCardBody class="p-4">
-                <div class="text-center mt-2">
-                  <h5 class="text-primary">Regístrate</h5>
-                </div>
-                <div class="p-2 mt-4">
-                  <div
-                    v-if="notification.message"
-                    :class="'alert ' + notification.type"
-                  >
-                    {{ notification.message }}
-                  </div>
-
-                  <BForm>
-                    <BFormGroup
-                      id="email-group"
-                      label="Usuario"
-                      class="mb-3"
-                      label-for="username"
-                    >
-                      <BFormInput
-                        id="username"
-                        v-model="user.username"
-                        type="text"
-                        placeholder="Ingresar usuario"
-                        :class="{
-                          'is-invalid': submitted && v$.user.username.$error
-                        }"
-                      ></BFormInput>
-                      <div
-                        v-if="submitted && v$.user.username.required.$invalid"
-                        class="invalid-feedback"
-                      >
-                        Usuario es requerido.
-                      </div>
-                    </BFormGroup>
-
-                    <BFormGroup
-                      id="password-group"
-                      label="Contraseña"
-                      class="mb-3"
-                      label-for="password"
-                    >
-                      <BFormInput
-                        id="password"
-                        v-model="user.password"
-                        type="password"
-                        placeholder="Ingresar contraseña"
-                        :class="{
-                          'is-invalid': submitted && v$.user.password.$error
-                        }"
-                      ></BFormInput>
-                      <div
-                        v-if="submitted && v$.user.password.required.$invalid"
-                        class="invalid-feedback"
-                      >
-                        Contraseña es requerida.
-                      </div>
-                    </BFormGroup>
-                    <BFormGroup
-                      label="Rol"
-                      label-for="formrow-firstname-input"
-                      class="mb-12">
-                      <Multiselect
-                          v-model="user.rol"
-                          required
-                          :options="roles"
-                          class="form-control p-0"
-                      />
-                    </BFormGroup>
-                    <div class="mt-3 text-end">
-                      <BButton
-                        variant="primary"
-                        class="w-sm"
-                        @click="tryToRegisterIn"
-                        >Register</BButton
-                      >
-                    </div>
-
-                    <div class="mt-4 text-center">
-                      <p class="text-muted mb-0">
-                        Already have an account ?
-                        <router-link to="/login" class="fw-medium text-primary"
-                          >Login</router-link
-                        >
-                      </p>
-                    </div>
-                  </BForm>
-                </div>
-                <!-- end card-body -->
-              </BCardBody>
-              <!-- end card -->
-            </BCard>
-          </BCol>
-          <!-- end col -->
-        </BRow>
-      </BContainer>
-    </div>
-    <!-- end row -->
-  </div>
+        <UserModal ref="UserModal"></UserModal>
+    </Layout>
 </template>
