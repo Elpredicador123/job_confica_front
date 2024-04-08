@@ -47,7 +47,7 @@ export default {
                 title: null,
                 Autor : user.username,
                 date : moment().format('YYYY-MM-DD HH:mm:ss'),
-                url : "aas",
+                url : "aa",
                 
             };
             this.dPDefaultDate = null;
@@ -70,8 +70,10 @@ export default {
             
         },
         gallerySelectedFile() {
-            this.galleryDropzoneFile = document.querySelector(".galleryDropzoneFile").files;
-            this.DropFile = []; // Eliminar los archivos existentes
+            this.galleryDropzoneFile = document.querySelector(
+                ".galleryDropzoneFile"
+            ).files;
+            this.DropFile.push(this.galleryDropzoneFile)
             const finalFile = Object.values(this.galleryDropzoneFile).map((file) => {
                 return {
                     name: file.name,
@@ -81,7 +83,13 @@ export default {
                     size: file.size
                 };
             });
-            this.galleryFiles = finalFile;
+            this.galleryFiles.push(...finalFile);
+            this.galleryFiles = this.galleryFiles.map((data, index) => {
+                return {
+                id: index + 1,
+                ...data
+                };
+            });
         },
 
         async submit(){
@@ -92,7 +100,7 @@ export default {
             });
 
             // Agrega los archivos
-
+            console.log(this.DropFile)
             if (this.DropFile && this.DropFile.length > 0) {
                 for (let i = 0; i < this.DropFile.length; i++) {
                     formData.append("file", this.DropFile[i][0]); // Utiliza "files" en lugar de "files[]"
@@ -176,7 +184,7 @@ export default {
       <BCol lg="12">
           <BCard no-body>
             <BCardBody>
-              <div>
+              <div v-if="galleryFiles.length ==0">
                 <DropZone
                   files="files"
                   cloudIcon="remix"

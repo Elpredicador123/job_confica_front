@@ -41,8 +41,10 @@ const  app =createApp(App)
 app.config.globalProperties.$http = axiosInstance; // Provee Axios globalmente
 // COLOCAR LA URL DE LA API en app
 app.config.globalProperties.$apiURL = 'https://back.sistemastest.xyz/api/';
-//app.config.globalProperties.$apiURL = 'http://comfica_back.test:8084/api/';
+app.config.globalProperties.$storageURL = "https://back.sistemastest.xyz/storage";
 
+//app.config.globalProperties.$apiURL = 'http://comfica_back.test:8084/api/';
+//app.config.globalProperties.$storageURL = 'http://comfica_back.test:8084/storage';
 
 
   app.use(store)
