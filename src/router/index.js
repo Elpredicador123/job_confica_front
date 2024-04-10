@@ -36,6 +36,7 @@ router.beforeEach((routeTo, routeFrom, next) => {
         const hasPermissions = routeTo.meta.permissions.every(permissionKey =>
             userPermissions.some(userPermission => userPermission.key === permissionKey)
         );
+        console.log(userPermissions,routeTo.meta.permissions)
 
         if (!hasPermissions) {
             return next({ path: '/utility/404' }); // Asegúrate de tener esta ruta definida.

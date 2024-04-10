@@ -26,7 +26,7 @@ export const menuItems = [
             {
                 id: 92,
                 label: "menuitems.news.list.create",
-                link: "/news/create/",
+                link: "/news/create",
                 parentId: 2,
                 meta: {
                     permissions: ['C_NEWS'] // Permisos necesarios para acceder a este elemento del menú
