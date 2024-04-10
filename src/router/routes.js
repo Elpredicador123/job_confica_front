@@ -52,7 +52,7 @@ export default [
         next(
           authRequiredOnPreviousRoute
             ? {
-                name: "home"
+                name: "Principal"
               }
             : {
                 ...routeFrom

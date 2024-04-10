@@ -47,6 +47,8 @@ router.beforeEach((routeTo, routeFrom, next) => {
 });
 
 router.beforeResolve(async (routeTo, routeFrom, next) => {
+    console.log(routeTo)
+    console.log(routeFrom)
     try {
         for (const route of routeTo.matched) {
             await new Promise((resolve, reject) => {
