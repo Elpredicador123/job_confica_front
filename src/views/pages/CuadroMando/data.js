@@ -1,6 +1,6 @@
 const columnChart = {
   series: [
-
+    {}
   ],
   chartOptions: {
     chart: {
@@ -12,11 +12,19 @@ const columnChart = {
       bar: {
         horizontal: false,
         columnWidth: "45%",
-        endingShape: "rounded"
+        endingShape: "rounded",
+        dataLabels: {
+          position: 'top' // Establece la posición de las etiquetas de datos encima de las barras
+        }
       }
     },
     dataLabels: {
-      enabled: false
+      enabled: true,
+      offsetY: -20, // Ajusta la posición vertical de las etiquetas de datos
+      style: {
+          fontSize: '12px',
+          colors: ['#000']
+      }
     },
     stroke: {
       show: true,
@@ -26,12 +34,12 @@ const columnChart = {
     colors: ['#10b07a', '#dc3545', '#f1b44c'],
     xaxis: {
       categories: [
-        
+        {}
       ]
     },
     yaxis: {
       title: {
-        text: "$ (thousands)"
+        text: ""
       }
     },
     grid: {
@@ -44,7 +52,7 @@ const columnChart = {
 };
 const columnChart2 = {
   series: [
-    
+    {}
   ],
   chartOptions: {
     chart: {
@@ -56,11 +64,19 @@ const columnChart2 = {
       bar: {
         horizontal: false,
         columnWidth: "45%",
-        endingShape: "rounded"
+        endingShape: "rounded",
+        dataLabels: {
+          position: 'top' // Establece la posición de las etiquetas de datos encima de las barras
+        }
       }
     },
     dataLabels: {
-      enabled: false
+      enabled: true,
+      offsetY: -20, // Ajusta la posición vertical de las etiquetas de datos
+      style: {
+          fontSize: '12px',
+          colors: ['#000']
+      }
     },
     stroke: {
       show: true,
@@ -70,12 +86,12 @@ const columnChart2 = {
     colors: ['#10b07a', '#dc3545', '#f1b44c'],
     xaxis: {
       categories: [
-        
+        {}
       ]
     },
     yaxis: {
       title: {
-        text: "$"
+        text: ""
       }
     },
     grid: {

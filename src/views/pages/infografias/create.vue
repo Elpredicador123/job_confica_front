@@ -33,6 +33,8 @@ export default {
             galleryDropzoneFile: "",
             galleryFiles: [],
             DropFile : [],
+            is_video : false,
+            url_envio : ""
         };
   },
   async created(){
@@ -109,7 +111,13 @@ export default {
 
             // Realiza la petición con Axios
             console.log(formData)
-            this.$http.post(this.$apiURL+'video/store', formData, {
+            if(this.is_video == true){
+              this.url_envio = "video/store"
+            }
+            else{
+              this.url_envio = "infographic/store"
+            }
+            this.$http.post(this.$apiURL+this.url_envio, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
@@ -180,6 +188,22 @@ export default {
                   </BRow>
                 </BCardBody>
             </BCard>
+        </BCol>
+        <BCol lg="2">
+          <BCard no-body>
+            <BCardBody>
+              <p>Es video?</p>
+              <BFormGroup class="form-radio-secondary">
+                <BFormCheckbox
+                  v-model="is_video"
+                  switch
+                  variant="secondary"
+                  size="lg"
+                >
+                </BFormCheckbox>
+              </BFormGroup>
+            </BCardBody>
+          </BCard>
         </BCol>
       <BCol lg="12">
           <BCard no-body>

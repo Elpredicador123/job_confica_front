@@ -150,9 +150,9 @@ export default {
         this.getRatioInstalaciones();
         this.getRatioMantenimientos();
         this.getTableAgendaPorDias();
-        setInterval(() => {
-                this.updateDataIfChanged();
-            }, 300000);
+        // setInterval(() => {
+        //         this.updateDataIfChanged();
+        //     }, 300000);
     },
     methods:{
         onFiltered(filteredItems) {
@@ -420,12 +420,14 @@ export default {
             try {
                 const response = await this.$http.get(this.$apiURL+'control-panel/installationprogressgraphic');
                 console.log(response)
-                this.PreviusChartInstalaciones = {
-                    series: response.data.series,
-                    categories: response.data.categories
-                };
-                this.columnChart.series = response.data.series;
-                this.columnChart.chartOptions.xaxis.categories = response.data.categories;
+                if (response.data.series && response.data.categories) {
+                    this.PreviusChartInstalaciones = {
+                        series: response.data.series,
+                        categories: response.data.categories
+                    };
+                    this.columnChart.series = response.data.series;
+                    this.columnChart.chartOptions.xaxis.categories = response.data.categories;
+                }
             } catch (error) {
                 console.error(error);
             }
@@ -433,12 +435,18 @@ export default {
         async getMantenimientos() {
             try {
                 const response = await this.$http.get(this.$apiURL+'control-panel/maintenanceprogressgraphic');
-                this.previousMantenimientosData = {
-                    series: response.data.series,
-                    categories: response.data.categories
-                };
-                this.columnChart2.series = response.data.series;
-                this.columnChart2.chartOptions.xaxis.categories = response.data.categories;
+                if (response.data.series && response.data.categories) {
+                    // Si ambos series y categories están definidos y no son nulos
+                    this.previousMantenimientosData = {
+                        series: response.data.series,
+                        categories: response.data.categories
+                    };
+                    this.columnChart2.series = response.data.series;
+                    this.columnChart2.chartOptions.xaxis.categories = response.data.categories;
+                } else {
+                    // Si uno o ambos son nulos o no están definidos
+                    console.error("No se encontraron datos de series o categorías.");
+                }
             } catch (error) {
                 console.error(error);
             }
@@ -470,7 +478,7 @@ export default {
             }
         },
         dataChanged(previousData, currentData) {
-            if(currentData == undefined){ return false}
+            if(currentData == undefined || previousData == undefined){ return false}
             console.log(previousData)
             console.log(currentData)
             return JSON.stringify(previousData) !== JSON.stringify(currentData);

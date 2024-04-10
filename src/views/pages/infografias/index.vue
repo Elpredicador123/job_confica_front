@@ -10,7 +10,6 @@ export default {
   components: { Layout, PageHeader,InfografiaModal },
     data() {
         return {
-            tableData: [],
             title: "Infografías",
             items: [
                 {
@@ -22,6 +21,8 @@ export default {
                 active: true
                 }
             ],
+            //--------------------------
+            tableData: [],
             totalRows: 1,
             currentPage: 1,
             perPage: 10,
@@ -31,6 +32,37 @@ export default {
             sortBy: "age",
             sortDesc: false,
             fields: [
+                {
+                    key: "id",
+                    sortable: true
+                },
+                {
+                    key: "title",
+                    sortable: true
+                },
+                {
+                    key: "url",
+                    sortable: true
+                },
+                {
+                    key: "Autor",
+                    sortable: true
+                },
+                {
+                    key: "actions",
+                }
+            ],
+            //--------------------------
+            tableInfografia: [],
+            totalRowsInfografia: 1,
+            currentPageInfografia: 1,
+            perPageInfografia: 10,
+            pageOptionsInfografia: [10, 25, 50, 100],
+            filterInfografia: null,
+            filterOnInfografia: [],
+            sortByInfografia: "age",
+            sortDescInfografia: false,
+            fieldsInfografia: [
                 {
                     key: "id",
                     sortable: true
@@ -63,7 +95,8 @@ export default {
     // },
     mounted() {
         // Set the initial number of items
-        this.totalRows = this.items.length;
+        this.totalRows = this.tableData.length;
+        this.totalRowsInfografia = this.tableInfografia.length;
         //obtener datos de la api
         this.getData();
     },
@@ -72,6 +105,11 @@ export default {
             // Trigger pagination to update the number of buttons/pages due to filtering
             this.totalRows = filteredItems.length;
             this.currentPage = 1;
+        },
+        onFilteredInfografia(filteredItems) {
+            // Trigger pagination to update the number of buttons/pages due to filtering
+            this.totalRowsInfografia = filteredItems.length;
+            this.currentPageInfografia = 1;
         },
         async getData() {
             try {
@@ -167,6 +205,87 @@ export default {
                                     v-model="currentPage"
                                     :total-rows="totalRows"
                                     :per-page="perPage"
+                                    ></BPagination>
+                                </ul>
+                                </div>
+                            </BCol>
+                        </BRow>
+                    </BCardBody>
+                </BCard>
+            </BCol>
+
+            <BCol cols="12">
+                <BCard no-body>
+                    <BCardBody>
+                        <BRow class="mt-4">
+                            <BCol sm="12" md="6">
+                                <div id="tickets-table_length" class="dataTables_length">
+                                <label class="d-inline-flex align-items-center">
+                                    Show&nbsp;
+                                    <BFormSelect
+                                    v-model="perPageInfografia"
+                                    size="sm"
+                                    :options="pageOptionsInfografia"
+                                    ></BFormSelect
+                                    >&nbsp;entries
+                                </label>
+                                </div>
+                            </BCol>
+                            <!-- Search -->
+                            <div class="col-sm-12 col-md-6">
+                                <div
+                                id="tickets-table_filter"
+                                class="dataTables_filter text-md-end"
+                                >
+                                <label class="d-inline-flex align-items-center">
+                                    Search:
+                                    <BFormInput
+                                    v-model="filterInfografia"
+                                    type="search"
+                                    placeholder="Search..."
+                                    class="form-control form-control-sm ms-2"
+                                    ></BFormInput>
+                                </label>
+                                </div>
+                            </div>
+                            <!-- End search -->
+                        </BRow>
+                        <!-- Table -->
+                        <div class="table-responsive mb-0">
+                            <BTable
+                                :items="tableInfografia"
+                                :fields="fieldsInfografia"
+                                responsive="sm"
+                                :per-page="perPageInfografia"
+                                :current-page="currentPageInfografia"
+                                :sort-by.sync="sortByInfografia"
+                                :sort-desc.sync="sortDescInfografia"
+                                :filter="filterInfografia"
+                                :filter-included-fields="filterOnInfografia"
+                                @filtered="onFilteredInfografia"
+                            >
+                            <template #cell(url)="data">
+                                <a :href="`${this.$storageURL}/${data.item.url}`" target="_blank" rel="noopener noreferrer" download>
+                                    <i class="fas fa-download"></i> Descargar
+                                </a>
+                            </template>
+                            <template #cell(actions)="{ item }">
+                                <!-- Agregar botón de edición -->
+                                <BButton @click="editItem(item)" variant="info">Editar</BButton>
+                            </template>
+                            </BTable>
+                        </div>
+                        <BRow>
+                            <BCol>
+                                <div
+                                class="dataTables_paginate paging_simple_numbers float-end"
+                                >
+                                <ul class="pagination pagination-rounded mb-0">
+                                    <!-- pagination -->
+                                    <BPagination
+                                    v-model="currentPageInfografia"
+                                    :total-rows="totalRowsInfografia"
+                                    :per-page="perPageInfografia"
                                     ></BPagination>
                                 </ul>
                                 </div>

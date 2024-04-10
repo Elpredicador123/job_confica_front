@@ -9,13 +9,11 @@ export default [
       title: "Log in",
       beforeResolve(routeTo, routeFrom, next) {
         // If the user is already logged in
-        if (store.getters["auth/loggedIn"]) {
-          // Redirect to the home page instead
-          next({
-            name: "home"
-          });
+        if (localStorage.getItem("user")) {
+          // Si existe la clave "user" en el localStorage, redirige a la página principal
+          next({ name: "Inicio" });
         } else {
-          // Continue to the login page
+          // Si no existe la clave "user" en el localStorage, continúa con la página de inicio de sesión
           next();
         }
       }
