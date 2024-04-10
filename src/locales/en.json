@@ -185,17 +185,7 @@
       }
     },
     "utility": {
-      "text": "Utility",
-      "list": {
-        "starter": "Starter Page",
-        "comingsoon": "Coming soon",
-        "maintenance": "Maintenance",
-        "timeline": "Timeline",
-        "faqs": "FAQs",
-        "pricing": "Pricing",
-        "error404": "Error 404",
-        "error500": "Error 500"
-      }
+      "text": "Error 404"
     },
     "components": {
       "text": "Components"

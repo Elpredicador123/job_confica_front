@@ -526,7 +526,7 @@ export default {
             </BCardBody>
         </BCard>
     </BCol>
-    <BCol cols="4">
+    <BCol lg="4">
         <BCard no-body>
             <BCardBody>
                 <BCardTitle>Producción Día : S/{{ totalesPorDia }}</BCardTitle>
@@ -603,7 +603,7 @@ export default {
 
     <!-- end row -->
     <div class="row">
-        <BCol cols="6">
+        <BCol lg="6">
             <BCard no-body>
                 <BCardBody>
                     <BCardTitle>Instalaciones</BCardTitle>
@@ -675,7 +675,7 @@ export default {
                 </BCardBody>
             </BCard>
         </BCol>
-        <BCol cols="6">
+        <BCol lg="6">
             <BCard no-body>
                 <BCardBody>
                     <BCardTitle>Mantenimientos</BCardTitle>
@@ -750,7 +750,7 @@ export default {
     </div>
     <div class="row">
         
-        <BCol cols="12">
+        <BCol lg="12">
             <BCard no-body>
                 <BCardBody>
                     <BCardTitle>Agenda a 7 días</BCardTitle>

@@ -371,7 +371,7 @@ export default {
                 </BCardBody>
             </BCard>
         </BCol>
-        <BCol cols="6">
+        <BCol lg="6">
             <BCard no-body>
                 <BCardBody>
                     <BCardTitle>Averías de infancia - Sup</BCardTitle>
@@ -457,7 +457,7 @@ export default {
                 </BCardBody>
             </BCard>
         </BCol>
-        <BCol cols="6">
+        <BCol lg="6">
             <BCard no-body>
                 <BCardBody>
                     <BCardTitle>Averías de infancia - Tec</BCardTitle>

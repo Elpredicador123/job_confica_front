@@ -382,7 +382,7 @@ export default {
                 </BCardBody>
             </BCard>
         </BCol>
-        <BCol cols="6">
+        <BCol lg="6">
             <BCard no-body>
                 <BCardBody>
                     <BCardTitle>Averías Reiteradas - Sup</BCardTitle>
@@ -468,7 +468,7 @@ export default {
                 </BCardBody>
             </BCard>
         </BCol>
-        <BCol cols="6">
+        <BCol lg="6">
             <BCard no-body>
                 <BCardBody>
                     <BCardTitle>Averías Reiteradas - Tec</BCardTitle>

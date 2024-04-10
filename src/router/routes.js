@@ -64,13 +64,13 @@ export default [
   {
     path: "",
     name: "Principal",
-    meta: { title: "Principal", authRequired: true},
+    meta: { title: "Principal", authRequired: true,permissions: ['PRINCIPAL']},
     component: () => import("../views/pages/principal/index")
   },
   {
     path: "/principal",
     name: "Inicio",
-    meta: { title: "Principal", authRequired: true},
+    meta: { title: "Principal", authRequired: true,permissions: ['PRINCIPAL']},
     component: () => import("../views/pages/principal/index")
   },
   {
@@ -186,5 +186,11 @@ export default [
     name: "Registrar usuario",
     meta: { title: "Registrar usuario", authRequired: true,permissions: ['C_USER'] },
     component: () => import("../views/pages/usuarios/create")
+  },
+  {
+    path: "/utility/404",
+    name: "utility",
+    meta: { title: "utility", authRequired: true,permissions: ['PRINCIPAL']},
+    component: () => import("../views/pages/utility/404")
   },
 ];

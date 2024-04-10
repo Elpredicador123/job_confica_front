@@ -165,7 +165,7 @@ export default {
         </BCardBody>
             </BCard>
         </BCol>
-        <BCol cols="6">
+        <BCol lg="6">
             <BCard no-body>
                 <BCardBody>
                     <BCardTitle>Titulo</BCardTitle>
@@ -174,7 +174,7 @@ export default {
                 </BCardBody>
             </BCard>
         </BCol>
-      <BCol cols="6">
+      <BCol lg="6">
         <BCard no-body>
           <BCardBody>
             <BCardTitle>Descripción</BCardTitle>

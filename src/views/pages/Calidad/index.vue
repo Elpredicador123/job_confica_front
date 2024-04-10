@@ -422,7 +422,7 @@ export default {
 <Layout>
     <PageHeader :title="title" :items="items" />
     <BRow>
-        <BCol cols="6">
+        <BCol lg="6">
             <BCard no-body>
                 <BCardBody>
                     <BCardTitle>Efectividad inspecciones</BCardTitle>
@@ -503,7 +503,7 @@ export default {
                 </BCardBody>
             </BCard>
         </BCol>
-        <BCol cols="6">
+        <BCol lg="6">
             <BCard no-body>
                 <BCardBody>
                     <BCardTitle>Avance auditorias</BCardTitle>
@@ -584,7 +584,7 @@ export default {
                 </BCardBody>
             </BCard>
         </BCol>
-        <BCol cols="6">
+        <BCol lg="6">
             <BCard no-body>
                 <BCardBody>
                     <BCardTitle>Efectividad inspecciones x tec</BCardTitle>
@@ -666,7 +666,7 @@ export default {
                 </BCardBody>
             </BCard>
         </BCol>
-        <BCol cols="6">
+        <BCol lg="6">
             <BCard no-body>
                 <BCardBody>
                     <BCardTitle>Avance auditoria x tec</BCardTitle>
@@ -750,7 +750,7 @@ export default {
         </BCol>
     </BRow>
     <BRow>
-        <BCol cols="6">
+        <BCol lg="6">
             <BCard no-body>
                 <BCardBody>
                     <BCardTitle>Errores en línea de rescate</BCardTitle>
@@ -832,7 +832,7 @@ export default {
                 </BCardBody>
             </BCard>
         </BCol>
-        <BCol cols="6">
+        <BCol lg="6">
             <BCard no-body>
                 <BCardBody>
                     <BCardTitle class="mb-4">% Errores calidad</BCardTitle>
@@ -848,7 +848,7 @@ export default {
                 </BCardBody>
             </BCard>
         </BCol>
-        <BCol cols="12">
+        <BCol lg="12">
             <BCard no-body>
                 <BCardBody>
                     <BCardTitle>Errores en línea de rescate - Tec</BCardTitle>

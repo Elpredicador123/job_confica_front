@@ -351,7 +351,7 @@ export default {
   <Layout>
     <PageHeader :title="title" :items="items" />
     <BRow>
-        <BCol cols="8">
+        <BCol lg="8">
             <BRow>
                 <BCol cols="12" v-for="newsItem in tableData" :key="newsItem.id">
                     <BCard>
@@ -374,7 +374,7 @@ export default {
                 </BCol>
             </BRow>
         </BCol>
-        <BCol cols="4">
+        <BCol lg="4">
             <BRow>
                 <BCol cols="12">
                     <BCard np-body>
@@ -413,7 +413,7 @@ export default {
     >
       <form @submit.prevent="editSubmit">
         <BRow>
-            <BCol cols="12">
+            <BCol lg="12">
                 <div class="mb-3">
                 <label for="name" class="form-label">Event Name</label>
                 <input
@@ -425,7 +425,7 @@ export default {
                 />
                 </div>
             </BCol>
-            <BCol cols="12">
+            <BCol lg="12">
                 <div class="mb-3">
                 <label class="control-label form-label">Category</label>
                 <select
@@ -454,7 +454,7 @@ export default {
         body-class="p-3"
         >
         <BRow>
-            <BCol cols="12">
+            <BCol lg="12">
                 <div class="mb-3">
                     <label for="name" class="form-label">Event Name</label>
                     <input
@@ -466,7 +466,7 @@ export default {
                     />
                 </div>
             </BCol>
-            <BCol cols="12">
+            <BCol lg="12">
                 <div class="mb-3">
                     <label class="control-label form-label">Category</label>
                     <select
@@ -484,13 +484,13 @@ export default {
                     </select>
                 </div>
             </BCol>
-            <BCol cols="12">
+            <BCol lg="12">
                 <div class="mb-3">
                     <label for="description" class="form-label">Descripción</label>
                     <textarea id="description" v-model="editevent2.editDescription" class="form-control" placeholder="Descripción del evento"></textarea>
                 </div>
             </BCol>
-            <BCol cols="12">
+            <BCol lg="12">
                 <div class="mb-3">
                     <label for="numberOfPeople" class="form-label">Número de Personas</label>
                     <input id="numberOfPeople" v-model="editevent2.editNumber_of_people" type="number" class="form-control" placeholder="Número de personas">

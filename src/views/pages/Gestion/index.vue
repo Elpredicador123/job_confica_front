@@ -375,7 +375,7 @@ export default {
 <Layout>
     <PageHeader :title="title" :items="items" />
     <BRow>
-        <BCol cols="6">
+        <BCol lg="6">
             <BCard no-body>
                 <BCardBody>
                     <BCardTitle>Avance instalaciones</BCardTitle>
@@ -461,7 +461,7 @@ export default {
                 </BCardBody>
             </BCard>
         </BCol>
-        <BCol cols="6">
+        <BCol lg="6">
             <BCard no-body>
                 <BCardBody>
                     <BCardTitle>Ordenes por gestor instalaciones</BCardTitle>
@@ -552,7 +552,7 @@ export default {
 
     <!-- end row -->
     <div class="row">
-        <BCol cols="6">
+        <BCol lg="6">
             <BCard no-body>
                 <BCardBody>
                     <BCardTitle>Avance Mantenimientos</BCardTitle>
@@ -638,7 +638,7 @@ export default {
                 </BCardBody>
             </BCard>
         </BCol>
-        <BCol cols="6">
+        <BCol lg="6">
             <BCard no-body>
                 <BCardBody>
                     <BCardTitle>Ordenes por gestor - horas pendientes</BCardTitle>
