@@ -295,15 +295,6 @@ export default {
 
         </BDropdown>
 
-        <div class="dropdown d-inline-block">
-          <BButton
-            variant="button"
-            class="btn header-item noti-icon right-bar-toggle toggle-right"
-            @click="toggleRightSidebar"
-          >
-            <i class="uil-cog toggle-right"></i>
-          </BButton>
-        </div>
       </div>
     </div>
   </header>

@@ -2,11 +2,7 @@
 import Layout from "../../layouts/main";
 import PageHeader from "@/components/page-header";
 import Multiselect from "@vueform/multiselect";
-import {
-  barChart,
-  pieChart,
-    pieChart2,
-} from "./data";
+import {constructor_barchart,constructor_piechart} from "@/components/constructor";
 /**
  * Apex-chart component
  */
@@ -21,9 +17,9 @@ export default {
             title: "Gestión",
             tableDataSup: [],
             tableDataTec: [],
-            ContrataBar: barChart,
-            pieChart: pieChart,
-            pieChart2: pieChart2,
+            ContrataBar: [],
+            pieChart: [],
+            pieChart2: [],
             GestorAgenda: [],
             GestorOrdenes: [
             ],
@@ -34,26 +30,6 @@ export default {
             CiudadId2: null,
             CiudadId3: null,
             CiudadId4: null,
-            itemsSup: [
-                {
-                    text: "Charts",
-                    href: "/"
-                },
-                {
-                    text: "Apex",
-                    active: true
-                }
-            ],
-            itemsTec: [
-                {
-                    text: "Charts",
-                    href: "/"
-                },
-                {
-                    text: "Apex",
-                    active: true
-                }
-            ],
             //--------------------
             totalRowsSup: 1,
             currentPageSup: 1,
@@ -82,8 +58,8 @@ export default {
     },
     mounted() {
         // Set the initial number of items
-        this.totalRowsSup = this.itemsSup.length;
-        this.totalRowsTec = this.itemsTec.length;
+        this.totalRowsSup = this.tableDataSup.length;
+        this.totalRowsTec = this.tableDataTec.length;
 
         //obtener datos de la api
         this.getTableSup();
@@ -172,9 +148,7 @@ export default {
                             series: this.ContrataBar.series,
                             labels: this.ContrataBar.categories
                         };
-                        this.ContrataBar =  barChart;
-                        this.ContrataBar.series[0].data = currentData.series;
-                        this.ContrataBar.chartOptions.xaxis.categories = currentData.categories;
+                        this.ContrataBar = {... constructor_barchart(response.data.series, response.data.categories)}
                     }
                 })
             }
@@ -191,9 +165,7 @@ export default {
                         series: this.pieChart.series,
                         labels: this.pieChart.categories
                     };
-                    this.pieChart =  pieChart;
-                    this.pieChart.series = currentData.series;
-                    this.pieChart.chartOptions.labels = currentData.categories;
+                    this.pieChart = {... constructor_piechart(response.data.series, response.data.categories)}
                 }
             } catch (error) {
                 console.error(error);  
@@ -211,9 +183,7 @@ export default {
                         series: this.pieChart2.series,
                         labels: this.pieChart2.categories
                     };
-                    this.pieChart2 =  pieChart2;
-                    this.pieChart2.series = currentData.series;
-                    this.pieChart2.chartOptions.labels = currentData.categories;
+                    this.pieChart2 = {... constructor_piechart(response.data.series, response.data.categories)}
                 }
             } catch (error) {
                 console.error(error);
@@ -230,13 +200,17 @@ export default {
             if(this.CiudadId1 != null){
                 this.$nextTick(async () => {
                     const response = await this.$http.get(this.$apiURL+'maintenance/ineffectivecontratagraphic/'+this.CiudadId1);
-                    this.previousContrataData = {
-                        series : response.data.series,
-                        categories : response.data.categories
+                    if (response.data.series && response.data.categories) {
+                        this.previousContrataData = {
+                            series : response.data.series,
+                            categories : response.data.categories
+                        }
+                        this.ContrataBar = {... constructor_barchart(response.data.series, response.data.categories)}
                     }
-                    this.ContrataBar.series[0].data = response.data.series;
-                    this.ContrataBar.chartOptions.xaxis.categories = response.data.categories;
                 })
+            }
+            else{
+                this.ContrataBar = {... constructor_barchart([], [])}
             }
         },
         async getTableSup(){
@@ -286,26 +260,33 @@ export default {
         async getRatioInstalaciones(){
             try {
                 const response = await this.$http.get(this.$apiURL+'maintenance/childhoodbreakdownsgeneral');
-                this.previousRatioInstalacionesData = {
-                    series : response.data.series,
-                    labels : response.data.categories
+                if (response.data.series && response.data.categories) {
+                    this.previousRatioInstalacionesData = {
+                        series : response.data.series,
+                        labels : response.data.categories
+                    }
+                    this.pieChart = {... constructor_piechart(response.data.series, response.data.categories)}
                 }
-                this.pieChart.series = response.data.series;
-                this.pieChart.chartOptions.labels = response.data.categories;
+                else{
+                    this.pieChart = {... constructor_piechart([] , [])}
+                }
             } catch (error) {
                 console.error(error);  
             }
         },
         async getRatioMantenimientos(){
             try {
-                this.pieChart2=pieChart2;
                 const response = await this.$http.get(this.$apiURL+'maintenance/ineffectivedistributionratiographic');
-                this.previousRatioMantenimientoData = {
-                    series : response.data.series,
-                    labels : response.data.categories
+                if (response.data.series && response.data.categories) {
+                    this.previousRatioMantenimientoData = {
+                        series : response.data.series,
+                        labels : response.data.categories
+                    }
+                    this.pieChart2 = {... constructor_piechart(response.data.series, response.data.categories)}
                 }
-                this.pieChart2.series = response.data.series;
-                this.pieChart2.chartOptions.labels = response.data.categories;
+                else{
+                    this.pieChart2 = {... constructor_piechart([], [])}
+                }
             } catch (error) {
                 console.error(error);
             }

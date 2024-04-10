@@ -1,20 +1,8 @@
 <script>
 import Layout from "../../layouts/main";
 import PageHeader from "@/components/page-header";
-import {
-    linewithDataChart,
-    dashedLineChart,
-    splineAreaChart,
-    columnChart,
-    columnChart2,
-    columnDatalabelChart,
-    barChart,
-    mixedChart,
-    radialChart,
-    pieChart,
-    pieChart2,
-    donutChart
-} from "./data";
+import {constructor_chart,constructor_piechart} from "@/components/constructor";
+
 
 /**
  * Apex-chart component
@@ -26,63 +14,16 @@ export default {
     },
     data() {
         return {
-            linewithDataChart: linewithDataChart,
-            dashedLineChart: dashedLineChart,
-            splineAreaChart: splineAreaChart,
-            columnChart: columnChart,
-            columnChart2: columnChart2,
-            columnDatalabelChart: columnDatalabelChart,
-            barChart: barChart,
-            mixedChart: mixedChart,
-            radialChart: radialChart,
-            pieChart: pieChart,
-            pieChart2: pieChart2,
-            donutChart: donutChart,
+            columnChart : [],
+            columnChartAux : [],
+            columnChart2: [],
+            pieChart: [],
+            pieChart2: [],
             title: "Apex",
             tableData: [],
             tableData2: [],
             tableDataPorDia: [],
             tableDataAgenda: [],
-            items: [
-                {
-                    text: "Charts",
-                    href: "/"
-                },
-                {
-                    text: "Apex",
-                    active: true
-                }
-            ],
-            items2: [
-                {
-                    text: "Charts",
-                    href: "/"
-                },
-                {
-                    text: "Apex",
-                    active: true
-                }
-            ],
-            itemsPorDia: [
-                {
-                    text: "Charts",
-                    href: "/"
-                },
-                {
-                    text: "Apex",
-                    active: true
-                }
-            ],
-            itemsAgenda: [
-                {
-                    text: "Charts",
-                    href: "/"
-                },
-                {
-                    text: "Apex",
-                    active: true
-                }
-            ],
             //Primera tabla------------:
             totalRows: 1,
             currentPage: 1,
@@ -136,10 +77,10 @@ export default {
     },
     mounted() {
         // Set the initial number of items
-        this.totalRows = this.items.length;
-        this.totalRows2 = this.items2.length;
-        this.totalRowsPorDia = this.itemsPorDia.length;
-        this.totalRowsAgenda = this.itemsAgenda.length;
+        this.totalRows = this.tableData.length;
+        this.totalRows2 = this.tableData2.length;
+        this.totalRowsPorDia = this.tableDataPorDia.length;
+        this.totalRowsAgenda = this.tableDataAgenda.length;
 
         //obtener datos de la api
         this.getInstalaciones();
@@ -287,9 +228,7 @@ export default {
                         series: this.columnChart.series,
                         categories: this.columnChart.categories
                     };
-                    this.columnChart =  columnChart;
-                    this.columnChart.series = currentData.series;
-                    this.columnChart.chartOptions.xaxis.categories = currentData.categories;
+                    this.columnChart = {... constructor_chart(response.data.series, response.data.categories)}
                 }
             } catch (error) {
                 console.error(error);
@@ -308,9 +247,8 @@ export default {
                         series: this.columnChart2.series,
                         categories: this.columnChart2.categories
                     };
-                    this.columnChart2 =  columnChart2;
-                    this.columnChart2.series = currentData.series;
-                    this.columnChart2.chartOptions.xaxis.categories = currentData.categories;
+                    this.columnChart2 = {... constructor_chart(response.data.series, response.data.categories)}
+
                 }
             } catch (error) {
                 console.error(error);
@@ -328,9 +266,7 @@ export default {
                         series: this.pieChart.series,
                         labels: this.pieChart.categories
                     };
-                    this.pieChart =  pieChart;
-                    this.pieChart.series = currentData.series;
-                    this.pieChart.chartOptions.labels = currentData.categories;
+                    this.pieChart = {... constructor_piechart(response.data.series, response.data.categories)}
                 }
             } catch (error) {
                 console.error(error);
@@ -348,9 +284,7 @@ export default {
                         series: this.pieChart2.series,
                         labels: this.pieChart2.categories
                     };
-                    this.pieChart2 =  pieChart2;
-                    this.pieChart2.series = currentData.series;
-                    this.pieChart2.chartOptions.labels = currentData.categories;
+                    this.pieChart2 = {... constructor_piechart(response.data.series, response.data.categories)}
                 }
             } catch (error) {
                 console.error(error);
@@ -418,16 +352,20 @@ export default {
         },
         async getInstalaciones() {
             try {
-                const response = await this.$http.get(this.$apiURL+'control-panel/installationprogressgraphic');
-                console.log(response)
-                if (response.data.series && response.data.categories) {
-                    this.PreviusChartInstalaciones = {
-                        series: response.data.series,
-                        categories: response.data.categories
-                    };
-                    this.columnChart.series = response.data.series;
-                    this.columnChart.chartOptions.xaxis.categories = response.data.categories;
-                }
+                await this.$http.get(this.$apiURL+'control-panel/installationprogressgraphic')
+                    .then(response => {
+                        console.log(response)
+                        if (response.data.series && response.data.categories) {
+                            this.PreviusChartInstalaciones = {
+                                series: response.data.series,
+                                categories: response.data.categories
+                            };
+                            this.columnChart = {... constructor_chart(response.data.series, response.data.categories)}
+                        }
+                        else{
+                            this.columnChart = {... constructor_chart([], [])}
+                        }
+                    })
             } catch (error) {
                 console.error(error);
             }
@@ -441,11 +379,9 @@ export default {
                         series: response.data.series,
                         categories: response.data.categories
                     };
-                    this.columnChart2.series = response.data.series;
-                    this.columnChart2.chartOptions.xaxis.categories = response.data.categories;
+                    this.columnChart2 = {... constructor_chart(response.data.series, response.data.categories)}
                 } else {
-                    // Si uno o ambos son nulos o no están definidos
-                    console.error("No se encontraron datos de series o categorías.");
+                    this.columnChart2 = {... constructor_chart([], [])}
                 }
             } catch (error) {
                 console.error(error);
@@ -454,12 +390,16 @@ export default {
         async getRatioInstalaciones() {
             try {
                 const response = await this.$http.get(this.$apiURL+'control-panel/installationratiographic');
-                this.previousRatioInstalacionesData = {
-                    series : response.data.series,
-                    labels : response.data.categories
+                if (response.data.series && response.data.categories) {
+                    // Si ambos series y categories están definidos y no son nulos
+                    this.previousRatioInstalacionesData = {
+                        series: response.data.series,
+                        labels: response.data.categories
+                    };
+                    this.pieChart = {... constructor_piechart(response.data.series, response.data.categories)}
+                } else {
+                    this.pieChart = {... constructor_piechart([], [])}
                 }
-                this.pieChart.series = response.data.series;
-                this.pieChart.chartOptions.labels = response.data.categories;
             } catch (error) {
                 console.error(error);
             }
@@ -467,12 +407,16 @@ export default {
         async getRatioMantenimientos() {
             try {
                 const response = await this.$http.get(this.$apiURL+'control-panel/maintenanceratiographic');
-                this.previousRatioMantenimientosData = {
-                    series : response.data.series,
-                    labels : response.data.categories
+                if (response.data.series && response.data.categories) {
+                    // Si ambos series y categories están definidos y no son nulos
+                    this.previousRatioMantenimientosData = {
+                        series: response.data.series,
+                        labels: response.data.categories
+                    };
+                    this.pieChart2 = {... constructor_piechart(response.data.series, response.data.categories)}
+                } else {
+                    this.pieChart2 = {... constructor_piechart([], [])}
                 }
-                this.pieChart2.series = response.data.series;
-                this.pieChart2.chartOptions.labels = response.data.categories;
             } catch (error) {
                 console.error(error);
             }

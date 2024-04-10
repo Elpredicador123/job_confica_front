@@ -2,10 +2,7 @@
 import Layout from "../../layouts/main";
 import PageHeader from "@/components/page-header";
 import Multiselect from "@vueform/multiselect";
-import {
-  barChart,
-  barChart2
-} from "./data";
+import {constructor_barchart} from "@/components/constructor";
 /**
  * Apex-chart component
  */
@@ -20,8 +17,8 @@ export default {
             title: "Gestión",
             tableDataSup: [],
             tableDataTec: [],
-            ContrataBar: barChart, 
-            GestorBar: barChart2,
+            ContrataBar: [], 
+            GestorBar: [],
             GestorAgenda: [],
             GestorOrdenes: [
             ],
@@ -120,9 +117,7 @@ export default {
                             series: this.ContrataBar.series,
                             labels: this.ContrataBar.categories
                         };
-                        this.ContrataBar =  barChart;
-                        this.ContrataBar.series[0].data = currentData.series;
-                        this.ContrataBar.chartOptions.xaxis.categories = currentData.categories;
+                        this.ContrataBar = {... constructor_barchart(response.data.series, response.data.categories)}
                     }
                 });
             }
@@ -142,9 +137,7 @@ export default {
                             series: this.GestorBar.series,
                             labels: this.GestorBar.categories
                         };
-                        this.GestorBar =  barChart;
-                        this.GestorBar.series[0].data = currentData.series;
-                        this.GestorBar.chartOptions.xaxis.categories = currentData.categories;
+                        this.GestorBar = {... constructor_barchart(response.data.series, response.data.categories)}
                     }
                 });
             }
@@ -213,15 +206,21 @@ export default {
         async getContrata(){
             if(this.ciudadId1 != null){
                 this.$nextTick(async () => {
-                    this.ContrataBar = barChart;
                     const response = await this.$http.get(this.$apiURL+'provision/diarycontratagraphic/'+this.ciudadId1);
-                    this.previousContrataData = {
-                        series: response.data.series,
-                        categories: response.data.categories
-                    };
-                    this.ContrataBar.series[0].data = response.data.series; 
-                    this.ContrataBar.chartOptions.xaxis.categories = response.data.categories;
+                    if (response.data.series && response.data.categories) {
+                        this.previousContrataData = {
+                            series: response.data.series,
+                            categories: response.data.categories
+                        };
+                        this.ContrataBar = {... constructor_barchart(response.data.series, response.data.categories)}
+                    }
+                    else{
+                        this.ContrataBar = {... constructor_barchart([],[])}
+                    }
                 });
+            }
+            else{
+                this.ContrataBar = {... constructor_barchart([],[])}
             }
 
         },
@@ -229,16 +228,21 @@ export default {
             try {
                 if(this.ciudadId2 != null){
                     this.$nextTick(async () => {
-                        this.GestorBar = barChart2;
-
                         const response = await this.$http.get(this.$apiURL+'provision/diarymanagergraphic/'+this.ciudadId2);
-                        this.previousGestorData = {
-                            series: response.data.series,
-                            categories: response.data.categories
-                        };
-                        this.GestorBar.series[0].data = response.data.series;
-                        this.GestorBar.chartOptions.xaxis.categories = response.data.categories;
+                        if (response.data.series && response.data.categories) {
+                            this.previousGestorData = {
+                                series: response.data.series,
+                                categories: response.data.categories
+                            };
+                            this.GestorBar = {... constructor_barchart(response.data.series, response.data.categories)}
+                        }
+                        else{
+                            this.GestorBar = {... constructor_barchart([],[])}
+                        }
                     })
+                }
+                else{
+                    this.GestorBar = {... constructor_barchart([],[])}
                 }
             } catch (error) {
                 console.error(error);
