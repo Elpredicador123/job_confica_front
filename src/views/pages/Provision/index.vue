@@ -94,9 +94,9 @@ export default {
         this.getTableTec();
         this.getContrata();
         this.getGestor();
-        setInterval(() => {
-            this.updateDataIfChanged();
-        }, 300000);
+        // setInterval(() => {
+        //     this.updateDataIfChanged();
+        // }, 300000);
     },
     methods:{
         async updateDataIfChanged() {

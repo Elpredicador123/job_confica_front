@@ -92,9 +92,9 @@ export default {
         this.getContrata();
         this.getRatioInstalaciones();
         this.getRatioMantenimientos();
-        setInterval(() => {
-            this.updateDataIfChanged();
-        }, 300000);
+        // setInterval(() => {
+        //     this.updateDataIfChanged();
+        // }, 300000);
     },
     methods:{
         onFilteredSup(filteredItems) {

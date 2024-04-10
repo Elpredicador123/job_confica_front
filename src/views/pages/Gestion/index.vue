@@ -135,9 +135,9 @@ export default {
         this.getCity();
 
         // Establecer intervalo para obtener datos de la API cada 5 minutos
-        setInterval(() => {
-            this.updateDataIfChanged();
-        }, 100000);
+        // setInterval(() => {
+        //     this.updateDataIfChanged();
+        // }, 100000);
     },
     methods:{
         onFiltered(filteredItems) {
@@ -240,14 +240,16 @@ export default {
                     const response = await this.$http.get(this.$apiURL+'management/ordermanagertable/'+this.OrdenesGestorId);
                     const currentData = {
                         series: response.data.series,
-                        fields: response.data.fields
+                        categories: response.data.categories
                     };
 
                     if (this.dataChanged(this.previousTableOrderData, currentData)) {
+                        console.log(this.previousTableOrderData)
+                        console.log(currentData)
                         this.tableDataOrder.splice(0, this.tableDataOrder.length);
                         this.fieldsOrder.splice(0, this.fieldsOrder.length);
                         currentData.series.map(i => this.tableDataOrder.push({ ...i }));
-                        currentData.fields.map(i => this.fieldsOrder.push({ key: i, sortable : true }));
+                        currentData.categories.map(i => this.fieldsOrder.push({ key: i, sortable : true }));
                         this.totalRowsOrder = this.tableDataOrder.length;
                         this.totalesOrder = response.data.totales;
                         this.previousTableOrderData = currentData;
@@ -258,8 +260,6 @@ export default {
 
         dataChanged(previousData, currentData) {
             if( currentData == undefined){ return false}
-            console.log(JSON.stringify(previousData))
-            console.log(JSON.stringify(currentData))
             return JSON.stringify(previousData) !== JSON.stringify(currentData);
         },
         async getGestorAgenda(){
@@ -353,7 +353,7 @@ export default {
                         const response = await this.$http.get(this.$apiURL+'management/ordermanagertable/'+this.OrdenesGestorId);
                         this.previousTableOrderData = {
                             series: response.data.series,
-                            fields: response.data.fields
+                            categories: response.data.categories
                         };
                         response.data.series.map(i => this.tableDataOrder.push({ ...i }));
                         //this.fieldsOrder.push({ key: "Ciudad", sortable : true })

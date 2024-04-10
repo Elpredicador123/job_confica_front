@@ -159,13 +159,13 @@ export default {
                   <BRow>
                     <BCol lg="6">
                       <BFormGroup
-                          label="Nombre de Infografía"
+                          label="Nombre de Infografía / Video"
                           label-for="formrow-firstname-input"
                           class="mb-12">
                           <BFormInput
                               type="text"
                               v-model="form.title"
-                              placeholder = "NOMBRE DE INFOGRAFÍA"
+                              placeholder = "NOMBRE DE INFOGRAFÍA / VIDEO"
                               required
                               id="formrow-firstname-input">
                           </BFormInput>

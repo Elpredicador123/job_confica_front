@@ -1,13 +1,14 @@
 <script>
 import Layout from "../../layouts/main";
 import PageHeader from "@/components/page-header";
-import InfografiaModal from "./edit.vue";
+import VideoModal from "./edit.vue";
+import InfografiaModal from "./edit_infografia.vue";
 
 /**
  * Products component
  */
 export default {
-  components: { Layout, PageHeader,InfografiaModal },
+  components: { Layout, PageHeader,InfografiaModal,VideoModal },
     data() {
         return {
             title: "Infografías",
@@ -49,7 +50,7 @@ export default {
                     sortable: true
                 },
                 {
-                    key: "actions",
+                    key: "accion",
                 }
             ],
             //--------------------------
@@ -80,7 +81,7 @@ export default {
                     sortable: true
                 },
                 {
-                    key: "actions",
+                    key: "accion",
                 }
             ]
         }
@@ -99,6 +100,7 @@ export default {
         this.totalRowsInfografia = this.tableInfografia.length;
         //obtener datos de la api
         this.getData();
+        this.getInfografia();
     },
     methods:{
         onFiltered(filteredItems) {
@@ -120,8 +122,20 @@ export default {
                 console.error(error);
             }
         },
+        async getInfografia() {
+            try {
+                const response = await this.$http.get(this.$apiURL+'infographic/all');
+                response.data.data.map(i => this.tableInfografia.push({ ...i }));
+                this.totalRowsInfografia = this.tableInfografia.length;
+            } catch (error) {
+                console.error(error);
+            }
+        },
         editItem(item) {
-            console.log("Editar item", item);
+            this.selectedItem = JSON.parse(JSON.stringify(item)); // Realiza una copia profunda del ítem
+            this.$refs.VideoModal.open(this.selectedItem);
+        },
+        editInfografia(item) {
             this.selectedItem = JSON.parse(JSON.stringify(item)); // Realiza una copia profunda del ítem
             this.$refs.InfografiaModal.open(this.selectedItem);
         },
@@ -136,6 +150,7 @@ export default {
             <BCol cols="12">
                 <BCard no-body>
                     <BCardBody>
+                        <BCardTitle class="mb-4">Listado de Videos</BCardTitle>
                         <BRow class="mt-4">
                             <BCol sm="12" md="6">
                                 <div id="tickets-table_length" class="dataTables_length">
@@ -188,7 +203,7 @@ export default {
                                     <i class="fas fa-download"></i> Descargar
                                 </a>
                             </template>
-                            <template #cell(actions)="{ item }">
+                            <template #cell(accion)="{ item }">
                                 <!-- Agregar botón de edición -->
                                 <BButton @click="editItem(item)" variant="info">Editar</BButton>
                             </template>
@@ -217,6 +232,7 @@ export default {
             <BCol cols="12">
                 <BCard no-body>
                     <BCardBody>
+                        <BCardTitle class="mb-4">Listado de Infografías</BCardTitle>
                         <BRow class="mt-4">
                             <BCol sm="12" md="6">
                                 <div id="tickets-table_length" class="dataTables_length">
@@ -269,9 +285,9 @@ export default {
                                     <i class="fas fa-download"></i> Descargar
                                 </a>
                             </template>
-                            <template #cell(actions)="{ item }">
+                            <template #cell(accion)="{ item }">
                                 <!-- Agregar botón de edición -->
-                                <BButton @click="editItem(item)" variant="info">Editar</BButton>
+                                <BButton @click="editInfografia(item)" variant="info">Editar</BButton>
                             </template>
                             </BTable>
                         </div>
@@ -295,6 +311,7 @@ export default {
                 </BCard>
             </BCol>
         </BRow>
+        <VideoModal ref="VideoModal"></VideoModal>
         <InfografiaModal ref="InfografiaModal"></InfografiaModal>
     </Layout>
 </template>
