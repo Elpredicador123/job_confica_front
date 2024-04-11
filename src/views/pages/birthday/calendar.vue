@@ -41,16 +41,16 @@ export default {
       calendarOptions: {
         eventDrop: this.handleEventDrop,
         headerToolbar: {
-          left: "prev,next today",
-          center: "title",
-          right: "dayGridMonth,timeGridWeek,timeGridDay,listWeek"
+            left: "prev,next today",
+            center: "title",
+            right: "dayGridMonth,listWeek" // Elimina "timeGridWeek" y "timeGridDay" de las opciones del encabezado
         },
         plugins: [
-          dayGridPlugin,
-          timeGridPlugin,
-          interactionPlugin,
-          bootstrapPlugin,
-          listPlugin
+            dayGridPlugin,
+            timeGridPlugin,
+            interactionPlugin,
+            bootstrapPlugin,
+            listPlugin
         ],
         initialView: "dayGridMonth",
         themeSystem: "bootstrap",
@@ -66,6 +66,7 @@ export default {
         selectMirror: true,
         dayMaxEvents: true
       },
+
       currentEvents: [],
       tableData: [],
       showModal: false,
@@ -207,8 +208,17 @@ export default {
      * Delete event
      */
     deleteEvent() {
-      this.edit.remove();
-      this.eventModal = false;
+      const id_calendar = this.edit._def.publicId
+      this.$http.delete(this.$apiURL+'birthday/delete/'+id_calendar)
+          .then(response => {
+            console.log(response)
+            this.edit.remove();
+            this.eventModal = false;
+          })
+          .catch(error => {
+              console.error(error);
+              // Manejar errores aquí
+          });
     },
     /**
      * Modal open for add event
@@ -290,7 +300,7 @@ export default {
     </BRow>
     <BModal
       v-model="showModal"
-      title="Add New Event"
+      title="NUEVO CUMPLEAÑOS"
       title-class="font-18"
       body-class="p-3"
       hide-footer
@@ -299,13 +309,13 @@ export default {
         <BRow>
           <BCol cols="12">
             <div class="mb-3">
-              <label for="name" class="form-label">Event Name</label>
+              <label for="name" class="form-label">NOMBRE DE EVENTO</label>
               <input
                 id="name"
                 v-model="event.title"
                 type="text"
                 class="form-control"
-                placeholder="Insert Event name"
+                placeholder="Ingresa nombre"
                 :class="{ 'is-invalid': submitted && v$.event.title.$error }"
               />
               <div
@@ -317,36 +327,13 @@ export default {
             </div>
           </BCol>
           <BCol cols="12">
-            <div class="mb-3">
-              <label class="control-label form-label">Category</label>
-              <select
-                v-model="event.category"
-                class="form-control"
-                name="category"
-                :class="{ 'is-invalid': submitted && v$.event.category.errors }"
-              >
-                <option
-                  v-for="option in categories"
-                  :key="option.backgroundColor"
-                  :value="`${option.value}`"
-                >
-                  {{ option.name }}
-                </option>
-              </select>
-              <div
-                v-if="submitted && v$.event.category.$invalid"
-                class="invalid-feedback"
-              >
-                This value is required.
-              </div>
-            </div>
           </BCol>
         </BRow>
 
         <div class="text-end pt-5 mt-3">
-          <BButton variant="light" @click="hideModal">Close</BButton>
+          <BButton variant="light" @click="hideModal">Cerrar</BButton>
           <BButton type="submit" variant="success" class="ms-1"
-            >Create event</BButton
+            >Crear Evento</BButton
           >
         </div>
       </BForm>
@@ -375,22 +362,6 @@ export default {
             </div>
           </BCol>
           <BCol cols="12">
-            <div class="mb-3">
-              <label class="control-label form-label">Category</label>
-              <select
-                v-model="editevent.editcategory"
-                class="form-control"
-                name="category"
-              >
-                <option
-                  v-for="option in categories"
-                  :key="option.backgroundColor"
-                  :value="`${option.value}`"
-                >
-                  {{ option.name }}
-                </option>
-              </select>
-            </div>
           </BCol>
         </BRow>
         <div class="d-flex justify-content-between">

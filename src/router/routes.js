@@ -193,4 +193,16 @@ export default [
     meta: { title: "utility", authRequired: true,permissions: ['PRINCIPAL']},
     component: () => import("../views/pages/utility/404")
   },
+  {
+    path: "/form/advanced",
+    name: "form-advanced",
+    meta: { title: "Form Advanced", authRequired: true ,permissions: ['PRINCIPAL']},
+    component: () => import("../views/pages/form/advanced")
+  },
+  {
+    path: "/ecommerce/add-product",
+    name: "Add Product",
+    meta: { title: "Add Product", authRequired: true,permissions: ['PRINCIPAL'] },
+    component: () => import("../views/pages/ecommerce/add-product")
+  },
 ];

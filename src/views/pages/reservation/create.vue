@@ -46,11 +46,11 @@ data() {
         right: "dayGridMonth,timeGridWeek,timeGridDay,listWeek"
         },
         plugins: [
-        dayGridPlugin,
-        timeGridPlugin,
-        interactionPlugin,
-        bootstrapPlugin,
-        listPlugin
+            dayGridPlugin,
+            timeGridPlugin,
+            interactionPlugin,
+            bootstrapPlugin,
+            listPlugin
         ],
         initialView: "dayGridMonth",
         themeSystem: "bootstrap",
@@ -64,7 +64,8 @@ data() {
         weekends: true,
         selectable: true,
         selectMirror: true,
-        dayMaxEvents: true
+        dayMaxEvents: true,
+        select: this.handleSelect // Manejador de eventos select
     },
     currentEvents: [],
     tableData: [],
@@ -105,6 +106,10 @@ methods: {
     /**
      * Modal form submit
      */
+     handleSelect(info) {
+        this.newEventData = info; // Almacena la información sobre el rango de tiempo seleccionado
+        this.showModal = true; // Abre el modal
+    },
     async getData() {
         try {
             const response = await this.$http.get(this.$apiURL+'reservation/all');
@@ -159,12 +164,42 @@ methods: {
         if (this.v$.$invalid) {
             return;
         }
+        let date ="";
+        let time = "";
+        let time2 = "";
+        let time3 = "";
+        let time4 ="";
+        let dateStr = null;
         console.log(this.newEventData)
+        if(this.newEventData.endStr){
+            let time5 ="";
+            dateStr = this.newEventData.endStr;
+            [date, time] = dateStr.split('T'); // Separa la fecha y la hora
+            [time3, time5] = time.split('-'); // Ignorar la información de zona horaria
 
-        const dateStr = this.newEventData.dateStr;
-        const [date, time] = dateStr.split('T'); // Separa la fecha y la hora
-        const [time2, time3] = time.split('-'); // Ignorar la información de zona horaria
+            dateStr = this.newEventData.startStr;
+            [date, time] = dateStr.split('T'); // Separa la fecha y la hora
+            [time2, time4] = time.split('-'); // Ignorar la información de zona horaria
+            console.log(time4,time5)
+        }
+        else{
+            dateStr = this.newEventData.dateStr;
+            [date, time] = dateStr.split('T'); // Separa la fecha y la hora
+            [time2, time4] = time.split('-'); // Ignorar la información de zona horaria
 
+            dateStr = this.newEventData.dateStr;
+            [date, time] = dateStr.split('T'); // Separar la fecha y la hora
+            [time2, time4] = time.split('-'); // Ignorar la información de zona horaria
+
+            // Convertir las horas a objetos Date para poder operar con ellas
+            let startTime = new Date(`2000-01-01T${time2}`);
+
+            // Sumar media hora al tiempo de inicio
+            let endTimeWithHalfHour = new Date(startTime.getTime() + (30 * 60000)); // 30 minutos en milisegundos
+
+            // Obtener la hora final en formato HH:mm
+            time3 = endTimeWithHalfHour.toTimeString().slice(0, 5);
+        }
         const eventData = {
             title: this.event.title,
             description: this.event.description,

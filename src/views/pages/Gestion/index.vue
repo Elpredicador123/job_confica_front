@@ -1,7 +1,6 @@
 <script>
 import Layout from "../../layouts/main";
 import PageHeader from "@/components/page-header";
-import Multiselect from "@vueform/multiselect";
 
 /**
  * Apex-chart component
@@ -9,7 +8,6 @@ import Multiselect from "@vueform/multiselect";
 export default {
     components: {
         Layout,
-        Multiselect,
         PageHeader
     },
     data() {
@@ -21,8 +19,8 @@ export default {
             tableDataOrder: [],
             GestorAgenda: [],
             Ciudades : [],
-            ciudadId: null,
-            ciudadId2: null,
+            ciudadId: "Lima",
+            ciudadId2: "Lima",
             OrdenesGestor: [],
             GestorOrdenes: [],
             GestorAgendaId: null,
@@ -125,14 +123,10 @@ export default {
         this.totalRows2 = this.items2.length;
         this.totalRowsGestor = this.itemsGestor.length;
         this.totalRowsOrder = this.itemsOrder.length;
-
+        this.getCity();
         //obtener datos de la api
-        this.getTableMantenimientos();
-        this.getTableInstalaciones();
-        this.getTableOrder();
         this.getGestorAgenda();
         this.getOrdenesGestor();
-        this.getCity();
 
         // Establecer intervalo para obtener datos de la API cada 5 minutos
         // setInterval(() => {
@@ -145,13 +139,11 @@ export default {
             this.totalRows = filteredItems.length;
             this.currentPage = 1;
         },
-
         onFiltered2(filteredItems) {
             // Trigger pagination to update the number of buttons/pages due to filtering
             this.totalRows2 = filteredItems.length;
             this.currentPage2 = 1;
         },
-
         onFilteredGestor(filteredItems) {
             // Trigger pagination to update the number of buttons/pages due to filtering
             this.totalRowsGestor = filteredItems.length;
@@ -162,121 +154,26 @@ export default {
             this.totalRowsOrder = filteredItems.length;
             this.currentPageOrder = 1;
         },
-        async updateDataIfChanged() {
-            console.log("cambio")
-            await Promise.all([
-                this.updateTableMantenimientos(),
-                this.updateTableInstalaciones(),
-                this.updateTableGestor(),
-                this.updateTableOrder(),
-            ]);
-        },
-        async updateTableMantenimientos() {
-            if(this.ciudadId2 != null){
-                this.$nextTick(async () => {
-
-                    const response = await this.$http.get(this.$apiURL+'management/maintenanceprogresstable/'+this.ciudadId2);
-                    const currentData = {
-                        series: response.data.series,
-                        fields: response.data.fields
-                    };
-
-                    if (this.dataChanged(this.previousTableMantenimientosData, currentData)) {
-                        this.tableMantenimiento.splice(0, this.tableMantenimiento.length);
-                        this.fieldsMantenimiento.splice(0, this.fieldsMantenimiento.length);
-                        currentData.series.map(i => this.tableMantenimiento.push({ ...i }));
-                        currentData.fields.map(i => this.fieldsMantenimiento.push({ key: i, sortable : true }));
-                        this.totalRows2 = this.tableMantenimiento.length;
-                        this.previousTableMantenimientosData = currentData;
-                    }
-                });
-            }
-        },
-
-        async updateTableInstalaciones() {
-            if(this.ciudadId != null){
-                this.$nextTick(async () => {
-                    const response = await this.$http.get(this.$apiURL+'management/installationprogresstable/'+this.ciudadId);
-                    const currentData = {
-                        series: response.data.series,
-                        fields: response.data.fields
-                    };
-                    if (this.dataChanged(this.previousTableInstalacionesData, currentData)) {
-                        this.TableInstalaciones.splice(0, this.TableInstalaciones.length);
-                        this.fields.splice(0, this.fields.length);
-                        currentData.series.map(i => this.TableInstalaciones.push({ ...i }));
-                        currentData.fields.map(i => this.fields.push({ key: i, sortable : true }));
-                        this.totalRows = this.TableInstalaciones.length;
-                        this.previousTableInstalacionesData = currentData;
-                    }
-                });
-            }
-        },
-
-        async updateTableGestor() {
-            if(this.GestorAgendaId != null){
-                this.$nextTick(async () => {
-                    const response = await this.$http.get(this.$apiURL+'management/installationlogmanagertable/'+this.GestorAgendaId);
-                    const currentData = {
-                        series: response.data.series,
-                        fields: response.data.fields
-                    };
-                    if (this.dataChanged(this.previousTableGestorData, currentData)) {
-                        this.tableDataGestor.splice(0, this.tableDataGestor.length);
-                        this.fieldsGestor.splice(0, this.fieldsGestor.length);
-                        currentData.series.map(i => this.tableDataGestor.push({ ...i }));
-                        currentData.fields.map(i => this.fieldsGestor.push({ key: i, sortable : true }));
-                        this.totalRowsGestor = this.tableDataGestor.length;
-                        this.totalesGestor = response.data.totales;
-                        this.previousTableGestorData = currentData;
-                    }
-                });
-            }
-        },
-
-        async updateTableOrder() {
-            if(this.OrdenesGestorId != null){ 
-                this.$nextTick(async () => {
-                    const response = await this.$http.get(this.$apiURL+'management/ordermanagertable/'+this.OrdenesGestorId);
-                    const currentData = {
-                        series: response.data.series,
-                        categories: response.data.categories
-                    };
-
-                    if (this.dataChanged(this.previousTableOrderData, currentData)) {
-                        console.log(this.previousTableOrderData)
-                        console.log(currentData)
-                        this.tableDataOrder.splice(0, this.tableDataOrder.length);
-                        this.fieldsOrder.splice(0, this.fieldsOrder.length);
-                        currentData.series.map(i => this.tableDataOrder.push({ ...i }));
-                        currentData.categories.map(i => this.fieldsOrder.push({ key: i, sortable : true }));
-                        this.totalRowsOrder = this.tableDataOrder.length;
-                        this.totalesOrder = response.data.totales;
-                        this.previousTableOrderData = currentData;
-                    }
-                });
-            }
-        },
-
-        dataChanged(previousData, currentData) {
-            if( currentData == undefined){ return false}
-            return JSON.stringify(previousData) !== JSON.stringify(currentData);
-        },
         async getGestorAgenda(){
             const response = await this.$http.get(this.$apiURL+'manager/managersaltas');
                 response.data.data.map(i => this.GestorAgenda.push( i.manager ));
                 this.GestorAgendaId = this.GestorAgenda[0]
+                this.getTableGestor()
         },
         async getCity(){
             const response = await this.$http.get(this.$apiURL+'city/all');
                 response.data.data.map(i => this.Ciudades.push( i.name ));
                 this.ciudadId = this.Ciudades[0]
                 this.ciudadId2 = this.Ciudades[0]
+                this.getTableInstalaciones();
+                this.getTableMantenimientos();
+                console.log(this.Ciudades)
         },
         async getOrdenesGestor(){
             const response = await this.$http.get(this.$apiURL+'manager/managersaverias');
                 response.data.data.map(i => this.OrdenesGestor.push( i.manager ));
                 this.OrdenesGestorId = this.OrdenesGestor[0]
+                this.getTableOrder();
         },
         async getTableMantenimientos() {
             try {
@@ -301,7 +198,7 @@ export default {
 
         async getTableInstalaciones() {
             try {
-                if(this.ciudadId != null){
+                    
                     this.$nextTick(async () => {
                         this.TableInstalaciones.splice(0, this.TableInstalaciones.length);
                         this.fields.splice(0, this.fields.length);
@@ -315,7 +212,6 @@ export default {
                         response.data.fields.map(i => this.fields.push({ key: i, sortable : true }));
                         this.totalRows = this.TableInstalaciones.length;
                     });
-                }
             } catch (error) {
                 console.error(error);
             }
@@ -385,12 +281,12 @@ export default {
                         </BCol>
                         <BCol cols="5">
                             Filtrar por:
-                            <Multiselect
+                            <BFormSelect
                                 v-model="ciudadId"
+                                size="sm"
                                 :options="Ciudades"
                                 @change="getTableInstalaciones()"
-                                placeholder="Seleccionar Ciudad"
-                            />
+                            ></BFormSelect>
                         </BCol>
                     </BRow>
                     <BRow class="mt-4">
@@ -471,12 +367,12 @@ export default {
                         </BCol>
                         <BCol cols="5">
                             Filtrar por:
-                            <Multiselect
+                            <BFormSelect
                                 v-model="GestorAgendaId"
+                                size="sm"
                                 :options="GestorAgenda"
                                 @change="getTableGestor()"
-                                placeholder="Seleccionar Gestor"
-                            />
+                            ></BFormSelect>
                         </BCol>
                     </BRow>
                     <BRow class="mt-4">
@@ -562,12 +458,12 @@ export default {
                         </BCol>
                         <BCol cols="5">
                             Filtrar por:
-                            <Multiselect
+                            <BFormSelect
                                 v-model="ciudadId2"
+                                size="sm"
                                 :options="Ciudades"
                                 @change="getTableMantenimientos()"
-                                placeholder="Seleccionar Ciudad"
-                            />
+                            ></BFormSelect>
                         </BCol>
                     </BRow>
                     <BRow class="mt-4">
@@ -648,12 +544,12 @@ export default {
                         </BCol>
                         <BCol cols="4">
                             Filtrar por:
-                            <Multiselect
+                            <BFormSelect
                                 v-model="OrdenesGestorId"
+                                size="sm"
                                 :options="OrdenesGestor"
-                                placeholder="Seleccionar Gestor"
                                 @change="getTableOrder()"
-                            />
+                            ></BFormSelect>
                         </BCol>
                     </BRow>
                     <BRow class="mt-4">

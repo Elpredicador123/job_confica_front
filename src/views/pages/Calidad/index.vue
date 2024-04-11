@@ -1,17 +1,13 @@
 <script>
 import Layout from "../../layouts/main";
 import PageHeader from "@/components/page-header";
-import Multiselect from "@vueform/multiselect";
-import {
-  pieChart,
-} from "./data";
+import {constructor_piechart} from "@/components/constructor";
 /**
  * Apex-chart component
  */
 export default {
     components: { 
         Layout,
-        Multiselect,
         PageHeader
     }, 
     data() {
@@ -23,10 +19,10 @@ export default {
             CiudadId2: null,
             CiudadId3: null,
             CiudadId4: null,
-            ManagerId1: null,
-            ManagerId2: null,
+            CiudadId5: null,
+            CiudadId6: null,
             //-------------------
-            pieChart: pieChart,
+            pieChart: [],
             //--------------------
             tableDataEfectividad: [],
             totalRowsEfectividad: 1,
@@ -117,160 +113,13 @@ export default {
         // Set the initial number of items
         //obtener datos de la api
         this.getCity();
-        this.getGestor();
-        this.getEfectividad();
-        this.getAuditoria();
-        this.getInspeccionesTec();
-        this.getAvanceTec();
-        this.getRescate();
-        this.getErrorTec();
         this.getErrorCalidad();
-        setInterval(() => {
-            this.updateDataIfChanged();
-        }, 300000);
     },
     methods:{
         onFilteredEfectividad(filteredItems) {
             // Trigger pagination to update the number of buttons/pages due to filtering
             this.totalRowsEfectividad = filteredItems.length;
             this.currentPageEfectividad = 1;
-        },
-        async updateDataIfChanged() {
-            await Promise.all([
-                this.UpdategetEfectividad(),
-                this.UpdategetAuditoria(),
-                this.UpdategetInspeccionesTec(),
-                this.UpdategetAvanceTec(),
-                this.UpdategetRescate(),
-                this.UpdategetErrorTec(),
-            ]);
-        },
-        async UpdategetEfectividad(){
-            if(this.CiudadId1 != null){
-                this.$nextTick(async () => {
-                    const response = await this.$http.get(this.$apiURL+'quality/inspectioneffectivenesstable/'+this.CiudadId1);
-                    const currentData = {
-                        series: response.data.series,
-                        categories: response.data.categories
-                    };
-                    if (this.dataChanged(this.previousTableDataEfectividad, currentData)) {
-                        this.tableDataEfectividad.splice(0, this.tableDataEfectividad.length);
-                        this.fieldsEfectividad.splice(0, this.fieldsEfectividad.length);
-                        response.data.series.map(i => this.tableDataEfectividad.push({ ...i }));
-                        response.data.categories.map(i => this.fieldsEfectividad.push({ key: i, sortable : true }));
-                        this.totalRowsEfectividad = this.tableDataEfectividad.length;
-                        this.totalesEfectividad = response.data.totales;
-                        this.previousTableDataEfectividad = currentData;
-                    }
-                })
-            }
-        },
-
-        async UpdategetAuditoria(){
-            if(this.CiudadId2 != null){
-                this.$nextTick(async () => {
-                    const response = await this.$http.get(this.$apiURL+'quality/auditsprogresstable/' + this.CiudadId2);
-                    const currentData = {
-                        series: response.data.series,
-                        categories: response.data.categories
-                    };
-
-                    if (this.dataChanged(this.previousTableDataAuditoria, currentData)) {
-                        this.tableDataAuditoria.splice(0, this.tableDataAuditoria.length);
-                        this.fieldsAuditoria.splice(0, this.fieldsAuditoria.length);
-                        response.data.series.map(i => this.tableDataAuditoria.push({ ...i }));
-                        response.data.categories.map(i => this.fieldsAuditoria.push({ key: i, sortable : true }));
-                        this.totalRowsAuditoria = this.tableDataAuditoria.length;
-                        this.totalesAuditoria = response.data.totales;
-                        this.previousTableDataAuditoria = currentData;
-                    }
-                })
-            }
-        },
-        async UpdategetInspeccionesTec(){
-            if(this.ManagerId1 != null){
-                this.$nextTick(async () => {
-                    const response = await this.$http.get(this.$apiURL+'quality/inspectioneffectivenessbytectable/'+this.ManagerId1);
-                    const currentData = {
-                        series: response.data.series,
-                        categories: response.data.categories
-                    };
-
-                    if (this.dataChanged(this.previousTableDataInspeccionesTec, currentData)) {
-                        this.tableDataInspeccionesTec.splice(0, this.tableDataInspeccionesTec.length);
-                        this.fieldsInspeccionesTec.splice(0, this.fieldsInspeccionesTec.length);
-                        response.data.series.map(i => this.tableDataInspeccionesTec.push({ ...i }));
-                        response.data.categories.map(i => this.fieldsInspeccionesTec.push({ key: i, sortable : true }));
-                        this.totalRowsInspeccionesTec = this.tableDataInspeccionesTec.length;
-                        this.totalesInspeccionesTec = response.data.totales;
-                        this.previousTableDataInspeccionesTec = currentData;
-                    }
-                })
-            }
-        },
-        async UpdategetAvanceTec(){
-            if(this.ManagerId2 != null){
-                this.$nextTick(async () => {
-                    const response = await this.$http.get(this.$apiURL+'quality/auditsprogressbytectable/'+this.ManagerId2);
-                    const currentData = {
-                        series: response.data.series,
-                        categories: response.data.categories
-                    };
-
-                    if (this.dataChanged(this.previousTableDataAvanceTec, currentData)) {
-                        this.tableDataAvanceTec.splice(0, this.tableDataAvanceTec.length);
-                        this.fieldsAvanceTec.splice(0, this.fieldsAvanceTec.length);
-                        response.data.series.map(i => this.tableDataAvanceTec.push({ ...i }));
-                        response.data.categories.map(i => this.fieldsAvanceTec.push({ key: i, sortable : true }));
-                        this.totalRowsAvanceTec = this.tableDataAvanceTec.length;
-                        this.totalesAvanceTec = response.data.totales;
-                        this.previousTableDataAvanceTec = currentData;
-                    }
-                })
-            }
-        },
-        async UpdategetRescate(){
-            if(this.CiudadId3 != null){
-                this.$nextTick(async () => {
-                    const response = await this.$http.get(this.$apiURL+'quality/errorsevidencetable/'+this.CiudadId3);
-                    const currentData = {
-                        series: response.data.series,
-                        categories: response.data.categories
-                    };
-
-                    if (this.dataChanged(this.previousTableDataRescate, currentData)) {
-                        this.tableDataRescate.splice(0, this.tableDataRescate.length);
-                        this.fieldsRescate.splice(0, this.fieldsRescate.length);
-                        response.data.series.map(i => this.tableDataRescate.push({ ...i }));
-                        response.data.categories.map(i => this.fieldsRescate.push({ key: i, sortable : true }));
-                        this.totalRowsRescate = this.tableDataRescate.length;
-                        this.totalesRescate = response.data.totales;
-                        this.previousTableDataRescate = currentData;
-                    }
-                })
-            }
-        },
-
-        async UpdategetErrorTec(){
-            if(this.CiudadId4 != null){
-                this.$nextTick(async () => {
-                    const response = await this.$http.get(this.$apiURL+'quality/errorsevidencebytectable/'+this.CiudadId4);
-                    const currentData = {
-                        series: response.data.series,
-                        categories: response.data.categories
-                    };
-
-                    if (this.dataChanged(this.previousTableDataErrorTec, currentData)) {
-                        this.tableDataErrorTec.splice(0, this.tableDataErrorTec.length);
-                        this.fieldsErrorTec.splice(0, this.fieldsErrorTec.length);
-                        response.data.series.map(i => this.tableDataErrorTec.push({ ...i }));
-                        response.data.categories.map(i => this.fieldsErrorTec.push({ key: i, sortable : true }));
-                        this.totalRowsErrorTec = this.tableDataErrorTec.length;
-                        this.totalesErrorTec = response.data.totales;
-                        this.previousTableDataErrorTec = currentData;
-                    }
-                })
-            }
         },
         //---------------------------------------
         async getEfectividad(){
@@ -314,12 +163,12 @@ export default {
             }
         },
         async getInspeccionesTec(){
-            if(this.ManagerId1 != null){
+            if(this.CiudadId5 != null){
                 this.$nextTick(async () => {
                     this.tableDataInspeccionesTec.splice(0, this.tableDataInspeccionesTec.length);
                     this.fieldsInspeccionesTec.splice(0, this.fieldsInspeccionesTec.length);
 
-                    const response = await this.$http.get(this.$apiURL+'quality/inspectioneffectivenessbytectable/'+this.ManagerId1);
+                    const response = await this.$http.get(this.$apiURL+'quality/inspectioneffectivenessbytectable/'+this.CiudadId5);
                     this.previousTableDataInspeccionesTec = {
                         series: response.data.series,
                         categories: response.data.categories
@@ -333,12 +182,12 @@ export default {
             }
         },
         async getAvanceTec(){
-            if(this.ManagerId2 != null){
+            if(this.CiudadId6 != null){
                 this.$nextTick(async () => {
                     this.tableDataAvanceTec.splice(0, this.tableDataAvanceTec.length);
                     this.fieldsAvanceTec.splice(0, this.fieldsAvanceTec.length);
 
-                    const response = await this.$http.get(this.$apiURL+'quality/auditsprogressbytectable/'+this.ManagerId2);
+                    const response = await this.$http.get(this.$apiURL+'quality/auditsprogressbytectable/'+this.CiudadId6);
                     this.previousTableDataAvanceTec = {
                         series: response.data.series,
                         categories: response.data.categories
@@ -390,8 +239,17 @@ export default {
         },
         async getErrorCalidad(){
                 const response = await this.$http.get(this.$apiURL+'quality/errorinspectionratiotable');
-                this.pieChart.series = response.data.series;
-                this.pieChart.chartOptions.labels = response.data.categories ;
+
+                if (response.data.series && response.data.categories) {
+                    this.previousRatioInstalacionesData = {
+                        series : response.data.series,
+                        labels : response.data.categories
+                    }
+                    this.pieChart = {... constructor_piechart(response.data.series, response.data.categories)}
+                }
+                else{
+                    this.pieChart = {... constructor_piechart([] , [])}
+                }
         },
         async getCity(){ 
             const response = await this.$http.get(this.$apiURL+'city/all');
@@ -401,18 +259,15 @@ export default {
                 this.CiudadId2 = this.Ciudades[0]
                 this.CiudadId3 = this.Ciudades[0]
                 this.CiudadId4 = this.Ciudades[0]
+                this.CiudadId5 = this.Ciudades[0]
+                this.CiudadId6 = this.Ciudades[0]
+                this.getEfectividad();
+                this.getAuditoria();
+                this.getRescate();
+                this.getErrorTec();
+                this.getInspeccionesTec();
+                this.getAvanceTec();
         },
-        async getGestor(){
-            const response = await this.$http.get(this.$apiURL+'manager/all');
-                response.data.data.map(i => this.Gestor.push( i.manager ));
-                this.ManagerId1 = this.Gestor[0]
-                this.ManagerId2 = this.Gestor[0]
-        },
-        dataChanged(previousData, currentData) {
-            if(currentData == undefined){ return false}
-            return JSON.stringify(previousData) !== JSON.stringify(currentData);
-        }
-
     },
     middleware: "authentication"
 };
@@ -432,12 +287,12 @@ export default {
                         </BCol>
                         <BCol cols="5">
                             Filtrar por:
-                            <Multiselect
+                            <BFormSelect
                                 v-model="CiudadId1"
+                                size="sm"
                                 :options="Ciudades"
-                                placeholder="Seleccionar Ciudad"
                                 @change="getEfectividad()"
-                            />
+                            ></BFormSelect>
                         </BCol>
                     </BRow>
                     <BRow class="mt-4">
@@ -513,12 +368,12 @@ export default {
                         </BCol>
                         <BCol cols="5">
                             Filtrar por:
-                            <Multiselect
+                            <BFormSelect
                                 v-model="CiudadId2"
+                                size="sm"
                                 :options="Ciudades"
-                                placeholder="Seleccionar Ciudad"
                                 @change="getAuditoria()"
-                            />
+                            ></BFormSelect>
                         </BCol>
                     </BRow>
                     <BRow class="mt-4">
@@ -594,13 +449,12 @@ export default {
                         </BCol>
                         <BCol cols="5">
                             Filtrar por:
-                            <Multiselect
-                                v-model="ManagerId1"
-                                :options="Gestor"
-                                placeholder="Seleccionar Gestor"
+                            <BFormSelect
+                                v-model="CiudadId5"
+                                size="sm"
+                                :options="Ciudades"
                                 @change="getInspeccionesTec()"
-
-                            />
+                            ></BFormSelect>
                         </BCol>
                     </BRow>
                     <BRow class="mt-4">
@@ -676,13 +530,12 @@ export default {
                         </BCol>
                         <BCol cols="5">
                             Filtrar por:
-                            <Multiselect
-                                v-model="ManagerId2"
-                                :options="Gestor"
-                                placeholder="Seleccionar Gestor"
+                            <BFormSelect
+                                v-model="CiudadId6"
+                                size="sm"
+                                :options="Ciudades"
                                 @change="getAvanceTec()"
-
-                            />
+                            ></BFormSelect>
                         </BCol>
                     </BRow>
                     <BRow class="mt-4">
@@ -760,13 +613,12 @@ export default {
                         </BCol>
                         <BCol cols="5">
                             Filtrar por:
-                            <Multiselect
+                            <BFormSelect
                                 v-model="CiudadId3"
+                                size="sm"
                                 :options="Ciudades"
-                                placeholder="Seleccionar Ciudad"
                                 @change="getRescate()"
-
-                            />
+                            ></BFormSelect>
                         </BCol>
                     </BRow>
                     <BRow class="mt-4">
@@ -858,13 +710,12 @@ export default {
                         </BCol>
                         <BCol cols="5">
                             Filtrar por:
-                            <Multiselect
+                            <BFormSelect
                                 v-model="CiudadId4"
+                                size="sm"
                                 :options="Ciudades"
-                                placeholder="Seleccionar Ciudad"
                                 @change="getErrorTec()"
-
-                            />
+                            ></BFormSelect>
                         </BCol>
                     </BRow>
                     <BRow class="mt-4">

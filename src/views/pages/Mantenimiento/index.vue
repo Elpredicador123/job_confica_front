@@ -1,7 +1,6 @@
 <script>
 import Layout from "../../layouts/main";
 import PageHeader from "@/components/page-header";
-import Multiselect from "@vueform/multiselect";
 import {constructor_barchart,constructor_piechart} from "@/components/constructor";
 /**
  * Apex-chart component
@@ -9,7 +8,6 @@ import {constructor_barchart,constructor_piechart} from "@/components/constructo
 export default {
     components: { 
         Layout,
-        Multiselect,
         PageHeader
     }, 
     data() {
@@ -62,10 +60,7 @@ export default {
         this.totalRowsTec = this.tableDataTec.length;
 
         //obtener datos de la api
-        this.getTableSup();
         this.getCity();
-        this.getTableTec();
-        this.getContrata();
         this.getRatioInstalaciones();
         this.getRatioMantenimientos();
         // setInterval(() => {
@@ -82,118 +77,6 @@ export default {
             // Trigger pagination to update the number of buttons/pages due to filtering
             this.totalRowsTec = filteredItems.length;
             this.currentPageTec = 1;
-        },
-        async updateDataIfChanged() {
-            console.log("cambios")
-            await Promise.all([
-                this.UpdategetTableSup(),
-                this.UpdategetTableTec(),
-                this.updateContrata(),
-                this.updateRatioInstalaciones(),
-                this.updateRatioMantenimientos()
-            ]);
-        },
-        async UpdategetTableSup() {
-            if(this.CiudadId3 != null){
-                this.$nextTick(async () => {
-                    const response = await this.$http.get(this.$apiURL+'maintenance/childhoodbreakdownsmanagers/'+this.CiudadId3);
-                    const currentData = {
-                        series: response.data.series,
-                        fields: response.data.fields
-                    };
-
-                    if (this.dataChanged(this.previousTableSupData, currentData)) {
-                        this.tableDataSup.splice(0, this.tableDataSup.length);
-                        this.fieldsSup.splice(0, this.fieldsSup.length);
-                        response.data.series.map(i => this.tableDataSup.push({ ...i }));
-                        response.data.fields.map(i => this.fieldsSup.push({ key: i, sortable : true }));
-                        this.totalRowsSup = this.tableDataSup.length;
-                        this.previousTableSupData = currentData;
-                    }
-                })
-            }
-        },
-
-        async UpdategetTableTec() {
-            if(this.CiudadId4 != null){
-                this.$nextTick(async () => {
-                    const response = await this.$http.get(this.$apiURL+'maintenance/childhoodbreakdownstechnicians/'+this.CiudadId4);
-                    const currentData = {
-                        series: response.data.series,
-                        fields: response.data.fields
-                    };
-
-                    if (this.dataChanged(this.previousTableTecData, currentData)) {
-                        this.tableDataTec.splice(0, this.tableDataTec.length);
-                        this.fieldsTec.splice(0, this.fieldsTec.length);
-                        response.data.series.map(i => this.tableDataTec.push({ ...i }));
-                        response.data.fields.map(i => this.fieldsTec.push({ key: i, sortable : true }));
-                        this.totalRowsTec = this.tableDataTec.length;
-                        this.totalesTec = response.data.totales;
-                        this.previousTableTecData = currentData;
-                    }
-                })
-            }
-        },
-        async updateContrata(){
-            if(this.CiudadId1 != null){
-                this.$nextTick(async () => {
-                    const response = await this.$http.get(this.$apiURL+'maintenance/ineffectivecontratagraphic/'+this.CiudadId1);
-                    const currentData = {
-                        series: response.data.series,
-                        categories: response.data.categories
-                    };
-                    if (this.dataChanged(this.previousContrataData, currentData)) {
-                        this.previousContrataData = {
-                            series: this.ContrataBar.series,
-                            labels: this.ContrataBar.categories
-                        };
-                        this.ContrataBar = {... constructor_barchart(response.data.series, response.data.categories)}
-                    }
-                })
-            }
-        },
-        async updateRatioInstalaciones(){
-            try {
-                const response = await this.$http.get(this.$apiURL+'maintenance/childhoodbreakdownsgeneral');
-                const currentData = {
-                    series: response.data.series,
-                    labels: response.data.categories
-                };
-                if (this.dataChanged(this.previousRatioInstalacionesData, currentData)) {
-                    this.previousRatioInstalacionesData = {
-                        series: this.pieChart.series,
-                        labels: this.pieChart.categories
-                    };
-                    this.pieChart = {... constructor_piechart(response.data.series, response.data.categories)}
-                }
-            } catch (error) {
-                console.error(error);  
-            }
-        },
-        async updateRatioMantenimientos(){
-            try {
-                const response = await this.$http.get(this.$apiURL+'maintenance/ineffectivedistributionratiographic');
-                const currentData = {
-                    series: response.data.series,
-                    labels: response.data.categories
-                };
-                if (this.dataChanged(this.previousRatioMantenimientoData, currentData)) {
-                    this.previousRatioMantenimientoData = {
-                        series: this.pieChart2.series,
-                        labels: this.pieChart2.categories
-                    };
-                    this.pieChart2 = {... constructor_piechart(response.data.series, response.data.categories)}
-                }
-            } catch (error) {
-                console.error(error);
-            }
-        },
-        dataChanged(previousData, currentData) {
-            if(currentData == undefined){ return false}
-            console.log(previousData)
-            console.log(currentData)
-            return JSON.stringify(previousData) !== JSON.stringify(currentData);
         },
         //-------------------------------------------------------
         async getContrata(){
@@ -256,6 +139,9 @@ export default {
                 this.CiudadId2 = this.Ciudades[0]
                 this.CiudadId3 = this.Ciudades[0]
                 this.CiudadId4 = this.Ciudades[0]
+                this.getContrata();
+                this.getTableSup();
+                this.getTableTec();
         },
         async getRatioInstalaciones(){
             try {
@@ -310,13 +196,12 @@ export default {
                         </BCol>
                         <BCol cols="5">
                             Filtrar por:
-                            <Multiselect
+                            <BFormSelect
                                 v-model="CiudadId1"
+                                size="sm"
                                 :options="Ciudades"
-                                placeholder="Seleccionar Ciudad"
-                                ref="multiselect1"
                                 @change="getContrata()"
-                            />
+                            ></BFormSelect>
                         </BCol>
                     </BRow>
                     <!-- Bar Chart -->
@@ -373,12 +258,12 @@ export default {
                         </BCol>
                         <BCol cols="5">
                             Filtrar por:
-                            <Multiselect
+                            <BFormSelect
                                 v-model="CiudadId3"
+                                size="sm"
                                 :options="Ciudades"
-                                placeholder="Seleccionar Ciudad"
                                 @change="getTableSup()"
-                            />
+                            ></BFormSelect>
                         </BCol>
                     </BRow>
                     <BRow class="mt-4">
@@ -459,12 +344,12 @@ export default {
                         </BCol>
                         <BCol cols="5">
                             Filtrar por:
-                            <Multiselect
+                            <BFormSelect
                                 v-model="CiudadId4"
+                                size="sm"
                                 :options="Ciudades"
-                                placeholder="Seleccionar Ciudad"
                                 @change="getTableTec()"
-                            />
+                            ></BFormSelect>
                         </BCol>
                     </BRow>
                     <BRow class="mt-4">

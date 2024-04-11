@@ -43,7 +43,7 @@ export default {
                 headerToolbar: {
                     left: "prev,next today",
                     center: "title",
-                    right: "dayGridMonth,timeGridWeek,timeGridDay,listWeek"
+                    right: "dayGridMonth,timeGridWeek,listWeek" // Elimina "timeGridDay" de las opciones de la barra de herramientas del encabezado
                 },
                 plugins: [
                     dayGridPlugin,
@@ -63,7 +63,14 @@ export default {
                 weekends: true,
                 selectable: true,
                 selectMirror: true,
-                dayMaxEvents: true
+                dayMaxEvents: true,
+                views: {
+                    timeGridWeek: {
+                        buttonText: 'Week', // Cambia el texto del botón de la vista "timeGridWeek" a "All Day"
+                        allDaySlot: true, // Mostrar solo la opción de "All Day" en la vista "timeGridWeek"
+                        slotDuration: '24:00:00' // Hace que cada ranura tenga una duración de 24 horas, ocultando así las horas específicas
+                    }
+                }
             },
             calendarOptions2: {
                 eventDrop: this.handleEventDrop,
@@ -406,7 +413,7 @@ export default {
     <!-- Edit Modal -->
     <BModal
       v-model="eventModal"
-      title="Edit Event"
+      title="Cumpleaño"
       title-class="font-18"
       hide-footer
       body-class="p-3"
@@ -422,6 +429,7 @@ export default {
                     type="text"
                     class="form-control"
                     placeholder="Insert Event name"
+                    disabled
                 />
                 </div>
             </BCol>
@@ -432,6 +440,7 @@ export default {
                     v-model="editevent.editcategory"
                     class="form-control"
                     name="category"
+                    disabled
                 >
                     <option
                     v-for="option in categories"
@@ -462,6 +471,7 @@ export default {
                         v-model="editevent2.editTitle"
                         type="text"
                         class="form-control"
+                        disabled
                         placeholder="Insert Event name"
                     />
                 </div>

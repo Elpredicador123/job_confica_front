@@ -3,19 +3,19 @@ function constructor_chart(data_series,data_categories){
         series: data_series,
         chartOptions: {
             chart: {
-            toolbar: {
-                show: false
-            }
+                toolbar: {
+                    show: false
+                }
             },
             plotOptions: {
-            bar: {
-                horizontal: false,
-                columnWidth: "45%",
-                endingShape: "rounded",
-                dataLabels: {
-                position: 'top' // Establece la posición de las etiquetas de datos encima de las barras
+                bar: {
+                    horizontal: false,
+                    columnWidth: "45%",
+                    endingShape: "rounded",
+                    dataLabels: {
+                    position: 'top' // Establece la posición de las etiquetas de datos encima de las barras
+                    }
                 }
-            }
             },
             dataLabels: {
             enabled: true,

@@ -352,6 +352,7 @@ export default {
         },
         async getInstalaciones() {
             try {
+
                 await this.$http.get(this.$apiURL+'control-panel/installationprogressgraphic')
                     .then(response => {
                         console.log(response)
@@ -361,9 +362,16 @@ export default {
                                 categories: response.data.categories
                             };
                             this.columnChart = {... constructor_chart(response.data.series, response.data.categories)}
+                            localStorage.setItem('installation_progress', JSON.stringify(this.PreviusChartInstalaciones));
                         }
                         else{
-                            this.columnChart = {... constructor_chart([], [])}
+                            const currentData = JSON.parse(localStorage.getItem('installation_progress')); // Convertir los datos del usuario a JSON
+                            if(currentData){
+                                this.columnChart = {... constructor_chart([currentData.series], [currentData.categories])}
+                            }
+                            else {
+                                this.columnChart = {... constructor_chart([], [])}
+                            }
                         }
                     })
             } catch (error) {
@@ -390,13 +398,13 @@ export default {
         async getRatioInstalaciones() {
             try {
                 const response = await this.$http.get(this.$apiURL+'control-panel/installationratiographic');
-                if (response.data.series && response.data.categories) {
+                if (response.data.series && response.data.labels) {
                     // Si ambos series y categories están definidos y no son nulos
                     this.previousRatioInstalacionesData = {
                         series: response.data.series,
-                        labels: response.data.categories
+                        labels: response.data.labels
                     };
-                    this.pieChart = {... constructor_piechart(response.data.series, response.data.categories)}
+                    this.pieChart = {... constructor_piechart(response.data.series, response.data.labels)}
                 } else {
                     this.pieChart = {... constructor_piechart([], [])}
                 }
@@ -407,13 +415,14 @@ export default {
         async getRatioMantenimientos() {
             try {
                 const response = await this.$http.get(this.$apiURL+'control-panel/maintenanceratiographic');
-                if (response.data.series && response.data.categories) {
+                console.log(response)
+                if (response.data.series && response.data.labels) {
                     // Si ambos series y categories están definidos y no son nulos
                     this.previousRatioMantenimientosData = {
                         series: response.data.series,
-                        labels: response.data.categories
+                        labels: response.data.labels
                     };
-                    this.pieChart2 = {... constructor_piechart(response.data.series, response.data.categories)}
+                    this.pieChart2 = {... constructor_piechart(response.data.series, response.data.labels)}
                 } else {
                     this.pieChart2 = {... constructor_piechart([], [])}
                 }
