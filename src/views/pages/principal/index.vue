@@ -12,16 +12,16 @@ import { required } from "@vuelidate/validators";
 import Swal from "sweetalert2";
 
 import Layout from "../../layouts/main";
-import PageHeader from "@/components/page-header";
 
 import {  categories } from "../calendar/data-calendar";
 import { format } from 'date-fns';
+import esLocale from '@fullcalendar/core/locales/es';
 
 /**
  * Calendar component
  */
 export default {
-    components: { FullCalendar, Layout, PageHeader },
+    components: { FullCalendar, Layout },
     setup() {
         return { v$: useVuelidate() };
     },
@@ -39,6 +39,7 @@ export default {
             ],
             calendarEvents: [],
             calendarOptions: {
+                locale: esLocale,
                 eventDrop: this.handleEventDrop,
                 headerToolbar: {
                     left: "prev,next today",
@@ -73,6 +74,7 @@ export default {
                 }
             },
             calendarOptions2: {
+                locale: esLocale,
                 eventDrop: this.handleEventDrop,
                 headerToolbar: {
                     left: "prev,next today",
@@ -352,12 +354,68 @@ export default {
     display: block;
     background: transparent !important;
 }
+/* Estilo para reducir el tamaño del calendario */
+.app-calendar .fc {
+  font-size: 12px; /* Reducir el tamaño de la fuente */
+}
+
+.app-calendar .fc-event {
+  font-size: 10px; /* Reducir el tamaño de la fuente de los eventos */
+}
+
+.app-calendar .fc th, 
+.app-calendar .fc td {
+  padding: 5px; /* Reducir el espacio entre celdas */
+}
+
+.app-calendar .fc-list-item {
+  font-size: 12px; /* Reducir el tamaño de la fuente en la vista de lista */
+}
+
+.app-calendar .fc-list-heading {
+  font-size: 14px; /* Reducir el tamaño de la fuente en los encabezados de la vista de lista */
+}
+.app-calendar .btn {
+  font-size: 10px; /* Reducir el tamaño de la fuente de los botones */
+  padding: 5px 10px; /* Reducir el padding de los botones */
+}
+.app-calendar .month-year-text {
+  font-size: 9px; /* Tamaño de la fuente */
+}
+.fc .fc-toolbar h2, .fc .fc-toolbar .h2 {
+    font-size: 12px;
+    line-height: 15px;
+    text-transform: uppercase;
+}
+
 </style>
 
 <template>
   <Layout>
-    <PageHeader :title="title" :items="items" />
     <BRow>
+        <BCol lg="12">
+        <BCard no-body>
+          <BCardBody>
+            <div class="button-items d-flex flex-wrap gap-2">
+              <a
+                class="btn btn-primary"
+                href="https://back.sistemastest.xyz/importdiary"
+                role="button" target="_blank"
+                >Importar Agendas</a>
+                <a
+                class="btn btn-primary"
+                href="https://back.sistemastest.xyz/importaudit"
+                role="button" target="_blank"
+                >Importar Auditorias</a>
+                <a
+                class="btn btn-primary"
+                href="https://back.sistemastest.xyz/importevidence"
+                role="button" target="_blank"
+                >Importar Evidencias</a>
+            </div>
+          </BCardBody>
+        </BCard>
+      </BCol>
         <BCol lg="8">
             <BRow>
                 <BCol cols="12" v-for="newsItem in tableData" :key="newsItem.id">

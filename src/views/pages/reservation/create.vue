@@ -16,6 +16,7 @@ import PageHeader from "@/components/page-header";
 
 import {  categories } from "../calendar/data-calendar";
 import { format } from 'date-fns';
+import esLocale from '@fullcalendar/core/locales/es';
 
 /**
  * Calendar component
@@ -39,11 +40,13 @@ data() {
     ],
     calendarEvents: [],
     calendarOptions: {
+        locale: esLocale,
+        displayEventTime: true,
         eventDrop: this.handleEventDrop,
         headerToolbar: {
-        left: "prev,next today",
-        center: "title",
-        right: "dayGridMonth,timeGridWeek,timeGridDay,listWeek"
+            left: "prev,next today",
+            center: "title",
+            right: "timeGridWeek,timeGridDay,listWeek"
         },
         plugins: [
             dayGridPlugin,
@@ -52,7 +55,7 @@ data() {
             bootstrapPlugin,
             listPlugin
         ],
-        initialView: "dayGridMonth",
+        initialView: "timeGridWeek",
         themeSystem: "bootstrap",
         initialEvents: [],
         editable: true,
@@ -382,31 +385,6 @@ methods: {
                 </BCol>
                 <BCol cols="12">
                     <div class="mb-3">
-                    <label class="control-label form-label">Category</label>
-                    <select
-                        v-model="event.category"
-                        class="form-control"
-                        name="category"
-                        :class="{ 'is-invalid': submitted && v$.event.category.errors }"
-                    >
-                        <option
-                        v-for="option in categories"
-                        :key="option.backgroundColor"
-                        :value="`${option.value}`"
-                        >
-                        {{ option.name }}
-                        </option>
-                    </select>
-                    <div
-                        v-if="submitted && v$.event.category.$invalid"
-                        class="invalid-feedback"
-                    >
-                        This value is required.
-                    </div>
-                    </div>
-                </BCol>
-                <BCol cols="12">
-                    <div class="mb-3">
                         <label for="description" class="form-label">Descripción</label>
                         <textarea id="description" v-model="event.description" class="form-control" placeholder="Descripción del evento"></textarea>
                     </div>
@@ -448,24 +426,6 @@ methods: {
                             class="form-control"
                             placeholder="Insert Event name"
                         />
-                    </div>
-                </BCol>
-                <BCol cols="12">
-                    <div class="mb-3">
-                        <label class="control-label form-label">Category</label>
-                        <select
-                            v-model="editevent.editcategory"
-                            class="form-control"
-                            name="category"
-                        >
-                            <option
-                            v-for="option in categories"
-                            :key="option.backgroundColor"
-                            :value="`${option.value}`"
-                            >
-                            {{ option.name }}
-                            </option>
-                        </select>
                     </div>
                 </BCol>
                 <BCol cols="12">

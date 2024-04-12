@@ -12,7 +12,7 @@ export default {
     },
     data() {
         return {
-            title: "Gestión",
+            title: "Provisiónes",
             tableDataSup: [],
             tableDataTec: [],
             ContrataBar: [], 
@@ -28,24 +28,9 @@ export default {
             ciudadId2: null,
             ciudadId3: null,
             ciudadId4: null,
-            itemsSup: [
+            items: [
                 {
-                    text: "Charts",
-                    href: "/"
-                },
-                {
-                    text: "Apex",
-                    active: true
-                }
-            ],
-            itemsTec: [
-                {
-                    text: "Charts",
-                    href: "/"
-                },
-                {
-                    text: "Apex",
-                    active: true
+                    text: "Privisiones",
                 }
             ],
             //--------------------
@@ -99,16 +84,22 @@ export default {
         async getContrata(){
             if(this.ciudadId1 != null){
                 this.$nextTick(async () => {
-                    const response = await this.$http.get(this.$apiURL+'provision/diarycontratagraphic/'+this.ciudadId1);
-                    if (response.data.series && response.data.categories) {
-                        this.previousContrataData = {
-                            series: response.data.series,
-                            categories: response.data.categories
-                        };
+                    const TIMEOUT_MS = 4000; // Tiempo de espera en milisegundos
+                    const responsePromise = this.$http.get(this.$apiURL + 'provision/diarycontratagraphic/'+this.ciudadId1);
+                    const timeoutPromise = new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
+                    const response = await Promise.race([responsePromise, timeoutPromise]);
+                    if (response) {
                         this.ContrataBar = {... constructor_barchart(response.data.series, response.data.categories)}
+                        localStorage.setItem('contrata_bar_provision', JSON.stringify(response));
                     }
                     else{
-                        this.ContrataBar = {... constructor_barchart([],[])}
+                        const currentData = JSON.parse(localStorage.getItem('contrata_bar_provision')); // Convertir los datos del usuario a JSON
+                        if(currentData){
+                            this.ContrataBar = {... constructor_barchart(currentData.data.series, currentData.data.categories)}
+                        }
+                        else{
+                            this.ContrataBar = {... constructor_barchart([],[])}
+                        }
                     }
                 });
             }
@@ -121,16 +112,22 @@ export default {
             try {
                 if(this.ciudadId2 != null){
                     this.$nextTick(async () => {
-                        const response = await this.$http.get(this.$apiURL+'provision/diarymanagergraphic/'+this.ciudadId2);
-                        if (response.data.series && response.data.categories) {
-                            this.previousGestorData = {
-                                series: response.data.series,
-                                categories: response.data.categories
-                            };
+                        const TIMEOUT_MS = 4000; // Tiempo de espera en milisegundos
+                        const responsePromise = this.$http.get(this.$apiURL + 'provision/diarymanagergraphic/'+this.ciudadId2);
+                        const timeoutPromise = new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
+                        const response = await Promise.race([responsePromise, timeoutPromise]);
+                        if (response) {
                             this.GestorBar = {... constructor_barchart(response.data.series, response.data.categories)}
+                            localStorage.setItem('diary_manager_provision', JSON.stringify(response));
                         }
                         else{
-                            this.GestorBar = {... constructor_barchart([],[])}
+                            const currentData = JSON.parse(localStorage.getItem('diary_manager_provision')); // Convertir los datos del usuario a JSON
+                            if(currentData){
+                                this.GestorBar = {... constructor_barchart(currentData.data.series, currentData.data.categories)}
+                            }
+                            else{
+                                this.GestorBar = {... constructor_barchart([],[])}
+                            }
                         }
                     })
                 }
@@ -145,19 +142,26 @@ export default {
             try {
                 if(this.ciudadId3 != null){
                     this.$nextTick(async () => {
+                        const TIMEOUT_MS = 4000; // Tiempo de espera en milisegundos
+                        const responsePromise = this.$http.get(this.$apiURL + 'provision/childhoodbreakdownsmanagers/'+this.ciudadId3);
+                        const timeoutPromise = new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
+                        const response = await Promise.race([responsePromise, timeoutPromise]);
                         this.tableDataSup.splice(0, this.tableDataSup.length);
                         this.fieldsSup.splice(0, this.fieldsSup.length);
-
-                        const response = await this.$http.get(this.$apiURL+'provision/childhoodbreakdownsmanagers/'+this.ciudadId3);
-                        this.previousTableSupData = {
-                            series: response.data.series,
-                            fields: response.data.fields
-                        };
-                        response.data.series.map(i => this.tableDataSup.push({ ...i }));
-                        //this.fieldsGestor.push({ key: "Ciudad", sortable : true })
-                        response.data.fields.map(i => this.fieldsSup.push({ key: i, sortable : true }));
-                        this.totalRowsSup = this.tableDataSup.length;
-                        this.totalesSup = response.data.totales;
+                        if (response) {
+                            response.data.series.map(i => this.tableDataSup.push({ ...i }));
+                            response.data.fields.map(i => this.fieldsSup.push({ key: i, sortable : true }));
+                            this.totalRowsSup = this.tableDataSup.length;
+                            localStorage.setItem('installation_manager_provision', JSON.stringify(response));
+                        }
+                        else{
+                            const currentData = JSON.parse(localStorage.getItem('installation_manager_provision')); // Convertir los datos del usuario a JSON
+                            if(currentData){
+                                currentData.data.series.map(i => this.tableDataSup.push({ ...i }));
+                                currentData.data.fields.map(i => this.fieldsSup.push({ key: i, sortable : true }));
+                                this.totalRowsSup = this.tableDataSup.length;
+                            }
+                        }
                     });
                 }
             } catch (error) {
@@ -168,19 +172,27 @@ export default {
             try {
                 if(this.ciudadId4 != null){
                     this.$nextTick(async () => { 
+                        const TIMEOUT_MS = 4000; // Tiempo de espera en milisegundos
+                        const responsePromise = this.$http.get(this.$apiURL + 'provision/childhoodbreakdownstechnicians/'+this.ciudadId4);
+                        const timeoutPromise = new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
+                        const response = await Promise.race([responsePromise, timeoutPromise]);
                         this.tableDataTec.splice(0, this.tableDataTec.length);
                         this.fieldsTec.splice(0, this.fieldsTec.length);
 
-                        const response = await this.$http.get(this.$apiURL+'provision/childhoodbreakdownstechnicians/'+this.ciudadId4);
-                        this.previousTableTecData = {
-                            series: response.data.series,
-                            fields: response.data.fields
-                        };
-                        response.data.series.map(i => this.tableDataTec.push({ ...i }));
-                        //this.fieldsTec.push({ key: "Ciudad", sortable : true })
-                        response.data.fields.map(i => this.fieldsTec.push({ key: i, sortable : true }));
-                        this.totalRowsTec = this.tableDataTec.length;
-                        this.totalesTec = response.data.totales;
+                        if (response) {
+                            response.data.series.map(i => this.tableDataTec.push({ ...i }));
+                            response.data.fields.map(i => this.fieldsTec.push({ key: i, sortable : true }));
+                            this.totalRowsTec = this.tableDataTec.length;
+                            localStorage.setItem('childhood_table', JSON.stringify(response));
+                        }
+                        else{
+                            const currentData = JSON.parse(localStorage.getItem('childhood_table')); // Convertir los datos del usuario a JSON
+                            if(currentData){
+                                currentData.data.series.map(i => this.tableDataTec.push({ ...i }));
+                                currentData.data.fields.map(i => this.fieldsTec.push({ key: i, sortable : true }));
+                                this.totalRowsTec = this.tableDataTec.length;
+                            }
+                        }
                     });
                 }
             } catch (error) {
@@ -189,18 +201,26 @@ export default {
         },
         async getCity(){
             try {
-            const response = await this.$http.get(this.$apiURL+'city/all');
-                if(response.data.status == 'success'){
-                    response.data.data.map(i => this.Ciudades.push( i.name ));
+                const TIMEOUT_MS = 4000; // Tiempo de espera en milisegundos
+                const responsePromise = this.$http.get(this.$apiURL + 'city/all');
+                const timeoutPromise = new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
+                const response = await Promise.race([responsePromise, timeoutPromise]);
+                if (response) {
+                    response.data.data.forEach(city => this.Ciudades.push(city.name));
                     this.ciudadId1 = this.Ciudades[0];
                     this.ciudadId2 = this.Ciudades[0];
                     this.ciudadId3 = this.Ciudades[0];
                     this.ciudadId4 = this.Ciudades[0];
-                    this.getTableTec();
-                    this.getContrata();
-                    this.getGestor();
-                    this.getTableSup();
+                } else {
+                    this.ciudadId = "Lima";
+                    this.ciudadId2 = "Lima";
+                    this.ciudadId3 = "Lima";
+                    this.ciudadId4 = "Lima";
                 }
+                this.getTableTec();
+                this.getContrata();
+                this.getGestor();
+                this.getTableSup();
             } catch (error) {
                 console.error(error);
             }

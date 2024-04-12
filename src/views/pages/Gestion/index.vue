@@ -120,7 +120,6 @@ export default {
         },
         async getGestorAgenda(){
             try {
-
                 const TIMEOUT_MS = 4000; // Tiempo de espera en milisegundos
                 const responsePromise = this.$http.get(this.$apiURL + 'manager/managersaltas');
                 const timeoutPromise = new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
@@ -129,6 +128,9 @@ export default {
                     response.data.data.map(i => this.GestorAgenda.push( i.manager ));
                     this.GestorAgendaId = this.GestorAgenda[0]
                 }
+                else{
+                    this.GestorAgendaId = ""
+                }
                 this.getTableGestor()
             } catch (error) {
                 console.error(error);
@@ -136,13 +138,10 @@ export default {
         },
         async getCity() {
             try {
-
                 const TIMEOUT_MS = 4000; // Tiempo de espera en milisegundos
                 const responsePromise = this.$http.get(this.$apiURL + 'city/all');
                 const timeoutPromise = new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
                 const response = await Promise.race([responsePromise, timeoutPromise]);
-
-                // Verifica si la respuesta es de la API o del tiempo de espera
                 if (response) {
                     response.data.data.forEach(city => this.Ciudades.push(city.name));
                     this.ciudadId = this.Ciudades[0];
@@ -160,10 +159,22 @@ export default {
         },
 
         async getOrdenesGestor(){
-            const response = await this.$http.get(this.$apiURL+'manager/managersaverias');
-                response.data.data.map(i => this.OrdenesGestor.push( i.manager ));
-                this.OrdenesGestorId = this.OrdenesGestor[0]
+            try {
+                const TIMEOUT_MS = 4000; // Tiempo de espera en milisegundos
+                const responsePromise = this.$http.get(this.$apiURL + 'manager/managersaverias');
+                const timeoutPromise = new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
+                const response = await Promise.race([responsePromise, timeoutPromise]);
+                if (response) {
+                    response.data.data.forEach(i => this.OrdenesGestor.push(i.manager));
+                    this.OrdenesGestorId = this.OrdenesGestor[0]
+                } else {
+                    this.OrdenesGestorId = "";
+                }
+                // Realiza otras operaciones después de obtener las ciudades
                 this.getTableOrder();
+            } catch (error) {
+                console.error(error);
+            }    
         },
         async getTableMantenimientos() {
             try {
@@ -199,7 +210,7 @@ export default {
 
         async getTableInstalaciones() {
             try {
-                if(this.ciudadId2 != null){
+                if(this.ciudadId != null){
                     this.$nextTick(async () => {
                         this.TableInstalaciones.splice(0, this.TableInstalaciones.length);
                         this.fields.splice(0, this.fields.length);
@@ -207,21 +218,17 @@ export default {
                         const responsePromise = this.$http.get(this.$apiURL + 'management/installationprogresstable/' + this.ciudadId);
                         const timeoutPromise = new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
                         const response = await Promise.race([responsePromise, timeoutPromise]);
-
                         if (response) {
-                            this.previousTableInstalacionesData = {
-                                series: response.data.series,
-                                fields: response.data.fields
-                            };
-                            response.data.series.forEach(item => this.TableInstalaciones.push({ ...item }));
-                            response.data.fields.forEach(item => this.fields.push({ key: item, sortable: true }));
+                            response.data.series.map(i => this.TableInstalaciones.push({ ...i }));
+                            response.data.fields.map(i => this.fields.push({ key: i, sortable : true }));
                             this.totalRows = this.TableInstalaciones.length;
                             localStorage.setItem('installation_progress_table', JSON.stringify(response));
-                        } else {
-                            const currentData = JSON.parse(localStorage.getItem('installation_progress_table'));
-                            if (currentData) {
-                                currentData.series.forEach(item => this.TableInstalaciones.push({ ...item }));
-                                currentData.fields.forEach(item => this.fields.push({ ...item }));
+                        }
+                        else{
+                            const currentData = JSON.parse(localStorage.getItem('installation_progress_table')); // Convertir los datos del usuario a JSON
+                            if(currentData){
+                                currentData.data.series.map(i => this.TableInstalaciones.push({ ...i }));
+                                currentData.data.fields.map(i => this.fields.push({ key: i, sortable : true }));
                                 this.totalRows = this.TableInstalaciones.length;
                             }
                         }

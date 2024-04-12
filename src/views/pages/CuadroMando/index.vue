@@ -153,10 +153,10 @@ export default {
                     response.data.series.map(i => this.tableData.push({ ...i }));
                     response.data.fields.map(i => this.fields.push({ key: i, sortable : true }));
                     this.totalRows = this.tableData.length;
-                    localStorage.setItem('installation_progress', JSON.stringify(response));
+                    localStorage.setItem('installation_progress_table', JSON.stringify(response));
                 }
                 else{
-                    const currentData = JSON.parse(localStorage.getItem('installation_progress')); // Convertir los datos del usuario a JSON
+                    const currentData = JSON.parse(localStorage.getItem('installation_progress_table')); // Convertir los datos del usuario a JSON
                     if(currentData){
                         currentData.data.series.map(i => this.tableData.push({ ...i }));
                         currentData.data.fields.map(i => this.fields.push({ key: i, sortable : true }));

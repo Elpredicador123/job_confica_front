@@ -16,6 +16,7 @@ import PageHeader from "@/components/page-header";
 
 import {  categories } from "../calendar/data-calendar";
 import { format } from 'date-fns';
+import esLocale from '@fullcalendar/core/locales/es';
 
 /**
  * Calendar component
@@ -39,6 +40,7 @@ export default {
       ],
       calendarEvents: [],
       calendarOptions: {
+        locale: esLocale,
         eventDrop: this.handleEventDrop,
         headerToolbar: {
             left: "prev,next today",

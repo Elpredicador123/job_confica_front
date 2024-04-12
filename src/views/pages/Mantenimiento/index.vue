@@ -48,7 +48,6 @@ export default {
             sortByTec: "age",
             sortDescTec: false,
             fieldsTec: [],
-            totalesTec : 0,
             //--------------------
         };
     },
@@ -73,9 +72,22 @@ export default {
         async getContrata(){
             if(this.CiudadId1 != null){
                 this.$nextTick(async () => {
-                    const response = await this.$http.get(this.$apiURL+'maintenance/ineffectivecontratagraphic/'+this.CiudadId1);
-                    if (response.data.series && response.data.categories) {
+                    const TIMEOUT_MS = 4000; // Tiempo de espera en milisegundos
+                    const responsePromise = this.$http.get(this.$apiURL + 'maintenance/ineffectivecontratagraphic/'+this.CiudadId1);
+                    const timeoutPromise = new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
+                    const response = await Promise.race([responsePromise, timeoutPromise]);
+                    if (response) {
                         this.ContrataBar = {... constructor_barchart(response.data.series, response.data.categories)}
+                        localStorage.setItem('ineffective_contrata', JSON.stringify(response));
+                    }
+                    else{
+                        const currentData = JSON.parse(localStorage.getItem('ineffective_contrata')); // Convertir los datos del usuario a JSON
+                        if(currentData){
+                            this.ContrataBar = {... constructor_barchart(currentData.data.series, currentData.data.categories)}
+                        }
+                        else{
+                            this.ContrataBar = {... constructor_barchart([],[])}
+                        }
                     }
                 })
             }
@@ -86,50 +98,102 @@ export default {
         async getTableSup(){
             if(this.CiudadId3 != null){
                 this.$nextTick(async () => {
+                    const TIMEOUT_MS = 4000; // Tiempo de espera en milisegundos
+                    const responsePromise = this.$http.get(this.$apiURL + 'maintenance/childhoodbreakdownsmanagers/'+this.CiudadId3);
+                    const timeoutPromise = new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
+                    const response = await Promise.race([responsePromise, timeoutPromise]);
+                    
                     this.tableDataSup.splice(0, this.tableDataSup.length);
                     this.fieldsSup.splice(0, this.fieldsSup.length);
-                    const response = await this.$http.get(this.$apiURL+'maintenance/childhoodbreakdownsmanagers/'+this.CiudadId3);
-                    response.data.series.map(i => this.tableDataSup.push({ ...i }));
-                    response.data.fields.map(i => this.fieldsSup.push({ key: i, sortable : true }));
 
-                    this.totalRowsSup = this.tableDataSup.length;
+                    if (response) {
+                        response.data.series.map(i => this.tableDataSup.push({ ...i }));
+                        response.data.fields.map(i => this.fieldsSup.push({ key: i, sortable : true }));
+                        this.totalRowsSup = this.tableDataSup.length;
+                        localStorage.setItem('childhood_break', JSON.stringify(response));
+                    }
+                    else{
+                        const currentData = JSON.parse(localStorage.getItem('childhood_break')); // Convertir los datos del usuario a JSON
+                        if(currentData){
+                            currentData.data.series.map(i => this.tableDataSup.push({ ...i }));
+                            currentData.data.fields.map(i => this.fieldsSup.push({ key: i, sortable : true }));
+                            this.totalRowsSup = this.tableDataSup.length;
+                        }
+                    }
                 });
             }
         },
         async getTableTec(){
             if(this.CiudadId4 != null){
                 this.$nextTick(async () => {
+                    const TIMEOUT_MS = 4000; // Tiempo de espera en milisegundos
+                    const responsePromise = this.$http.get(this.$apiURL + 'maintenance/childhoodbreakdownstechnicians/'+this.CiudadId4);
+                    const timeoutPromise = new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
+                    const response = await Promise.race([responsePromise, timeoutPromise]);
                     this.tableDataTec.splice(0, this.tableDataTec.length);
                     this.fieldsTec.splice(0, this.fieldsTec.length);
 
-                    const response = await this.$http.get(this.$apiURL+'maintenance/childhoodbreakdownstechnicians/'+this.CiudadId4);
-                    response.data.series.map(i => this.tableDataTec.push({ ...i }));
-                    //this.fieldsTec.push({ key: "Ciudad", sortable : true })
-                    response.data.fields.map(i => this.fieldsTec.push({ key: i, sortable : true }));
-                    this.totalRowsTec = this.tableDataTec.length;
-                    this.totalesTec = response.data.totales;
+                    if (response) {
+                        response.data.series.map(i => this.tableDataTec.push({ ...i }));
+                        response.data.fields.map(i => this.fieldsTec.push({ key: i, sortable : true }));
+                        this.totalRowsTec = this.tableDataTec.length;
+                        localStorage.setItem('childhood_break_downs', JSON.stringify(response));
+                    }
+                    else{
+                        const currentData = JSON.parse(localStorage.getItem('childhood_break_downs')); // Convertir los datos del usuario a JSON
+                        if(currentData){
+                            currentData.data.series.map(i => this.tableDataTec.push({ ...i }));
+                            currentData.data.fields.map(i => this.fieldsTec.push({ key: i, sortable : true }));
+                            this.totalRowsTec = this.tableDataTec.length;
+                        }
+                    }
                 });
             }
         },
         async getCity(){ 
-            const response = await this.$http.get(this.$apiURL+'city/all');
-                response.data.data.map(i => this.Ciudades.push( i.name ));
-                this.CiudadId1 = this.Ciudades[0]
-                this.CiudadId2 = this.Ciudades[0]
-                this.CiudadId3 = this.Ciudades[0]
-                this.CiudadId4 = this.Ciudades[0]
+            try {
+                const TIMEOUT_MS = 4000; // Tiempo de espera en milisegundos
+                const responsePromise = this.$http.get(this.$apiURL + 'city/all');
+                const timeoutPromise = new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
+                const response = await Promise.race([responsePromise, timeoutPromise]);
+                if (response) {
+                    response.data.data.forEach(city => this.Ciudades.push(city.name));
+                    this.CiudadId1 = this.Ciudades[0]
+                    this.CiudadId2 = this.Ciudades[0]
+                    this.CiudadId3 = this.Ciudades[0]
+                    this.CiudadId4 = this.Ciudades[0]
+                } else {
+                    this.CiudadId1 = "Lima"
+                    this.CiudadId2 = "Lima"
+                    this.CiudadId3 = "Lima"
+                    this.CiudadId4 = "Lima"
+                }
+                // Realiza otras operaciones después de obtener las ciudades
                 this.getContrata();
                 this.getTableSup();
                 this.getTableTec();
+            } catch (error) {
+                console.error(error);
+            }
         },
         async getRatioInstalaciones(){
             try {
-                const response = await this.$http.get(this.$apiURL+'maintenance/childhoodbreakdownsgeneral');
-                if (response.data.series && response.data.categories) {
+                const TIMEOUT_MS = 4000; // Tiempo de espera en milisegundos
+                const responsePromise = this.$http.get(this.$apiURL + 'maintenance/childhoodbreakdownsgeneral');
+                const timeoutPromise = new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
+                const response = await Promise.race([responsePromise, timeoutPromise]);
+
+                if (response) {
                     this.pieChart = {... constructor_piechart(response.data.series, response.data.categories)}
-                }
-                else{
-                    this.pieChart = {... constructor_piechart([] , [])}
+                    localStorage.setItem('child_hood_break', JSON.stringify(response));
+                } else {
+                    const currentData = JSON.parse(localStorage.getItem('child_hood_break')); // Convertir los datos del usuario a JSON
+                    if(currentData){
+                        this.pieChart = {... constructor_piechart(currentData.data.series, currentData.data.categories)}
+                    }
+                    else {
+                        this.pieChart = {... constructor_piechart([], [])}
+                    }
                 }
             } catch (error) {
                 console.error(error);  
@@ -137,12 +201,22 @@ export default {
         },
         async getRatioMantenimientos(){
             try {
-                const response = await this.$http.get(this.$apiURL+'maintenance/ineffectivedistributionratiographic');
-                if (response.data.series && response.data.categories) {
+                const TIMEOUT_MS = 4000; // Tiempo de espera en milisegundos
+                const responsePromise = this.$http.get(this.$apiURL + 'maintenance/ineffectivedistributionratiographic');
+                const timeoutPromise = new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
+                const response = await Promise.race([responsePromise, timeoutPromise]);
+
+                if (response) {
                     this.pieChart2 = {... constructor_piechart(response.data.series, response.data.categories)}
-                }
-                else{
-                    this.pieChart2 = {... constructor_piechart([], [])}
+                    localStorage.setItem('ineffective_distribution', JSON.stringify(response));
+                } else {
+                    const currentData = JSON.parse(localStorage.getItem('ineffective_distribution')); // Convertir los datos del usuario a JSON
+                    if(currentData){
+                        this.pieChart2 = {... constructor_piechart(currentData.data.series, currentData.data.categories)}
+                    }
+                    else {
+                        this.pieChart2 = {... constructor_piechart([], [])}
+                    }
                 }
             } catch (error) {
                 console.error(error);
