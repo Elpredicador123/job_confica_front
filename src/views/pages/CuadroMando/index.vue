@@ -19,7 +19,7 @@ export default {
             columnChart2: [],
             pieChart: [],
             pieChart2: [],
-            title: "Apex",
+            title: "Cuadro de Mando",
             tableData: [],
             tableData2: [],
             tableDataPorDia: [],
@@ -117,279 +117,153 @@ export default {
             this.totalRowsAgenda = filteredItems.length;
             this.currentPageAgenda = 1;
         },
-        async updateDataIfChanged() {
-            console.log("change")
-            await Promise.all([
-                this.updateTableMantenimientos(),
-                this.updateTableInstalaciones(),
-                this.updateTablePorDia(),
-                this.updateTableAgendaPorDias(),
-                this.updateInstalaciones(),
-                this.updateMantenimientos(),
-                this.updateRatioInstalaciones(),
-                this.updateRatioMantenimientos()
-            ]);
-        },
-
-        async updateTableMantenimientos() {
-            try {
-                const response = await this.$http.get(this.$apiURL+'control-panel/maintenanceprogresstable');
-                const currentData = {
-                    series: response.data.series,
-                    fields: response.data.fields
-                };
-
-                if (this.dataChanged(this.previousTableMantenimientosData, currentData)) {
-                    this.tableData2.splice(0, this.tableData2.length);
-                    this.fields2.splice(0, this.fields2.length);
-                    currentData.series.map(i => this.tableData2.push({ ...i }));
-                    currentData.fields.map(i => this.fields2.push({ key: i, sortable : true }));
-                    this.totalRows2 = this.tableData2.length;
-                    this.previousTableMantenimientosData = currentData;
-                }
-            } catch (error) {
-                console.error(error);
-            }
-        },
-
-        async updateTableInstalaciones() {
-            try {
-                const response = await this.$http.get(this.$apiURL+'control-panel/installationprogresstable');
-                const currentData = {
-                    series: response.data.series,
-                    fields: response.data.fields
-                };
-
-                if (this.dataChanged(this.previousTableInstalacionesData, currentData)) {
-                    this.tableData.splice(0, this.tableData.length);
-                    this.fields.splice(0, this.fields.length);
-                    currentData.series.map(i => this.tableData.push({ ...i }));
-                    currentData.fields.map(i => this.fields.push({ key: i, sortable : true }));
-                    this.totalRows = this.tableData.length;
-                    this.previousTableInstalacionesData = currentData;
-                }
-            } catch (error) {
-                console.error(error);
-            }
-        },
-
-        async updateTablePorDia() {
-            try {
-                const response = await this.$http.get(this.$apiURL+'control-panel/productiontable');
-                const currentData = {
-                    series: response.data.series,
-                    fields: response.data.fields
-                };
-
-                if (this.dataChanged(this.previousTablePorDiaData, currentData)) {
-                    this.tableDataPorDia.splice(0, this.tableDataPorDia.length);
-                    this.fieldsPorDia.splice(0, this.fieldsPorDia.length);
-                    currentData.series.map(i => this.tableDataPorDia.push({ ...i }));
-                    currentData.fields.map(i => this.fieldsPorDia.push({ key: i, sortable : true }));
-                    this.totalRowsPorDia = this.tableDataPorDia.length;
-                    this.totalesPorDia = response.data.totales;
-                    this.previousTablePorDiaData = currentData;
-                }
-            } catch (error) {
-                console.error(error);
-            }
-        },
-
-        async updateTableAgendaPorDias() {
-            try {
-                const response = await this.$http.get(this.$apiURL+'control-panel/diarytable');
-                const currentData = {
-                    series: response.data.series,
-                    fields: response.data.fields
-                };
-
-                if (this.dataChanged(this.previousTableAgendaPorDiasData, currentData)) {
-                    this.tableDataAgenda.splice(0, this.tableDataAgenda.length);
-                    this.fieldsAgenda.splice(0, this.fieldsAgenda.length);
-                    currentData.series.map(i => this.tableDataAgenda.push({ ...i }));
-                    currentData.fields.map(i => this.fieldsAgenda.push({ key: i, sortable : true }));
-                    this.totalRowsAgenda = this.tableDataAgenda.length;
-                    this.totalesAgenda = response.data.totales;
-                    this.previousTableAgendaPorDiasData = currentData;
-                }
-            } catch (error) {
-                console.error(error);
-            }
-        },
-        async updateInstalaciones() {
-            try {
-                const response = await this.$http.get(this.$apiURL+'control-panel/installationprogressgraphic');
-                const currentData = {
-                    series: response.data.series,
-                    categories: response.data.categories
-                };
-                if (this.dataChanged(this.PreviusChartInstalaciones, currentData)) {
-                    this.PreviusChartInstalaciones = {
-                        series: this.columnChart.series,
-                        categories: this.columnChart.categories
-                    };
-                    this.columnChart = {... constructor_chart(response.data.series, response.data.categories)}
-                }
-            } catch (error) {
-                console.error(error);
-            }
-            
-        },
-        async updateMantenimientos() {
-            try {
-                const response = await this.$http.get(this.$apiURL+'control-panel/maintenanceprogressgraphic');
-                const currentData = {
-                    series: response.data.series,
-                    categories: response.data.categories
-                };
-                if (this.dataChanged(this.PreviusChartMaintenance, currentData)) {
-                    this.PreviusChartMaintenance = {
-                        series: this.columnChart2.series,
-                        categories: this.columnChart2.categories
-                    };
-                    this.columnChart2 = {... constructor_chart(response.data.series, response.data.categories)}
-
-                }
-            } catch (error) {
-                console.error(error);
-            }
-        },
-        async updateRatioInstalaciones() {
-            try {
-                const response = await this.$http.get(this.$apiURL+'control-panel/installationratiographic');
-                const currentData = {
-                    series: response.data.series,
-                    labels: response.data.categories
-                };
-                if (this.dataChanged(this.previousRatioInstalacionesData, currentData)) {
-                    this.previousRatioInstalacionesData = {
-                        series: this.pieChart.series,
-                        labels: this.pieChart.categories
-                    };
-                    this.pieChart = {... constructor_piechart(response.data.series, response.data.categories)}
-                }
-            } catch (error) {
-                console.error(error);
-            }
-        },
-        async updateRatioMantenimientos() {
-            try {
-                const response = await this.$http.get(this.$apiURL+'control-panel/installationratiographic');
-                const currentData = {
-                    series: response.data.series,
-                    labels: response.data.categories
-                };
-                if (this.dataChanged(this.previousRatioMantenimientosData, currentData)) {
-                    this.previousRatioMantenimientosData = {
-                        series: this.pieChart2.series,
-                        labels: this.pieChart2.categories
-                    };
-                    this.pieChart2 = {... constructor_piechart(response.data.series, response.data.categories)}
-                }
-            } catch (error) {
-                console.error(error);
-            }
-        },
         async getTableMantenimientos() {
             try {
-                const response = await this.$http.get(this.$apiURL+'control-panel/maintenanceprogresstable');
-                this.previousTableMantenimientosData = {
-                    series: response.data.series,
-                    fields: response.data.fields
-                };
-                response.data.series.map(i => this.tableData2.push({ ...i }));
-                response.data.fields.map(i => this.fields2.push({ key: i, sortable : true }));
-                this.totalRows2= this.tableData2.length;
+                const TIMEOUT_MS = 4000; // Tiempo de espera en milisegundos
+                const responsePromise = this.$http.get(this.$apiURL + 'control-panel/maintenanceprogresstable');
+                const timeoutPromise = new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
+                const response = await Promise.race([responsePromise, timeoutPromise]);
+
+                if (response) {
+                    response.data.series.map(i => this.tableData2.push({ ...i }));
+                    response.data.fields.map(i => this.fields2.push({ key: i, sortable : true }));
+                    this.totalRows2= this.tableData2.length;
+                    localStorage.setItem('maintenance_progress', JSON.stringify(response));
+                }
+                else{
+                    const currentData = JSON.parse(localStorage.getItem('maintenance_progress')); // Convertir los datos del usuario a JSON
+                    if(currentData){
+                        currentData.data.series.map(i => this.tableData2.push({ ...i }));
+                        currentData.data.fields.map(i => this.fields2.push({ key: i, sortable : true }));
+                        this.totalRows2= this.tableData2.length;
+                    }
+                }
             } catch (error) {
                 console.error(error);
             }
         },
         async getTableInstalaciones() {
             try {
-                const response = await this.$http.get(this.$apiURL+'control-panel/installationprogresstable');
-                this.previousTableInstalacionesData = {
-                    series: response.data.series,
-                    fields: response.data.fields
-                };
-                response.data.series.map(i => this.tableData.push({ ...i }));
-                response.data.fields.map(i => this.fields.push({ key: i, sortable : true }));
-                this.totalRows = this.tableData.length;
+                const TIMEOUT_MS = 4000; // Tiempo de espera en milisegundos
+                const responsePromise = this.$http.get(this.$apiURL + 'control-panel/installationprogresstable');
+                const timeoutPromise = new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
+                const response = await Promise.race([responsePromise, timeoutPromise]);
+
+                if (response) {
+                    response.data.series.map(i => this.tableData.push({ ...i }));
+                    response.data.fields.map(i => this.fields.push({ key: i, sortable : true }));
+                    this.totalRows = this.tableData.length;
+                    localStorage.setItem('installation_progress', JSON.stringify(response));
+                }
+                else{
+                    const currentData = JSON.parse(localStorage.getItem('installation_progress')); // Convertir los datos del usuario a JSON
+                    if(currentData){
+                        currentData.data.series.map(i => this.tableData.push({ ...i }));
+                        currentData.data.fields.map(i => this.fields.push({ key: i, sortable : true }));
+                        this.totalRows = this.tableData.length;
+                    }
+                }
             } catch (error) {
                 console.error(error);
             }
         },
         async getTablePorDia(){
             try {
-                const response = await this.$http.get(this.$apiURL+'control-panel/productiontable');
-                this.previousTablePorDiaData = {
-                    series: response.data.series,
-                    fields: response.data.fields
-                };
-                response.data.series.map(i => this.tableDataPorDia.push({ ...i }));
-                //this.fieldsPorDia.push({ key: "Ciudad", sortable : true })
-                response.data.fields.map(i => this.fieldsPorDia.push({ key: i, sortable : true }));
-                this.totalRowsPorDia = this.tableDataPorDia.length;
-                this.totalesPorDia = response.data.totales;
+                const TIMEOUT_MS = 4000; // Tiempo de espera en milisegundos
+                const responsePromise = this.$http.get(this.$apiURL + 'control-panel/productiontable');
+                const timeoutPromise = new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
+                const response = await Promise.race([responsePromise, timeoutPromise]);
+
+                if (response) {
+                    response.data.series.map(i => this.tableDataPorDia.push({ ...i }));
+                    response.data.fields.map(i => this.fieldsPorDia.push({ key: i, sortable : true }));
+                    this.totalRowsPorDia = this.tableDataPorDia.length;
+                    this.totalesPorDia = response.data.totales;
+                    localStorage.setItem('production_table', JSON.stringify(response));
+                }
+                else{
+                    const currentData = JSON.parse(localStorage.getItem('production_table')); // Convertir los datos del usuario a JSON
+                    if(currentData){
+                        currentData.data.series.map(i => this.tableDataPorDia.push({ ...i }));
+                        currentData.data.fields.map(i => this.fieldsPorDia.push({ key: i, sortable : true }));
+                        this.totalRowsPorDia = this.tableDataPorDia.length;
+                        this.totalesPorDia = currentData.data.totales;
+                    }
+                }
             } catch (error) {
                 console.error(error);
             }
         },
-        async getTableAgendaPorDias(){ 
+        async getTableAgendaPorDias(){
             try {
-                const response = await this.$http.get(this.$apiURL+'control-panel/diarytable');
-                this.previousTableAgendaPorDiasData = {
-                    series: response.data.series,
-                    fields: response.data.fields
-                };
-                response.data.series.map(i => this.tableDataAgenda.push({ ...i }));
-                //this.fieldsAgenda.push({ key: "Ciudad", sortable : true })
-                response.data.fields.map(i => this.fieldsAgenda.push({ key: i, sortable : true }));
-                this.totalRowsAgenda = this.tableDataAgenda.length;
-                this.totalesAgenda = response.data.totales;
+                const TIMEOUT_MS = 4000; // Tiempo de espera en milisegundos
+                const responsePromise = this.$http.get(this.$apiURL + 'control-panel/diarytable');
+                const timeoutPromise = new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
+                const response = await Promise.race([responsePromise, timeoutPromise]);
+
+                if (response) {
+                    response.data.series.map(i => this.tableDataAgenda.push({ ...i }));
+                    response.data.fields.map(i => this.fieldsAgenda.push({ key: i, sortable : true }));
+                    this.totalRowsAgenda = this.tableDataAgenda.length;
+                    this.totalesAgenda = response.data.totales;
+                    localStorage.setItem('agenda_dias', JSON.stringify(response));
+                }
+                else{
+                    const currentData = JSON.parse(localStorage.getItem('agenda_dias')); // Convertir los datos del usuario a JSON
+                    if(currentData){
+                        currentData.data.series.map(i => this.tableDataAgenda.push({ ...i }));
+                        currentData.data.fields.map(i => this.fieldsAgenda.push({ key: i, sortable : true }));
+                        this.totalRowsAgenda = this.tableDataAgenda.length;
+                        this.totalesAgenda = currentData.data.totales;
+                    }
+                }
             } catch (error) {
                 console.error(error);
             }
         },
         async getInstalaciones() {
             try {
+                const TIMEOUT_MS = 4000; // Tiempo de espera en milisegundos
+                const responsePromise = this.$http.get(this.$apiURL + 'control-panel/installationprogressgraphic');
+                const timeoutPromise = new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
+                const response = await Promise.race([responsePromise, timeoutPromise]);
 
-                await this.$http.get(this.$apiURL+'control-panel/installationprogressgraphic')
-                    .then(response => {
-                        console.log(response)
-                        if (response.data.series && response.data.categories) {
-                            this.PreviusChartInstalaciones = {
-                                series: response.data.series,
-                                categories: response.data.categories
-                            };
-                            this.columnChart = {... constructor_chart(response.data.series, response.data.categories)}
-                            localStorage.setItem('installation_progress', JSON.stringify(this.PreviusChartInstalaciones));
-                        }
-                        else{
-                            const currentData = JSON.parse(localStorage.getItem('installation_progress')); // Convertir los datos del usuario a JSON
-                            if(currentData){
-                                this.columnChart = {... constructor_chart([currentData.series], [currentData.categories])}
-                            }
-                            else {
-                                this.columnChart = {... constructor_chart([], [])}
-                            }
-                        }
-                    })
+                if (response) {
+                    this.columnChart = {... constructor_chart(response.data.series, response.data.categories)}
+                    localStorage.setItem('installation_progress', JSON.stringify(response));
+                }
+                else{
+                    const currentData = JSON.parse(localStorage.getItem('installation_progress')); // Convertir los datos del usuario a JSON
+                    if(currentData){
+                        this.columnChart = {... constructor_chart(currentData.data.series, currentData.data.categories)}
+                    }
+                    else {
+                        this.columnChart = {... constructor_chart([], [])}
+                    }
+                }
+
             } catch (error) {
                 console.error(error);
             }
         },
         async getMantenimientos() {
             try {
-                const response = await this.$http.get(this.$apiURL+'control-panel/maintenanceprogressgraphic');
-                if (response.data.series && response.data.categories) {
-                    // Si ambos series y categories están definidos y no son nulos
-                    this.previousMantenimientosData = {
-                        series: response.data.series,
-                        categories: response.data.categories
-                    };
+                const TIMEOUT_MS = 4000; // Tiempo de espera en milisegundos
+                const responsePromise = this.$http.get(this.$apiURL + 'control-panel/maintenanceprogressgraphic');
+                const timeoutPromise = new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
+                const response = await Promise.race([responsePromise, timeoutPromise]);
+
+                if (response) {
                     this.columnChart2 = {... constructor_chart(response.data.series, response.data.categories)}
+                    localStorage.setItem('mantenimientos_data', JSON.stringify(response));
                 } else {
-                    this.columnChart2 = {... constructor_chart([], [])}
+                    const currentData = JSON.parse(localStorage.getItem('mantenimientos_data')); // Convertir los datos del usuario a JSON
+                    if(currentData){
+                        this.columnChart2 = {... constructor_chart(currentData.data.series, currentData.data.categories)}
+                    }
+                    else {
+                        this.columnChart2 = {... constructor_chart([], [])}
+                    }
                 }
             } catch (error) {
                 console.error(error);
@@ -397,16 +271,22 @@ export default {
         },
         async getRatioInstalaciones() {
             try {
-                const response = await this.$http.get(this.$apiURL+'control-panel/installationratiographic');
-                if (response.data.series && response.data.labels) {
-                    // Si ambos series y categories están definidos y no son nulos
-                    this.previousRatioInstalacionesData = {
-                        series: response.data.series,
-                        labels: response.data.labels
-                    };
+                const TIMEOUT_MS = 4000; // Tiempo de espera en milisegundos
+                const responsePromise = this.$http.get(this.$apiURL + 'control-panel/installationratiographic');
+                const timeoutPromise = new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
+                const response = await Promise.race([responsePromise, timeoutPromise]);
+
+                if (response) {
                     this.pieChart = {... constructor_piechart(response.data.series, response.data.labels)}
+                    localStorage.setItem('installation_ratio', JSON.stringify(response));
                 } else {
-                    this.pieChart = {... constructor_piechart([], [])}
+                    const currentData = JSON.parse(localStorage.getItem('installation_ratio')); // Convertir los datos del usuario a JSON
+                    if(currentData){
+                        this.pieChart = {... constructor_piechart(currentData.data.series, currentData.data.labels)}
+                    }
+                    else {
+                        this.pieChart = {... constructor_piechart([], [])}
+                    }
                 }
             } catch (error) {
                 console.error(error);
@@ -414,29 +294,27 @@ export default {
         },
         async getRatioMantenimientos() {
             try {
-                const response = await this.$http.get(this.$apiURL+'control-panel/maintenanceratiographic');
-                console.log(response)
-                if (response.data.series && response.data.labels) {
-                    // Si ambos series y categories están definidos y no son nulos
-                    this.previousRatioMantenimientosData = {
-                        series: response.data.series,
-                        labels: response.data.labels
-                    };
+                const TIMEOUT_MS = 4000; // Tiempo de espera en milisegundos
+                const responsePromise = this.$http.get(this.$apiURL + 'control-panel/maintenanceratiographic');
+                const timeoutPromise = new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
+                const response = await Promise.race([responsePromise, timeoutPromise]);
+
+                if (response) {
                     this.pieChart2 = {... constructor_piechart(response.data.series, response.data.labels)}
+                    localStorage.setItem('maintenance_ratio', JSON.stringify(response));
                 } else {
-                    this.pieChart2 = {... constructor_piechart([], [])}
+                    const currentData = JSON.parse(localStorage.getItem('maintenance_ratio')); // Convertir los datos del usuario a JSON
+                    if(currentData){
+                        this.pieChart2 = {... constructor_piechart(currentData.data.series, currentData.data.labels)}
+                    }
+                    else {
+                        this.pieChart2 = {... constructor_piechart([], [])}
+                    }
                 }
             } catch (error) {
                 console.error(error);
             }
         },
-        dataChanged(previousData, currentData) {
-            if(currentData == undefined || previousData == undefined){ return false}
-            console.log(previousData)
-            console.log(currentData)
-            return JSON.stringify(previousData) !== JSON.stringify(currentData);
-        },
-
     },
     middleware: "authentication"
 };

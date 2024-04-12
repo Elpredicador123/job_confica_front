@@ -50,22 +50,13 @@ export default {
             fieldsTec: [],
             totalesTec : 0,
             //--------------------
-            previousTableSupData: {},
-            previousTableTecData: {},
         };
     },
     mounted() {
-        // Set the initial number of items
-        this.totalRowsSup = this.tableDataSup.length;
-        this.totalRowsTec = this.tableDataTec.length;
-
         //obtener datos de la api
         this.getCity();
         this.getRatioInstalaciones();
         this.getRatioMantenimientos();
-        // setInterval(() => {
-        //     this.updateDataIfChanged();
-        // }, 300000);
     },
     methods:{
         onFilteredSup(filteredItems) {
@@ -84,10 +75,6 @@ export default {
                 this.$nextTick(async () => {
                     const response = await this.$http.get(this.$apiURL+'maintenance/ineffectivecontratagraphic/'+this.CiudadId1);
                     if (response.data.series && response.data.categories) {
-                        this.previousContrataData = {
-                            series : response.data.series,
-                            categories : response.data.categories
-                        }
                         this.ContrataBar = {... constructor_barchart(response.data.series, response.data.categories)}
                     }
                 })
@@ -102,10 +89,6 @@ export default {
                     this.tableDataSup.splice(0, this.tableDataSup.length);
                     this.fieldsSup.splice(0, this.fieldsSup.length);
                     const response = await this.$http.get(this.$apiURL+'maintenance/childhoodbreakdownsmanagers/'+this.CiudadId3);
-                    this.previousTableSupData = {
-                        series: response.data.series,
-                        fields: response.data.fields
-                    };
                     response.data.series.map(i => this.tableDataSup.push({ ...i }));
                     response.data.fields.map(i => this.fieldsSup.push({ key: i, sortable : true }));
 
@@ -120,10 +103,6 @@ export default {
                     this.fieldsTec.splice(0, this.fieldsTec.length);
 
                     const response = await this.$http.get(this.$apiURL+'maintenance/childhoodbreakdownstechnicians/'+this.CiudadId4);
-                    this.previousTableTecData = {
-                        series: response.data.series,
-                        fields: response.data.fields
-                    };
                     response.data.series.map(i => this.tableDataTec.push({ ...i }));
                     //this.fieldsTec.push({ key: "Ciudad", sortable : true })
                     response.data.fields.map(i => this.fieldsTec.push({ key: i, sortable : true }));
@@ -147,10 +126,6 @@ export default {
             try {
                 const response = await this.$http.get(this.$apiURL+'maintenance/childhoodbreakdownsgeneral');
                 if (response.data.series && response.data.categories) {
-                    this.previousRatioInstalacionesData = {
-                        series : response.data.series,
-                        labels : response.data.categories
-                    }
                     this.pieChart = {... constructor_piechart(response.data.series, response.data.categories)}
                 }
                 else{
@@ -164,10 +139,6 @@ export default {
             try {
                 const response = await this.$http.get(this.$apiURL+'maintenance/ineffectivedistributionratiographic');
                 if (response.data.series && response.data.categories) {
-                    this.previousRatioMantenimientoData = {
-                        series : response.data.series,
-                        labels : response.data.categories
-                    }
                     this.pieChart2 = {... constructor_piechart(response.data.series, response.data.categories)}
                 }
                 else{
