@@ -48,10 +48,6 @@ export default {
                     sortable: true
                 },
                 {
-                    key: "is_active",
-                    sortable: true
-                },
-                {
                     key: "user_id",
                     sortable: true
                 },
@@ -157,6 +153,12 @@ export default {
                             <template #cell(actions)="{ item }">
                                 <!-- Agregar botón de edición -->
                                 <BButton @click="editItem(item)" variant="info">Editar</BButton>
+                            </template>
+                            <template #cell(title)="data">
+                                <div v-html="data.item.title"></div>
+                            </template>
+                            <template #cell(description)="data">
+                                <div v-html="data.item.description"></div>
                             </template>
                             </BTable>
                         </div>

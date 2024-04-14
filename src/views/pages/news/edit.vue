@@ -170,20 +170,49 @@ export default {
           this.news.id = item.id;
           this.news.user_id = user.id;
           this.galleryFiles = [];
-
-          // Iterar sobre los enlaces de los archivos en item.images
-          item.images.forEach((image, index) => {
-              // Construir el objeto de archivo utilizando el enlace proporcionado en item.images
-              const archivo = {
-                  id: index + 1, // Asignar un ID único al archivo
-                  name: image.url, // Usar el enlace como nombre de archivo
-                  size: null, // Establecer el tamaño como nulo ya que no se proporciona
-              };
-
-              // Agregar el objeto de archivo a la lista galleryFiles
-              this.galleryFiles.push(archivo);
-          });
+          console.log(item.images)
+          this.loadFilesFromUrls(item.images);
       },
+      loadFilesFromUrls(images) {
+        const dt = new DataTransfer();
+
+        const loadPromises = images.map(image => {
+            return fetch(image.url)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.blob();
+                })
+                .then(blob => {
+                    const newFile = new File([blob], image.url.split('/').pop(), { type: blob.type });
+                    dt.items.add(newFile);
+                })
+                .catch(error => console.error('Error loading image:', error));
+        });
+
+        Promise.all(loadPromises).then(() => {
+            this.DropFile = dt.files;  // Aquí asignamos el FileList simulado a DropFile
+        });
+    },
+    updateDropZoneWithFileList(fileList) {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.files = fileList; // Establecer el FileList simulado al input
+
+        // Aquí necesitarías gatillar el DropZone para aceptar estos archivos
+        // Esto puede variar dependiendo de cómo tu DropZone maneja la entrada de archivos
+        if (this.$refs.dropzone) {
+            // Si tu DropZone puede tomar un input de archivo directamente
+            this.$refs.dropzone.handleFiles(input.files);
+        }
+    },
+    updateDropZone(files) {
+        // Suponiendo que tienes acceso al componente DropZone y puedes pasarle archivos
+        // Esto depende de cómo DropZone está implementado y si permite setear archivos programáticamente
+        // Si DropZone no soporta esto directamente, podrías necesitar ajustar su implementación o estado
+        this.$refs.dropzone.setFiles(files); // Esto es hipotético y depende de la API de DropZone
+    },
       close() {
           // Cerrar el modal y restablecer los datos
           this.isOpen = false;
@@ -234,7 +263,7 @@ export default {
           });
 
           // Agrega los archivos
-
+          console.log(this.DropFile)
           if (this.DropFile && this.DropFile.length > 0) {
               for (let i = 0; i < this.DropFile.length; i++) {
                   formData.append("files", this.DropFile[i][0]);

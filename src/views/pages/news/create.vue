@@ -49,8 +49,8 @@ export default {
         initForm(){
           const user = JSON.parse(localStorage.getItem('user')); // Convertir los datos del usuario a JSON
           this.news = {
-                title:"<h3>Título de la notica</h3>",
-                description :"<h3>Descripción de la notica</h3>",
+                title:"",
+                description :"",
                 date: null,
                 user_id : user.id,
             };
