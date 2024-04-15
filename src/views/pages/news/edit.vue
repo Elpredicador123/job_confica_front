@@ -174,26 +174,19 @@ export default {
           this.loadFilesFromUrls(item.images);
       },
       loadFilesFromUrls(images) {
-        const dt = new DataTransfer();
+        const promises = images.map(image =>
+            fetch(image.url)  // Usar la URL dentro del objeto 'image'
+            .then(response => response.blob())
+            .then(blob => {
+                const name = image.url.split('/').pop(); // Extrae el nombre del archivo de la URL
+                return new File([blob], name, {type: blob.type}); // Crea un archivo
+            })
+        );
 
-        const loadPromises = images.map(image => {
-            return fetch(image.url)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.blob();
-                })
-                .then(blob => {
-                    const newFile = new File([blob], image.url.split('/').pop(), { type: blob.type });
-                    dt.items.add(newFile);
-                })
-                .catch(error => console.error('Error loading image:', error));
-        });
-
-        Promise.all(loadPromises).then(() => {
-            this.DropFile = dt.files;  // Aquí asignamos el FileList simulado a DropFile
-        });
+        Promise.all(promises).then(files => {
+            this.galleryFiles = files; // Almacena los archivos en el estado del componente
+            // Aquí puedes llamar a un método para actualizar el DropZone, si necesario
+        }).catch(error => console.error('Error loading files:', error));
     },
     updateDropZoneWithFileList(fileList) {
         const input = document.createElement('input');

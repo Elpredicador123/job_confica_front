@@ -19,8 +19,6 @@ router.beforeEach((routeTo, routeFrom, next) => {
     const publicPages = ['/login', '/register', '/forgot-password'];
     const authRequired = !publicPages.includes(routeTo.path);
     const loggedUser = JSON.parse(localStorage.getItem('user-token'));
-    console.log(routeTo)
-    console.log(routeFrom)
 
     if (!authRequired) return next();
 
@@ -31,14 +29,12 @@ router.beforeEach((routeTo, routeFrom, next) => {
     // Suponiendo que 'user-permissions' se almacena como un array de objetos en localStorage,
     // donde cada objeto tiene al menos una propiedad 'key' que representa el permiso.
     const userPermissions = JSON.parse(localStorage.getItem('user-permissions')) || [];
-    console.log(routeTo)
     if (routeTo.meta.permissions) {
         // Verifica si el usuario tiene todos los permisos requeridos para esta ruta,
         // comparando las 'keys' de los permisos requeridos con las 'keys' de los permisos del usuario.
         const hasPermissions = routeTo.meta.permissions.every(permissionKey =>
             userPermissions.some(userPermission => userPermission.key === permissionKey)
         );
-        console.log(userPermissions,routeTo.meta.permissions)
 
         if (!hasPermissions) {
             return next({ path: '/utility/404' }); // Asegúrate de tener esta ruta definida.
@@ -52,8 +48,6 @@ router.beforeEach((routeTo, routeFrom, next) => {
 });
 
 router.beforeResolve(async (routeTo, routeFrom, next) => {
-    console.log(routeTo)
-    console.log(routeFrom)
     try {
         for (const route of routeTo.matched) {
             await new Promise((resolve, reject) => {

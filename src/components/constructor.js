@@ -98,15 +98,24 @@ function constructor_barchart(data_series,data_categories){
             },
             plotOptions: {
                 bar: {
-                horizontal: true
+                horizontal: true,
+                dataLabels: {
+                    position: 'bottom'
+                  },
+                distributed: false,
                 }
             },
             dataLabels: {
                 enabled: false
             },
-            colors: ["#34c38f","#f46a6a","#50a5f1","#556ee6", "#f1b44c"],
+            colors: ['#34c38f', '#556ee6', '#f46a6a', '#50a5f1', '#A5978B', '#2b908f', '#f9a3a4', '#90ee7e','#f48024', '#69d2e7'],
             grid: {
                 borderColor: "#f1f1f1"
+            },
+            yaxis: {
+                labels: {
+                    show: true
+                }
             },
             xaxis: {
                 categories: data_categories

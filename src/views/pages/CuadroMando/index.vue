@@ -117,26 +117,41 @@ export default {
             this.totalRowsAgenda = filteredItems.length;
             this.currentPageAgenda = 1;
         },
-        async getTableMantenimientos() {
+        async fetchData(url, timeoutMs = 4000) {
             try {
-                const TIMEOUT_MS = 4000; // Tiempo de espera en milisegundos
-                const responsePromise = this.$http.get(this.$apiURL + 'control-panel/maintenanceprogresstable');
-                const timeoutPromise = new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
+                const responsePromise = this.$http.get(this.$apiURL + url);
+                const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), timeoutMs));
                 const response = await Promise.race([responsePromise, timeoutPromise]);
 
-                if (response) {
-                    response.data.series.map(i => this.tableData2.push({ ...i }));
-                    response.data.fields.map(i => this.fields2.push({ key: i, sortable : true }));
-                    this.totalRows2= this.tableData2.length;
-                    localStorage.setItem('maintenance_progress', JSON.stringify(response));
+                return response.data;
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                return null;  // Retornar null o manejar de otra forma según sea necesario
+            }
+        },
+        processTableData(data, tableData, fields, storageKey) {
+            if (data.series && data.fields) {
+                tableData.push(...data.series.map(i => ({ ...i })));
+                fields.push(...data.fields.map(i => ({ key: i, sortable: true })));
+                localStorage.setItem(storageKey, JSON.stringify({ data }));
+            } else {
+                this.loadFromLocalStorage(storageKey, tableData, fields);
+            }
+        },
+        loadFromLocalStorage(storageKey, tableData, fields) {
+            const currentData = JSON.parse(localStorage.getItem(storageKey));
+            if (currentData) {
+                this.processTableData(currentData.data, tableData, fields);
+            }
+        },
+        async getTableMantenimientos() {
+            try {
+                const data = await this.fetchData('control-panel/maintenanceprogresstable');
+                if(data){
+                    this.processTableData(data, this.tableData2, this.fields2,'maintenance_progress');
                 }
                 else{
-                    const currentData = JSON.parse(localStorage.getItem('maintenance_progress')); // Convertir los datos del usuario a JSON
-                    if(currentData){
-                        currentData.data.series.map(i => this.tableData2.push({ ...i }));
-                        currentData.data.fields.map(i => this.fields2.push({ key: i, sortable : true }));
-                        this.totalRows2= this.tableData2.length;
-                    }
+                    this.loadFromLocalStorage('maintenance_progress', this.tableData2, this.fields2);
                 }
             } catch (error) {
                 console.error(error);
