@@ -155,15 +155,6 @@ export default {
             // Abrir el modal y establecer los datos del elemento seleccionado
             this.isOpen = true;
             this.form = item;
-            this.galleryFiles = [];
-
-            // Construir el objeto de archivo utilizando la URL proporcionada en item
-            const archivo = {
-                name: item.title, // Usar el título como nombre de archivo
-            };
-
-            // Agregar el objeto de archivo a la lista galleryFiles
-            this.galleryFiles.push(archivo);
         },
         close() {
             // Cerrar el modal y restablecer los datos

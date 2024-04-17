@@ -175,7 +175,11 @@ export default {
       },
       loadFilesFromUrls(images) {
         const promises = images.map(image =>
-            fetch(this.$storageURL + "/"+image.url)  // Usar la URL dentro del objeto 'image'
+            fetch(this.$storageURL + "/" + image.url, {
+                  headers: {
+                      'Origin': 'http://localhost:8080/' // Reemplaza 'http://tuorigen.com' con el origen de tu aplicación
+                  }
+              })
             .then(response => response.blob())
             .then(blob => {
                 const name = this.$storageURL + "/"+image.url.split('/').pop(); // Extrae el nombre del archivo de la URL
@@ -187,24 +191,6 @@ export default {
             this.galleryFiles = files; // Almacena los archivos en el estado del componente
             // Aquí puedes llamar a un método para actualizar el DropZone, si necesario
         }).catch(error => console.error('Error loading files:', error));
-    },
-    updateDropZoneWithFileList(fileList) {
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.files = fileList; // Establecer el FileList simulado al input
-
-        // Aquí necesitarías gatillar el DropZone para aceptar estos archivos
-        // Esto puede variar dependiendo de cómo tu DropZone maneja la entrada de archivos
-        if (this.$refs.dropzone) {
-            // Si tu DropZone puede tomar un input de archivo directamente
-            this.$refs.dropzone.handleFiles(input.files);
-        }
-    },
-    updateDropZone(files) {
-        // Suponiendo que tienes acceso al componente DropZone y puedes pasarle archivos
-        // Esto depende de cómo DropZone está implementado y si permite setear archivos programáticamente
-        // Si DropZone no soporta esto directamente, podrías necesitar ajustar su implementación o estado
-        this.$refs.dropzone.setFiles(files); // Esto es hipotético y depende de la API de DropZone
     },
       close() {
           // Cerrar el modal y restablecer los datos
@@ -265,7 +251,7 @@ export default {
 
           // Realiza la petición con Axios
           console.log(formData)
-          this.$http.put(this.$apiURL+'news/update/'+this.news.id, formData, {
+          this.$http.post(this.$apiURL+'news/store', formData, {
               headers: {
                   'Content-Type': 'multipart/form-data'
               }

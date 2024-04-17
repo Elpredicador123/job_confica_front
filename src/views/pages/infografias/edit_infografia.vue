@@ -51,10 +51,10 @@
                                         <DropZone
                                         files="files"
                                         cloudIcon="remix"
-                                        dropzoneFile="galleryDropzoneFile"
+                                        dropzoneFile="galleryDropzoneFile2"
                                         :isMultiple="true"
                                         @drop.prevent="galleryDrop($event)"
-                                        @change="gallerySelectedFile"
+                                        @change="gallerySelectedFile2"
                                         @dragenter.prevent
                                         @dragover.prevent
                                         />
@@ -64,7 +64,7 @@
                                         <li class="mt-2" id="dropzone-preview-list2">
                                         <div
                                             class="border rounded mb-1"
-                                            v-for="(file, index) of galleryFiles"
+                                            v-for="(file, index) of galleryFiles2"
                                             :key="index"
                                         >
                                             <div class="d-flex p-2">
@@ -120,7 +120,6 @@
 import DropZone from "@/components/custom/Dropzone.vue";
 
 import "flatpickr/dist/flatpickr.css";
-import moment from 'moment'
 export default {
     components: {
         DropZone,
@@ -141,9 +140,9 @@ export default {
             ],
             form: {},
             dPDefaultDate: null,
-            galleryDropzoneFile: "",
-            galleryFiles: [],
-            DropFile : [],
+            galleryDropzoneFile2: "",
+            galleryFiles2: [],
+            DropFile2 : [],
         };
     },
     async created(){
@@ -154,16 +153,7 @@ export default {
         open(item) {
             // Abrir el modal y establecer los datos del elemento seleccionado
             this.isOpen = true;
-            this.form = item;
-            this.galleryFiles = [];
-
-            // Construir el objeto de archivo utilizando la URL proporcionada en item
-            const archivo = {
-                name: item.title, // Usar el título como nombre de archivo
-            };
-
-            // Agregar el objeto de archivo a la lista galleryFiles
-            this.galleryFiles.push(archivo);
+            this.form = {...item};
         },
         close() {
             // Cerrar el modal y restablecer los datos
@@ -173,36 +163,30 @@ export default {
         initForm(){
           const user = JSON.parse(localStorage.getItem('user')); // Convertir los datos del usuario a JSON
           console.log(user)
-          this.form = {
-                title: null,
-                Autor : user.username,
-                date : moment().format('YYYY-MM-DD HH:mm:ss'),
-                url : "aas",
-                id: null,
-            };
+          this.form = {};
             this.dPDefaultDate = null;
-            this.galleryDropzoneFile = "";
-            this.galleryFiles = [];
-            this.DropFile = [];
+            this.galleryDropzoneFile2 = "";
+            this.galleryFiles2 = [];
+            this.DropFile2 = [];
         },
         deleteRecord(ele) {
             console.log("call Delet");
             if (ele.id) {
-                this.galleryFiles = this.galleryFiles.filter((item) => {
+                this.galleryFiles2 = this.galleryFiles2.filter((item) => {
                 return item.id != ele.id;
                 });
             }
         },
         galleryDrop(e) {
             e.preventDefault();
-            this.galleryDropzoneFile = e.dataTransfer.files;
-            this.galleryFiles.push(this.galleryDropzoneFile);
+            this.galleryDropzoneFile2 = e.dataTransfer.files;
+            this.galleryFiles2.push(this.galleryDropzoneFile2);
             
         },
-        gallerySelectedFile() {
-            this.galleryDropzoneFile = document.querySelector(".galleryDropzoneFile").files;
-            this.DropFile = []; // Eliminar los archivos existentes
-            const finalFile = Object.values(this.galleryDropzoneFile).map((file) => {
+        gallerySelectedFile2() {
+            this.galleryDropzoneFile2 = document.querySelector(".galleryDropzoneFile2").files;
+          this.DropFile2.push(this.galleryDropzoneFile2)
+            const finalFile = Object.values(this.galleryDropzoneFile2).map((file) => {
                 return {
                     name: file.name,
                     lastModified: file.lastModified,
@@ -211,7 +195,13 @@ export default {
                     size: file.size
                 };
             });
-            this.galleryFiles = finalFile;
+            this.galleryFiles2.push(...finalFile);
+            this.galleryFiles2 = this.galleryFiles2.map((data, index) => {
+                return {
+                id: index + 1,
+                ...data
+                };
+            });
         },
 
         async submit(){
@@ -221,20 +211,17 @@ export default {
                 formData.append(key, this.form[key]);
             });
 
-            // Agrega los archivos
-
-            if (this.DropFile && this.DropFile.length > 0) {
-                for (let i = 0; i < this.DropFile.length; i++) {
-                    formData.append("file", this.DropFile[i][0]); // Utiliza "files" en lugar de "files[]"
-                }
-            }          
-
+            if (this.DropFile2 && this.DropFile2.length > 0) {
+              for (let i = 0; i < this.DropFile2.length; i++) {
+                  formData.append("file", this.DropFile2[i][0]);
+              }
+          }          
             // Realiza la petición con Axios
             console.log(formData)
-            this.$http.put(this.$apiURL+'infographic/update/'+this.form.id, formData, {
+            this.$http.post(this.$apiURL+'infographic/store', formData, {
                 headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
+                  'Content-Type': 'multipart/form-data'
+              }
             }).then(response => {
                 if(response.status == 200){
                   console.log(response);
