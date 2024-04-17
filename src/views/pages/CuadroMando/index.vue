@@ -97,23 +97,18 @@ export default {
     },
     methods:{
         onFiltered(filteredItems) {
-            // Trigger pagination to update the number of buttons/pages due to filtering
             this.totalRows = filteredItems.length;
             this.currentPage = 1;
         },
-
         onFiltered2(filteredItems) {
-            // Trigger pagination to update the number of buttons/pages due to filtering
             this.totalRows2 = filteredItems.length;
             this.currentPage2 = 1;
         },
         onFilteredPorDia(filteredItems) {
-            // Trigger pagination to update the number of buttons/pages due to filtering
             this.totalRowsPorDia = filteredItems.length;
             this.currentPagePorDia = 1;
         },
         onFilteredAgenda(filteredItems) {
-            // Trigger pagination to update the number of buttons/pages due to filtering
             this.totalRowsAgenda = filteredItems.length;
             this.currentPageAgenda = 1;
         },
@@ -122,7 +117,7 @@ export default {
                 const responsePromise = this.$http.get(this.$apiURL + url);
                 const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), timeoutMs));
                 const response = await Promise.race([responsePromise, timeoutPromise]);
-
+                console.log(response.data)
                 return response.data;
             } catch (error) {
                 console.error('Error fetching data:', error);
@@ -133,6 +128,9 @@ export default {
             if (data.series && data.fields) {
                 tableData.push(...data.series.map(i => ({ ...i })));
                 fields.push(...data.fields.map(i => ({ key: i, sortable: true })));
+                if(data.totales){
+                    this.totalesPorDia = data.totales;
+                }
                 localStorage.setItem(storageKey, JSON.stringify({ data }));
             } else {
                 this.loadFromLocalStorage(storageKey, tableData, fields);
@@ -159,24 +157,14 @@ export default {
         },
         async getTableInstalaciones() {
             try {
-                const TIMEOUT_MS = 4000; // Tiempo de espera en milisegundos
-                const responsePromise = this.$http.get(this.$apiURL + 'control-panel/installationprogresstable');
-                const timeoutPromise = new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
-                const response = await Promise.race([responsePromise, timeoutPromise]);
-
-                if (response) {
-                    response.data.series.map(i => this.tableData.push({ ...i }));
-                    response.data.fields.map(i => this.fields.push({ key: i, sortable : true }));
+                const data = await this.fetchData('control-panel/installationprogresstable');
+                if(data){
+                    this.processTableData(data, this.tableData, this.fields,'installation_progress_table');
                     this.totalRows = this.tableData.length;
-                    localStorage.setItem('installation_progress_table', JSON.stringify(response));
                 }
                 else{
-                    const currentData = JSON.parse(localStorage.getItem('installation_progress_table')); // Convertir los datos del usuario a JSON
-                    if(currentData){
-                        currentData.data.series.map(i => this.tableData.push({ ...i }));
-                        currentData.data.fields.map(i => this.fields.push({ key: i, sortable : true }));
-                        this.totalRows = this.tableData.length;
-                    }
+                    this.loadFromLocalStorage('installation_progress_table', this.tableData, this.fields);
+                    this.totalRows = this.tableData.length;
                 }
             } catch (error) {
                 console.error(error);
@@ -184,26 +172,14 @@ export default {
         },
         async getTablePorDia(){
             try {
-                const TIMEOUT_MS = 4000; // Tiempo de espera en milisegundos
-                const responsePromise = this.$http.get(this.$apiURL + 'control-panel/productiontable');
-                const timeoutPromise = new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
-                const response = await Promise.race([responsePromise, timeoutPromise]);
-
-                if (response) {
-                    response.data.series.map(i => this.tableDataPorDia.push({ ...i }));
-                    response.data.fields.map(i => this.fieldsPorDia.push({ key: i, sortable : true }));
+                const data = await this.fetchData('control-panel/productiontable');
+                if(data){
+                    this.processTableData(data, this.tableDataPorDia, this.fieldsPorDia,'production_table');
                     this.totalRowsPorDia = this.tableDataPorDia.length;
-                    this.totalesPorDia = response.data.totales;
-                    localStorage.setItem('production_table', JSON.stringify(response));
                 }
                 else{
-                    const currentData = JSON.parse(localStorage.getItem('production_table')); // Convertir los datos del usuario a JSON
-                    if(currentData){
-                        currentData.data.series.map(i => this.tableDataPorDia.push({ ...i }));
-                        currentData.data.fields.map(i => this.fieldsPorDia.push({ key: i, sortable : true }));
-                        this.totalRowsPorDia = this.tableDataPorDia.length;
-                        this.totalesPorDia = currentData.data.totales;
-                    }
+                    this.loadFromLocalStorage('production_table', this.tableDataPorDia, this.fieldsPorDia);
+                    this.totalRowsPorDia = this.tableDataPorDia.length;
                 }
             } catch (error) {
                 console.error(error);
@@ -211,26 +187,14 @@ export default {
         },
         async getTableAgendaPorDias(){
             try {
-                const TIMEOUT_MS = 4000; // Tiempo de espera en milisegundos
-                const responsePromise = this.$http.get(this.$apiURL + 'control-panel/diarytable');
-                const timeoutPromise = new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
-                const response = await Promise.race([responsePromise, timeoutPromise]);
-
-                if (response) {
-                    response.data.series.map(i => this.tableDataAgenda.push({ ...i }));
-                    response.data.fields.map(i => this.fieldsAgenda.push({ key: i, sortable : true }));
+                const data = await this.fetchData('control-panel/diarytable');
+                if(data){
+                    this.processTableData(data, this.tableDataAgenda, this.fieldsAgenda,'agenda_dias');
                     this.totalRowsAgenda = this.tableDataAgenda.length;
-                    this.totalesAgenda = response.data.totales;
-                    localStorage.setItem('agenda_dias', JSON.stringify(response));
                 }
                 else{
-                    const currentData = JSON.parse(localStorage.getItem('agenda_dias')); // Convertir los datos del usuario a JSON
-                    if(currentData){
-                        currentData.data.series.map(i => this.tableDataAgenda.push({ ...i }));
-                        currentData.data.fields.map(i => this.fieldsAgenda.push({ key: i, sortable : true }));
-                        this.totalRowsAgenda = this.tableDataAgenda.length;
-                        this.totalesAgenda = currentData.data.totales;
-                    }
+                    this.loadFromLocalStorage('agenda_dias', this.tableDataAgenda, this.fieldsAgenda);
+                    this.totalRowsAgenda = this.tableDataAgenda.length;
                 }
             } catch (error) {
                 console.error(error);
@@ -340,7 +304,7 @@ export default {
     <PageHeader :title="title" :items="items" />
 
     <BRow>
-    <BCol lg="4">
+    <BCol lg="6">
         <BCard no-body>
             <BCardBody>
                 <BCardTitle class="mb-4">Avance instalaciones</BCardTitle>
@@ -356,7 +320,7 @@ export default {
             </BCardBody>
         </BCard>
     </BCol>
-    <BCol lg="4">
+    <BCol lg="6">
         <BCard no-body>
             <BCardBody>
                 <BCardTitle class="mb-4">Avance mantenimientos</BCardTitle>
@@ -369,78 +333,6 @@ export default {
                     :series="columnChart2.series"
                     :options="columnChart2.chartOptions"
                 ></apexchart>
-            </BCardBody>
-        </BCard>
-    </BCol>
-    <BCol lg="4">
-        <BCard no-body>
-            <BCardBody>
-                <BCardTitle>Producción Día : S/{{ totalesPorDia }}</BCardTitle>
-                <BRow class="mt-4">
-                    <BCol sm="12" md="6">
-                        <div id="tickets-table_length" class="dataTables_length">
-                        <label class="d-inline-flex align-items-center">
-                            Show&nbsp;
-                            <BFormSelect
-                                v-model="perPagePorDia"
-                                size="sm"
-                                :options="pageOptionsPorDia"
-                            ></BFormSelect
-                            >&nbsp;entries
-                        </label>
-                        </div>
-                    </BCol>
-                    <!-- Search -->
-                    <div class="col-sm-12 col-md-6">
-                        <div
-                        id="tickets-table_filter"
-                        class="dataTables_filter text-md-end"
-                        >
-                        <label class="d-inline-flex align-items-center">
-                            Search:
-                            <BFormInput
-                            v-model="filterPorDia"
-                            type="search"
-                            placeholder="Search..."
-                            class="form-control form-control-sm ms-2"
-                            ></BFormInput>
-                        </label>
-                        </div>
-                    </div>
-                    <!-- End search -->
-                </BRow>
-                <!-- Table -->
-                <div class="table-responsive mb-0">
-                    <BTable
-                        :items="tableDataPorDia"
-                        :fields="fieldsPorDia"
-                        responsive="sm"
-                        :per-page="perPagePorDia"
-                        :current-page="currentPagePorDia"
-                        :sort-by.sync="sortByPorDia"
-                        :sort-desc.sync="sortDescPorDia"
-                        :filter="filterPorDia"
-                        :filter-included-fields="filterOnPorDia"
-                        @filtered="onFilteredPorDia"
-                    >                    
-                </BTable>
-                </div>
-                <BRow>
-                    <BCol>
-                        <div
-                        class="dataTables_paginate paging_simple_numbers float-end"
-                        >
-                        <ul class="pagination pagination-rounded mb-0">
-                            <!-- pagination -->
-                            <BPagination
-                            v-model="currentPagePorDia"
-                            :total-rows="totalRowsPorDia"
-                            :per-page="perPagePorDia"
-                            ></BPagination>
-                        </ul>
-                        </div>
-                    </BCol>
-                </BRow>
             </BCardBody>
         </BCard>
     </BCol>
@@ -593,6 +485,80 @@ export default {
                 </BCardBody>
             </BCard>
         </BCol>
+    </div>
+    <div class="row">
+        <BCol lg="12">
+        <BCard no-body>
+            <BCardBody>
+                <BCardTitle>Producción Día : S/{{ totalesPorDia }}</BCardTitle>
+                <BRow class="mt-4">
+                    <BCol sm="12" md="6">
+                        <div id="tickets-table_length" class="dataTables_length">
+                        <label class="d-inline-flex align-items-center">
+                            Show&nbsp;
+                            <BFormSelect
+                                v-model="perPagePorDia"
+                                size="sm"
+                                :options="pageOptionsPorDia"
+                            ></BFormSelect
+                            >&nbsp;entries
+                        </label>
+                        </div>
+                    </BCol>
+                    <!-- Search -->
+                    <div class="col-sm-12 col-md-6">
+                        <div
+                        id="tickets-table_filter"
+                        class="dataTables_filter text-md-end"
+                        >
+                        <label class="d-inline-flex align-items-center">
+                            Search:
+                            <BFormInput
+                            v-model="filterPorDia"
+                            type="search"
+                            placeholder="Search..."
+                            class="form-control form-control-sm ms-2"
+                            ></BFormInput>
+                        </label>
+                        </div>
+                    </div>
+                    <!-- End search -->
+                </BRow>
+                <!-- Table -->
+                <div class="table-responsive mb-0">
+                    <BTable
+                        :items="tableDataPorDia"
+                        :fields="fieldsPorDia"
+                        responsive="sm"
+                        :per-page="perPagePorDia"
+                        :current-page="currentPagePorDia"
+                        :sort-by.sync="sortByPorDia"
+                        :sort-desc.sync="sortDescPorDia"
+                        :filter="filterPorDia"
+                        :filter-included-fields="filterOnPorDia"
+                        @filtered="onFilteredPorDia"
+                    >                    
+                </BTable>
+                </div>
+                <BRow>
+                    <BCol>
+                        <div
+                        class="dataTables_paginate paging_simple_numbers float-end"
+                        >
+                        <ul class="pagination pagination-rounded mb-0">
+                            <!-- pagination -->
+                            <BPagination
+                            v-model="currentPagePorDia"
+                            :total-rows="totalRowsPorDia"
+                            :per-page="perPagePorDia"
+                            ></BPagination>
+                        </ul>
+                        </div>
+                    </BCol>
+                </BRow>
+            </BCardBody>
+        </BCard>
+    </BCol>
     </div>
     <div class="row">
         

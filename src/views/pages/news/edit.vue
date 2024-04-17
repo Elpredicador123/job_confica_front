@@ -175,10 +175,10 @@ export default {
       },
       loadFilesFromUrls(images) {
         const promises = images.map(image =>
-            fetch(this.$storageURL + ""+image.url)  // Usar la URL dentro del objeto 'image'
+            fetch(this.$storageURL + "/"+image.url)  // Usar la URL dentro del objeto 'image'
             .then(response => response.blob())
             .then(blob => {
-                const name = this.$storageURL + ""+image.url.split('/').pop(); // Extrae el nombre del archivo de la URL
+                const name = this.$storageURL + "/"+image.url.split('/').pop(); // Extrae el nombre del archivo de la URL
                 return new File([blob], name, {type: blob.type}); // Crea un archivo
             })
         );
