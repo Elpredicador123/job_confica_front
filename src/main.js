@@ -40,8 +40,8 @@ import "bootstrap-vue-next/dist/bootstrap-vue-next.css";
 const  app =createApp(App)
 app.config.globalProperties.$http = axiosInstance; // Provee Axios globalmente
 // COLOCAR LA URL DE LA API en app
-app.config.globalProperties.$apiURL = 'https://apis.sistemastest.xyz/api/';
-app.config.globalProperties.$storageURL = "https://apis.sistemastest.xyz/storage";
+app.config.globalProperties.$apiURL = 'https://back.comficaconect.com/api/';
+app.config.globalProperties.$storageURL = "https://back.comficaconect.com/storage";
 
 //app.config.globalProperties.$apiURL = 'http://comfica_back.test:8084/api/';
 //app.config.globalProperties.$storageURL = 'http://comfica_back.test:8084/storage';
