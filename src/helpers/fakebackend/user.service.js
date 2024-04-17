@@ -17,7 +17,7 @@ function login(username, password) {
     };
 
     //return fetch(`http://comfica_back.test:8084/api/login`, requestOptions)
-    return fetch(this.$apiURL + "login", requestOptions)
+    return fetch(`https://back.comficaconect.com/api/login`, requestOptions)
         .then(handleResponse)
         .then(user => {
             if (user.token) {
