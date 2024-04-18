@@ -125,8 +125,9 @@ export default {
                       icon: 'success',
                       confirmButtonColor: '#6457A2', // Cambiar el color del botón de confirmación
                   });
-                  this.$swal('Completado!', response.data.message, 'success');
-                  this.initForm()
+                  setTimeout(() => {
+                        window.location.reload();
+                    }, 2000);
                 }
             }).catch(error => {
                 console.error(error);

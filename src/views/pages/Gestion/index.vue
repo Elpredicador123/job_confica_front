@@ -124,7 +124,7 @@ export default {
                 const responsePromise = this.$http.get(this.$apiURL + 'manager/managersaltas');
                 const timeoutPromise = new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
                 const response = await Promise.race([responsePromise, timeoutPromise]);
-                if (response) {
+                if (response && response.data.data) {
                     response.data.data.map(i => this.GestorAgenda.push( i.manager ));
                     this.GestorAgendaId = this.GestorAgenda[0]
                 }
@@ -142,7 +142,7 @@ export default {
                 const responsePromise = this.$http.get(this.$apiURL + 'city/all');
                 const timeoutPromise = new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
                 const response = await Promise.race([responsePromise, timeoutPromise]);
-                if (response) {
+                if (response && response.data.data) {
                     response.data.data.forEach(city => this.Ciudades.push(city.name));
                     this.ciudadId = this.Ciudades[0];
                     this.ciudadId2 = this.Ciudades[0];
@@ -164,7 +164,7 @@ export default {
                 const responsePromise = this.$http.get(this.$apiURL + 'manager/managersaverias');
                 const timeoutPromise = new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
                 const response = await Promise.race([responsePromise, timeoutPromise]);
-                if (response) {
+                if (response && response.data.data) {
                     response.data.data.forEach(i => this.OrdenesGestor.push(i.manager));
                     this.OrdenesGestorId = this.OrdenesGestor[0]
                 } else {
@@ -186,7 +186,7 @@ export default {
                         const responsePromise = this.$http.get(this.$apiURL + 'management/maintenanceprogresstable/' + this.ciudadId2);
                         const timeoutPromise = new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
                         const response = await Promise.race([responsePromise, timeoutPromise]);
-                        if (response) {
+                        if (response && response.data.series && response.data.fields) {
                             response.data.series.map(i => this.tableMantenimiento.push({ ...i }));
                             response.data.fields.map(i => this.fieldsMantenimiento.push({ key: i, sortable : true }));
                             this.totalRows2 = this.tableMantenimiento.length;
@@ -218,7 +218,7 @@ export default {
                         const responsePromise = this.$http.get(this.$apiURL + 'management/installationprogresstable/' + this.ciudadId);
                         const timeoutPromise = new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
                         const response = await Promise.race([responsePromise, timeoutPromise]);
-                        if (response) {
+                        if (response && response.data.series && response.data.fields) {
                             response.data.series.map(i => this.TableInstalaciones.push({ ...i }));
                             response.data.fields.map(i => this.fields.push({ key: i, sortable : true }));
                             this.totalRows = this.TableInstalaciones.length;
@@ -251,7 +251,7 @@ export default {
                         const timeoutPromise = new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
                         const response = await Promise.race([responsePromise, timeoutPromise]);
 
-                        if (response) {
+                        if (response && response.data.series && response.data.categories) {
                             response.data.series.map(i => this.tableDataGestor.push({ ...i }));
                             response.data.categories.map(i => this.fieldsGestor.push({ key: i, sortable : true }));
                             this.totalRowsGestor = this.tableDataGestor.length;
@@ -283,7 +283,7 @@ export default {
                         const timeoutPromise = new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
                         const response = await Promise.race([responsePromise, timeoutPromise]);
 
-                        if (response) {
+                        if (response && response.data.series && response.data.categories) {
                             response.data.series.map(i => this.tableDataOrder.push({ ...i }));
                             //this.fieldsOrder.push({ key: "Ciudad", sortable : true })
                             response.data.categories.map(i => this.fieldsOrder.push({ key: i, sortable : true }));

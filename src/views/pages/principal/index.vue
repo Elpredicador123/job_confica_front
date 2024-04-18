@@ -67,7 +67,7 @@ export default {
                 dayMaxEvents: true,
                 views: {
                     timeGridWeek: {
-                        buttonText: 'Week', // Cambia el texto del botón de la vista "timeGridWeek" a "All Day"
+                        buttonText: 'Semana', // Cambia el texto del botón de la vista "timeGridWeek" a "All Day"
                         allDaySlot: true, // Mostrar solo la opción de "All Day" en la vista "timeGridWeek"
                         slotDuration: '24:00:00' // Hace que cada ranura tenga una duración de 24 horas, ocultando así las horas específicas
                     }
@@ -443,6 +443,7 @@ export default {
             <BRow>
                 <BCol cols="12">
                     <BCard np-body>
+                    Reservas
                         <BCardBody>
                             <div class="app-calendar">
                             <FullCalendar
@@ -455,6 +456,7 @@ export default {
                 </BCol>
                 <BCol cols="12">
                     <BCard np-body>
+                    Cumpleaños
                         <BCardBody>
                             <div class="app-calendar">
                             <FullCalendar

@@ -76,7 +76,7 @@ export default {
                     const responsePromise = this.$http.get(this.$apiURL + 'maintenance/ineffectivecontratagraphic/'+this.CiudadId1);
                     const timeoutPromise = new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
                     const response = await Promise.race([responsePromise, timeoutPromise]);
-                    if (response) {
+                    if (response && response.data.series && response.data.categories) {
                         this.ContrataBar = {... constructor_barchart(response.data.series, response.data.categories)}
                         localStorage.setItem('ineffective_contrata', JSON.stringify(response));
                     }
@@ -106,7 +106,7 @@ export default {
                     this.tableDataSup.splice(0, this.tableDataSup.length);
                     this.fieldsSup.splice(0, this.fieldsSup.length);
 
-                    if (response) {
+                    if (response && response.data.series && response.data.fields) {
                         response.data.series.map(i => this.tableDataSup.push({ ...i }));
                         response.data.fields.map(i => this.fieldsSup.push({ key: i, sortable : true }));
                         this.totalRowsSup = this.tableDataSup.length;
@@ -133,7 +133,7 @@ export default {
                     this.tableDataTec.splice(0, this.tableDataTec.length);
                     this.fieldsTec.splice(0, this.fieldsTec.length);
 
-                    if (response) {
+                    if (response && response.data.series && response.data.fields) {
                         response.data.series.map(i => this.tableDataTec.push({ ...i }));
                         response.data.fields.map(i => this.fieldsTec.push({ key: i, sortable : true }));
                         this.totalRowsTec = this.tableDataTec.length;
@@ -156,7 +156,7 @@ export default {
                 const responsePromise = this.$http.get(this.$apiURL + 'city/all');
                 const timeoutPromise = new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
                 const response = await Promise.race([responsePromise, timeoutPromise]);
-                if (response) {
+                if (response && response.data.data) {
                     response.data.data.forEach(city => this.Ciudades.push(city.name));
                     this.CiudadId1 = this.Ciudades[0]
                     this.CiudadId2 = this.Ciudades[0]
@@ -183,7 +183,7 @@ export default {
                 const timeoutPromise = new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
                 const response = await Promise.race([responsePromise, timeoutPromise]);
 
-                if (response) {
+                if (response && response.data.series && response.data.categories) {
                     this.pieChart = {... constructor_piechart(response.data.series, response.data.categories)}
                     localStorage.setItem('child_hood_break', JSON.stringify(response));
                 } else {
@@ -206,7 +206,7 @@ export default {
                 const timeoutPromise = new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
                 const response = await Promise.race([responsePromise, timeoutPromise]);
 
-                if (response) {
+                if (response && response.data.series && response.data.categories) {
                     this.pieChart2 = {... constructor_piechart(response.data.series, response.data.categories)}
                     localStorage.setItem('ineffective_distribution', JSON.stringify(response));
                 } else {

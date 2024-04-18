@@ -8,22 +8,49 @@
                       <BCardTitle>Editar Noticias</BCardTitle>
                       <form class="needs-validation" @submit.prevent="submit">
                         <BRow>
-                            <BCol lg="12">
+                            <BCol lg="6">
                                 <BCard no-body>
-                              <BCardBody>
+                                  <BCardBody>
 
-                                <div class="vuePicDatePicker">
-                                  <div class="form-group mb-3">
-                                    <label>Default Date Picker</label>
-                                    <br />
-                                <VueDatePicker
-                                      v-model="news.date"
-                                      model-type="yyyy-MM-dd HH:mm:ss"
-                                    />
-                                  </div>
-                                </div>
-                            </BCardBody>
+                                    <div class="vuePicDatePicker">
+                                      <div class="form-group mb-3">
+                                        <label>Default Date Picker</label>
+                                        <br />
+                                    <VueDatePicker
+                                          v-model="news.date"
+                                          model-type="yyyy-MM-dd HH:mm:ss"
+                                        />
+                                      </div>
+                                    </div>
+                                  </BCardBody>
                                 </BCard>
+                            </BCol>
+                            <BCol lg="6">
+                              Seleccionar para eliminar
+                              <ul class="list-unstyled mb-0" id="dropzone-preview2">
+                                <li class="mt-2" id="dropzone-preview-list2">
+                                  <div
+                                    class="border rounded mb-1"
+                                    v-for="(file, index) of galleryFilesEdit"
+                                    :key="index"
+                                  >
+                                    <div class="d-flex p-2">
+                                      <div class="flex-shrink-0 me-3">
+                                        <div class="avatar-sm bg-light rounded">
+                                          <img
+                                            class="img-fluid rounded d-block"
+                                            :src="storage + file.url"
+                                            alt="Dropzone-Image"
+                                          />
+                                        </div>
+                                      </div>
+                                      <div class="flex-shrink-0 ms-3">
+                                        <input type="checkbox" v-model="file.estado" :value="index">
+                                      </div>
+                                    </div>
+                                  </div>
+                                </li>
+                              </ul>
                             </BCol>
                             <BCol cols="6">
                                 <BCard no-body>
@@ -46,10 +73,8 @@
                           <BCol lg="12">
                               <BCard no-body>
                                 <BCardBody>
-                                  <BCardTitle class="mb-1">Dropzone</BCardTitle>
+                                  <BCardTitle class="mb-1">Cargar Archivo</BCardTitle>
                                   <p class="text-muted">
-                                    DropzoneJS is an open source library that provides drag’n’drop
-                                    file uploads with image previews.
                                   </p>
                                   <div>
                                     <DropZone
@@ -155,6 +180,7 @@ export default {
             galleryDropzoneFile: "",
             galleryFiles: [],
             DropFile : [],
+            galleryFilesEdit : [],
             editor_title: ClassicEditor,
             editor_description: ClassicEditor,
       };
@@ -163,35 +189,20 @@ export default {
       open(item) {
           // Abrir el modal y establecer los datos del elemento seleccionado
           const user = JSON.parse(localStorage.getItem('user')); // Convertir los datos del usuario a JSON
+          console.log(item)
+          this.storage = this.$storageURL + "/"
           this.isOpen = true;
           this.news.title = item.title;
           this.news.description = item.description;
           this.news.date = item.date;
           this.news.id = item.id;
           this.news.user_id = user.id;
-          this.galleryFiles = [];
-          console.log(item.images)
-          this.loadFilesFromUrls(item.images);
+          this.galleryFilesEdit = item.images.map(image => ({
+            ...image,
+            estado: false // Aquí puedes asignar el valor que desees para el campo "estado"
+          }));
+          console.log(this.galleryFilesEdit)
       },
-      loadFilesFromUrls(images) {
-        const promises = images.map(image =>
-            fetch(this.$storageURL + "/" + image.url, {
-                  headers: {
-                      'Origin': 'http://localhost:8080/' // Reemplaza 'http://tuorigen.com' con el origen de tu aplicación
-                  }
-              })
-            .then(response => response.blob())
-            .then(blob => {
-                const name = this.$storageURL + "/"+image.url.split('/').pop(); // Extrae el nombre del archivo de la URL
-                return new File([blob], name, {type: blob.type}); // Crea un archivo
-            })
-        );
-
-        Promise.all(promises).then(files => {
-            this.galleryFiles = files; // Almacena los archivos en el estado del componente
-            // Aquí puedes llamar a un método para actualizar el DropZone, si necesario
-        }).catch(error => console.error('Error loading files:', error));
-    },
       close() {
           // Cerrar el modal y restablecer los datos
           this.isOpen = false;
@@ -236,7 +247,6 @@ export default {
 
       async submit(){
           let formData = new FormData();
-          // Agrega los datos del formulario al objeto FormData
           Object.keys(this.news).forEach(key => {
               formData.append(key, this.news[key]);
           });
@@ -245,9 +255,17 @@ export default {
           console.log(this.DropFile)
           if (this.DropFile && this.DropFile.length > 0) {
               for (let i = 0; i < this.DropFile.length; i++) {
-                  formData.append("files", this.DropFile[i][0]);
+                  formData.append("files[]", this.DropFile[i][0]);
               }
-          }          
+          }
+          const activeImageIds = this.galleryFilesEdit
+            .filter(image => image.estado === true)
+            .map(image => image.id);
+
+          activeImageIds.forEach(id => {
+            formData.append("images[]", id);
+          });
+
 
           // Realiza la petición con Axios
           console.log(formData)
@@ -264,10 +282,9 @@ export default {
                     icon: 'success',
                     confirmButtonColor: '#6457A2', // Cambiar el color del botón de confirmación
                 });
-                this.$swal('Completado!', response.data.message, 'success');
+
               }
           }).catch(error => {
-              console.error(error);
                 this.$swal({
                   icon: "error",
                   title: "Oops...",

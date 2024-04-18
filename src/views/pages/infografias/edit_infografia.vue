@@ -26,19 +26,39 @@
                                                 </BFormInput>
                                             </BFormGroup>
                                             </BCol>
-                                            <BCol lg="6">
-                                            <BFormGroup
-                                                label="Autor"
-                                                label-for="formrow-firstname-input"
-                                                class="mb-12">
-                                                <BFormInput
-                                                    v-model="form.Autor"
-                                                    required
-                                                    type="text"
-                                                    id="formrow-firstname-input"
-                                                    disabled="">
-                                                </BFormInput>
-                                            </BFormGroup>
+                                            <BCol lg="3">
+                                                <BFormGroup
+                                                    label="Autor"
+                                                    label-for="formrow-firstname-input"
+                                                    class="mb-12">
+                                                    <BFormInput
+                                                        v-model="form.Autor"
+                                                        required
+                                                        type="text"
+                                                        id="formrow-firstname-input"
+                                                        disabled="">
+                                                    </BFormInput>
+                                                </BFormGroup>
+                                            </BCol>
+                                            <BCol lg="3">
+                                                Imagen
+                                                <ul class="list-unstyled mb-0" id="dropzone-preview2">
+                                                    <li class="mt-2" id="dropzone-preview-list2">
+                                                    <div class="border rounded mb-1">
+                                                        <div class="d-flex p-2">
+                                                        <div class="flex-shrink-0 me-3">
+                                                            <div class="avatar-sm bg-light rounded">
+                                                            <img
+                                                                class="img-fluid rounded d-block"
+                                                                :src="storage + form.url"
+                                                                alt=""
+                                                            />
+                                                            </div>
+                                                        </div>
+                                                        </div>
+                                                    </div>
+                                                    </li>
+                                                </ul>
                                             </BCol>
                                         </BRow>
                                         </BCardBody>
@@ -47,7 +67,7 @@
                             <BCol lg="12">
                                 <BCard no-body>
                                     <BCardBody>
-                                    <div>
+                                    <div v-if="galleryFiles2.length ==0">
                                         <DropZone
                                         files="files"
                                         cloudIcon="remix"
@@ -151,6 +171,7 @@ export default {
     
     methods: {
         open(item) {
+            this.storage = this.$storageURL + "/"
             // Abrir el modal y establecer los datos del elemento seleccionado
             this.isOpen = true;
             this.form = {...item};
@@ -212,10 +233,10 @@ export default {
             });
 
             if (this.DropFile2 && this.DropFile2.length > 0) {
-              for (let i = 0; i < this.DropFile2.length; i++) {
-                  formData.append("file", this.DropFile2[i][0]);
-              }
-          }          
+                for (let i = 0; i < this.DropFile2.length; i++) {
+                    formData.append("file", this.DropFile2[i][0]);
+                }
+            }
             // Realiza la petición con Axios
             console.log(formData)
             this.$http.post(this.$apiURL+'infographic/store', formData, {
@@ -231,8 +252,9 @@ export default {
                       icon: 'success',
                       confirmButtonColor: '#6457A2', // Cambiar el color del botón de confirmación
                   });
-                  this.$swal('Completado!', response.data.message, 'success');
-                  this.initForm()
+                  setTimeout(() => {
+                        window.location.reload();
+                    }, 2000);
                 }
             }).catch(error => {
                 console.error(error);

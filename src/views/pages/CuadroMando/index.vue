@@ -49,8 +49,8 @@ export default {
             //--------------------
             totalRowsPorDia: 1,
             currentPagePorDia: 1,
-            perPagePorDia: 3,
-            pageOptionsPorDia: [3,10,25,50,100],
+            perPagePorDia: 10,
+            pageOptionsPorDia: [10,25,50,100],
             filterOnPorDia: [],
             filterPorDia: null,
             sortByPorDia: "age",

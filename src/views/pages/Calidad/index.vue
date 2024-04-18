@@ -163,7 +163,7 @@ export default {
                     const timeoutPromise = new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
                     const response = await Promise.race([responsePromise, timeoutPromise]);
 
-                    if (response) {
+                    if (response && response.data.series && response.data.categories) {
                         response.data.series.map(i => this.tableDataEfectividad.push({ ...i }));
                         response.data.categories.map(i => this.fieldsEfectividad.push({ key: i, sortable : true }));
                         this.totalRowsEfectividad = this.tableDataEfectividad.length;
@@ -190,7 +190,7 @@ export default {
                     const timeoutPromise = new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
                     const response = await Promise.race([responsePromise, timeoutPromise]);
 
-                    if (response) {
+                    if (response && response.data.series && response.data.categories) {
                         response.data.series.map(i => this.tableDataAuditoria.push({ ...i }));
                         response.data.categories.map(i => this.fieldsAuditoria.push({ key: i, sortable : true }));
                         this.totalRowsAuditoria = this.tableDataAuditoria.length;
@@ -217,7 +217,7 @@ export default {
                     const timeoutPromise = new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
                     const response = await Promise.race([responsePromise, timeoutPromise]);
 
-                    if (response) {
+                    if (response && response.data.series && response.data.categories) {
                         response.data.series.map(i => this.tableDataInspeccionesTec.push({ ...i }));
                         response.data.categories.map(i => this.fieldsInspeccionesTec.push({ key: i, sortable : true }));
                         this.totalRowsInspeccionesTec = this.tableDataInspeccionesTec.length;
@@ -244,7 +244,7 @@ export default {
                     const timeoutPromise = new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
                     const response = await Promise.race([responsePromise, timeoutPromise]);
 
-                    if (response) {
+                    if (response && response.data.series && response.data.categories) {
                         response.data.series.map(i => this.tableDataAvanceTec.push({ ...i }));
                         response.data.categories.map(i => this.fieldsAvanceTec.push({ key: i, sortable : true }));
                         this.totalRowsAvanceTec = this.tableDataAvanceTec.length;
@@ -271,7 +271,7 @@ export default {
                     const timeoutPromise = new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
                     const response = await Promise.race([responsePromise, timeoutPromise]);
 
-                    if (response) {
+                    if (response && response.data.series && response.data.categories) {
                         response.data.series.map(i => this.tableDataRescate.push({ ...i }));
                         response.data.categories.map(i => this.fieldsRescate.push({ key: i, sortable : true }));
                         this.totalRowsRescate = this.tableDataRescate.length;
@@ -297,7 +297,7 @@ export default {
                     const responsePromise = this.$http.get(this.$apiURL + 'quality/errorsevidencebytectable/' + this.CiudadId4);
                     const timeoutPromise = new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
                     const response = await Promise.race([responsePromise, timeoutPromise]);
-                    if (response) {
+                    if (response && response.data.series && response.data.categories) {
                         response.data.series.map(i => this.tableDataErrorTec.push({ ...i }));
                         response.data.categories.map(i => this.fieldsErrorTec.push({ key: i, sortable : true }));
                         this.totalRowsErrorTec = this.tableDataErrorTec.length;
@@ -321,7 +321,7 @@ export default {
                 const timeoutPromise = new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
                 const response = await Promise.race([responsePromise, timeoutPromise]);
 
-                if (response) {
+                if (response && response.data.series && response.data.categories) {
                     this.pieChart = {... constructor_piechart(response.data.series, response.data.categories)}
                     localStorage.setItem('error_inspection', JSON.stringify(response));
                 } else {
@@ -343,7 +343,7 @@ export default {
                 const responsePromise = this.$http.get(this.$apiURL + 'city/all');
                 const timeoutPromise = new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
                 const response = await Promise.race([responsePromise, timeoutPromise]);
-                if (response) {
+                if (response && response.data.data) {
                     response.data.data.forEach(city => this.Ciudades.push(city.name));
                     this.CiudadId1 = this.Ciudades[0]
                     this.CiudadId2 = this.Ciudades[0]
@@ -370,7 +370,7 @@ export default {
                 const responsePromise = this.$http.get(this.$apiURL + 'audit/months');
                 const timeoutPromise = new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
                 const response = await Promise.race([responsePromise, timeoutPromise]);
-                if (response) {
+                if (response && response.data.data) {
                     response.data.data.map(i => this.Months.push( i.MES ));
                     this.Month1 = this.Months[0]
                     this.Month2 = this.Months[0]

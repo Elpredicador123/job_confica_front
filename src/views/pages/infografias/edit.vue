@@ -5,7 +5,7 @@
             <BCol cols="12">
                 <BCard no-body>
                     <BCardBody>
-                        <BCardTitle>Editar Infografía</BCardTitle>
+                        <BCardTitle>Editar Video</BCardTitle>
                         <form class="needs-validation" @submit.prevent="submit">
                             <BRow>
                                 <BCol cols="12">
@@ -14,31 +14,51 @@
                                         <BRow>
                                             <BCol lg="6">
                                             <BFormGroup
-                                                label="Nombre de Infografía"
+                                                label="Nombre de Video"
                                                 label-for="formrow-firstname-input"
                                                 class="mb-12">
                                                 <BFormInput
                                                     type="text"
                                                     v-model="form.title"
-                                                    placeholder = "NOMBRE DE INFOGRAFÍA"
+                                                    placeholder = "NOMBRE DE VIDEO"
                                                     required
                                                     id="formrow-firstname-input">
                                                 </BFormInput>
                                             </BFormGroup>
                                             </BCol>
-                                            <BCol lg="6">
-                                            <BFormGroup
-                                                label="Autor"
-                                                label-for="formrow-firstname-input"
-                                                class="mb-12">
-                                                <BFormInput
-                                                    v-model="form.Autor"
-                                                    required
-                                                    type="text"
-                                                    id="formrow-firstname-input"
-                                                    disabled="">
-                                                </BFormInput>
-                                            </BFormGroup>
+                                            <BCol lg="3">
+                                                <BFormGroup
+                                                    label="Autor"
+                                                    label-for="formrow-firstname-input"
+                                                    class="mb-12">
+                                                    <BFormInput
+                                                        v-model="form.Autor"
+                                                        required
+                                                        type="text"
+                                                        id="formrow-firstname-input"
+                                                        disabled="">
+                                                    </BFormInput>
+                                                </BFormGroup>
+                                            </BCol>
+                                            <BCol lg="3">
+                                                Imagen
+                                                <ul class="list-unstyled mb-0" id="dropzone-preview2">
+                                                    <li class="mt-2" id="dropzone-preview-list2">
+                                                    <div class="border rounded mb-1">
+                                                        <div class="d-flex p-2">
+                                                        <div class="flex-shrink-0 me-3">
+                                                            <div class="avatar-sm bg-light rounded">
+                                                            <img
+                                                                class="img-fluid rounded d-block"
+                                                                :src="storage + form.url"
+                                                                alt=""
+                                                            />
+                                                            </div>
+                                                        </div>
+                                                        </div>
+                                                    </div>
+                                                    </li>
+                                                </ul>
                                             </BCol>
                                         </BRow>
                                         </BCardBody>
@@ -47,7 +67,7 @@
                             <BCol lg="12">
                                 <BCard no-body>
                                     <BCardBody>
-                                    <div>
+                                    <div v-if="galleryFiles.length ==0">
                                         <DropZone
                                         files="files"
                                         cloudIcon="remix"
@@ -120,7 +140,6 @@
 import DropZone from "@/components/custom/Dropzone.vue";
 
 import "flatpickr/dist/flatpickr.css";
-import moment from 'moment'
 export default {
     components: {
         DropZone,
@@ -152,9 +171,10 @@ export default {
     
     methods: {
         open(item) {
-            // Abrir el modal y establecer los datos del elemento seleccionado
+            console.log(item)
+            this.storage = this.$storageURL + "/"
             this.isOpen = true;
-            this.form = item;
+            this.form = {...item};
         },
         close() {
             // Cerrar el modal y restablecer los datos
@@ -162,15 +182,9 @@ export default {
             this.selectedItem = null;
         },
         initForm(){
-          const user = JSON.parse(localStorage.getItem('user')); // Convertir los datos del usuario a JSON
-          console.log(user)
-          this.form = {
-                title: null,
-                Autor : user.username,
-                date : moment().format('YYYY-MM-DD HH:mm:ss'),
-                url : "aas",
-                id: null,
-            };
+            const user = JSON.parse(localStorage.getItem('user')); // Convertir los datos del usuario a JSON
+            console.log(user)
+            this.form = {};
             this.dPDefaultDate = null;
             this.galleryDropzoneFile = "";
             this.galleryFiles = [];
@@ -192,7 +206,7 @@ export default {
         },
         gallerySelectedFile() {
             this.galleryDropzoneFile = document.querySelector(".galleryDropzoneFile").files;
-            this.DropFile = []; // Eliminar los archivos existentes
+            this.DropFile.push(this.galleryDropzoneFile)
             const finalFile = Object.values(this.galleryDropzoneFile).map((file) => {
                 return {
                     name: file.name,
@@ -202,7 +216,13 @@ export default {
                     size: file.size
                 };
             });
-            this.galleryFiles = finalFile;
+            this.galleryFiles.push(...finalFile);
+            this.galleryFiles = this.galleryFiles.map((data, index) => {
+                return {
+                id: index + 1,
+                ...data
+                };
+            });
         },
 
         async submit(){
@@ -219,10 +239,9 @@ export default {
                     formData.append("file", this.DropFile[i][0]); // Utiliza "files" en lugar de "files[]"
                 }
             }          
-
             // Realiza la petición con Axios
             console.log(formData)
-            this.$http.put(this.$apiURL+'video/update/'+this.form.id, formData, {
+            this.$http.post(this.$apiURL+'video/store', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
@@ -235,8 +254,9 @@ export default {
                       icon: 'success',
                       confirmButtonColor: '#6457A2', // Cambiar el color del botón de confirmación
                   });
-                  this.$swal('Completado!', response.data.message, 'success');
-                  this.initForm()
+                  setTimeout(() => {
+                        window.location.reload();
+                    }, 2000);
                 }
             }).catch(error => {
                 console.error(error);
