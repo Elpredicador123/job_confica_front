@@ -49,12 +49,14 @@ function constructor_chart(data_series,data_categories){
     }
     return columnChartAux;
 }
-function constructor_piechart(data_series,data_categories){
+function constructor_piechart(data_series,data_categories,colors = null){
+    console.log(data_series,data_categories)
+    let colors_pie =( colors == null) ?  ["#3477C3", "#8F34C3", "#C3349A", "#C33459", "#C37534","3479C3"] : ["#FF7F50", "#91cc75", "#ee6666", "#fac858", "#4DB6AC","34C3B8"];
     let pie_chart = {
         series: data_series,
         chartOptions: {
             labels: data_categories,
-            colors: ["#34c38f", "#556ee6", "#f46a6a", "#50a5f1", "#f1b44c"],
+            colors: colors_pie,
             legend: {
                 show: true,
                 position: "bottom",
@@ -77,7 +79,19 @@ function constructor_piechart(data_series,data_categories){
                     }
                     }
                 }
-            ]
+            ],
+            dataLabels: {
+                style: {
+                    fontSize: '14px' // Ajusta el tamaño de la fuente del porcentaje
+                }
+            },
+            plotOptions: {
+                pie: {
+                    dataLabels: {
+                        offset: -20 // Ajusta el offset para centrar las etiquetas
+                    }
+                }
+            }
         }
     }
     return pie_chart;
@@ -125,8 +139,42 @@ function constructor_barchart(data_series,data_categories){
     return bar_chart;
 }
 
+function constructor_donutchart(data_series,data_categories){
+    let donutChart = {
+        series: data_series,
+        chartOptions: {
+          labels: data_categories,
+          colors: ["#34c38f", "#5b73e8","#f1b44c", "#50a5f1", "#f46a6a"],
+          legend: {
+            show: true,
+            position: "bottom",
+            horizontalAlign: "center",
+            verticalAlign: "middle",
+            floating: false,
+            fontSize: "14px",
+            offsetX: 0,
+            offsetY: 10
+          },
+          responsive: [
+            {
+              breakpoint: 600,
+              options: {
+                chart: {
+                  height: 240
+                },
+                legend: {
+                  show: false
+                }
+              }
+            }
+          ]
+        }
+      };
+    return donutChart;
+}
+
 
 
 export {
-    constructor_chart,constructor_piechart,constructor_barchart
+    constructor_chart,constructor_piechart,constructor_barchart,constructor_donutchart
 }

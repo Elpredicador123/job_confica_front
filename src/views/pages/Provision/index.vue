@@ -84,7 +84,7 @@ export default {
         async getContrata(){
             if(this.ciudadId1 != null){
                 this.$nextTick(async () => {
-                    const TIMEOUT_MS = 4000; // Tiempo de espera en milisegundos
+                    const TIMEOUT_MS = 7000; // Tiempo de espera en milisegundos
                     const responsePromise = this.$http.get(this.$apiURL + 'provision/diarycontratagraphic/'+this.ciudadId1);
                     const timeoutPromise = new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
                     const response = await Promise.race([responsePromise, timeoutPromise]);
@@ -112,7 +112,7 @@ export default {
             try {
                 if(this.ciudadId2 != null){
                     this.$nextTick(async () => {
-                        const TIMEOUT_MS = 4000; // Tiempo de espera en milisegundos
+                        const TIMEOUT_MS = 7000; // Tiempo de espera en milisegundos
                         const responsePromise = this.$http.get(this.$apiURL + 'provision/diarymanagergraphic/'+this.ciudadId2);
                         const timeoutPromise = new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
                         const response = await Promise.race([responsePromise, timeoutPromise]);
