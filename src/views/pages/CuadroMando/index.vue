@@ -405,6 +405,54 @@ export default {
         </BCol>
     </div>
     <div class="row">
+        <BCol lg="6">
+            <BCard no-body>
+                <BCardBody>
+                    <BRow>
+                        <BCol sm="7">
+                            <BCardTitle class="mb-4">Producción día - Instalaciones</BCardTitle>
+                        </BCol>
+                        <BCol sm="5">
+                            <p class="text-muted">Actualizado a las {{ InstalacionesDate }}</p>
+                        </BCol>
+                    </BRow>
+                    <!-- Donut Chart -->
+                    <apexchart
+                    class="apex-charts"
+                    height="320"
+                    type="donut"
+                    dir="ltr"
+                    :series="donutInstalaciones.series"
+                    :options="donutInstalaciones.chartOptions"
+                    ></apexchart>
+                </BCardBody>
+            </BCard>
+        </BCol>
+        <BCol lg="6">
+            <BCard no-body>
+                <BCardBody>
+                    <BRow>
+                        <BCol sm="7">
+                            <BCardTitle class="mb-4">Producción día - Reparaciones</BCardTitle>
+                        </BCol>
+                        <BCol sm="5">
+                            <p class="text-muted">Actualizado a las {{ MantenimientosDate }}</p>
+                        </BCol>
+                    </BRow>
+                    <!-- Donut Chart -->
+                    <apexchart
+                    class="apex-charts"
+                    height="320"
+                    type="donut"
+                    dir="ltr"
+                    :series="donutMaintenance.series"
+                    :options="donutMaintenance.chartOptions"
+                    ></apexchart>
+                </BCardBody>
+            </BCard>
+        </BCol>
+    </div>
+    <div class="row">
         
         <BCol lg="12">
             <BCard no-body>
