@@ -114,7 +114,7 @@ export default {
             this.totalRowsAgenda = filteredItems.length;
             this.currentPageAgenda = 1;
         },
-        async fetchData(url, timeoutMs = 9000) {
+        async fetchData(url, timeoutMs = 12000) {
             try {
                 const responsePromise = this.$http.get(this.$apiURL + url);
                 const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), timeoutMs));
@@ -148,7 +148,7 @@ export default {
         async getTableMantenimientos() {
             try {
                 const data = await this.fetchData('control-panel/maintenanceprogresstable');
-                if(data.series.length>0){
+                if(data !== null && 'series' in data && data.series.length>0){
                     this.processTableData(data, this.tableData2, this.fields2,'maintenance_progress',this.tableDate2);
                 }
                 else{
@@ -161,7 +161,7 @@ export default {
         async getTableInstalaciones() {
             try {
                 const data = await this.fetchData('control-panel/installationprogresstable');
-                if(data.series.length>0){
+                if(data !== null && 'series' in data && data.series.length>0){
                     this.processTableData(data, this.tableData, this.fields,'installation_progress_table',this.tableDate);
                 }
                 else{
@@ -174,7 +174,7 @@ export default {
         async getTableInstalacionesDia(){
             try {
                 const response = await this.fetchData('control-panel/productiontableinstallation');
-                if (response.series.length > 0) {
+                if (response !== null && 'series' in response && response.series.length > 0) {
                     this.donutInstalaciones = {... constructor_donutchart(response.series, response.fields)}
                     localStorage.setItem('production_table_installation', JSON.stringify(response));
                     this.InstalacionesDate = this.formatearHora(response.date)
@@ -196,7 +196,7 @@ export default {
         async getTableMantenimientosDia(){
             try {
                 const response = await this.fetchData('control-panel/productiontablemaintenance');
-                if (response.series.length>0) {
+                if (response !== null && 'series' in response && response.series.length>0) {
                     this.donutMaintenance = {... constructor_donutchart(response.series, response.fields)}
                     localStorage.setItem('production_table_mantenimientos', JSON.stringify(response));
                     this.MantenimientosDate = this.formatearHora(response.date)
@@ -218,7 +218,7 @@ export default {
         async getTableAgendaPorDias(){
             try {
                 const data = await this.fetchData('control-panel/diarytable');
-                if(data.series.length>0){
+                if(data !== null && 'series' in data && data.series.length>0){
                     this.processTableData(data, this.tableDataAgenda, this.fieldsAgenda,'agenda_dias',this.tableDateAux);
                     this.totalRowsAgenda = this.tableDataAgenda.length;
                 }
@@ -234,7 +234,7 @@ export default {
             try {
                 const response = await this.fetchData('control-panel/installationprogressgraphic');
 
-                if (response) {
+                if (response !== null && 'series' in response && response.series.length>0) {
                     this.columnChart = {... constructor_chart(response.series, response.categories)}
                     localStorage.setItem('installation_progress', JSON.stringify(response));
                 }
@@ -255,7 +255,7 @@ export default {
         async getMantenimientos() {
             try {
                 const response = await this.fetchData('control-panel/maintenanceprogressgraphic');
-                if (response) {
+                if (response !== null && 'series' in response && response.series.length >0) {
                     this.columnChart2 = {... constructor_chart(response.series, response.categories)}
                     localStorage.setItem('mantenimientos_data', JSON.stringify(response));
                 } else {
@@ -275,7 +275,7 @@ export default {
             try {
                 const response = await this.fetchData('control-panel/installationratiographic');
 
-                if (response) {
+                if (response !== null && 'series' in response && response.series.length > 0) {
                     this.pieChart = {... constructor_piechart(response.series, response.labels)}
                     localStorage.setItem('installation_ratio', JSON.stringify(response));
                 } else {
@@ -294,7 +294,7 @@ export default {
         async getRatioMantenimientos() {
             try {
                 const response = await this.fetchData('control-panel/maintenanceratiographic');
-                if (response) {
+                if (response !== null && 'series' in response && response.series.length>0) {
                     this.pieChart2 = {... constructor_piechart(response.series, response.labels,"distinto")}
                     localStorage.setItem('maintenance_ratio', JSON.stringify(response));
                 } else {
