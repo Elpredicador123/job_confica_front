@@ -2,6 +2,7 @@
 import Layout from "../../layouts/main";
 import PageHeader from "@/components/page-header";
 import {constructor_chart,constructor_piechart,constructor_donutchart} from "@/components/constructor";
+import moment from 'moment';
 
 
 /**
@@ -75,6 +76,8 @@ export default {
             tableDateAgenda:null,
             //---------------------
             tableDateAux:null,
+            InstalacionesDate : null,
+            MantenimientosDate : null,
         };
     },
     mounted() {
@@ -99,6 +102,10 @@ export default {
         //     }, 300000);
     },
     methods:{
+        formatearHora(value){
+            if (!value) return '';
+            return moment(value, 'DD/MM/YYYY HH:mm:ss').format('HH:mm:ss');
+        },
         onFilteredPorDia(filteredItems) {
             this.totalRowsPorDia = filteredItems.length;
             this.currentPagePorDia = 1;
@@ -107,14 +114,15 @@ export default {
             this.totalRowsAgenda = filteredItems.length;
             this.currentPageAgenda = 1;
         },
-        async fetchData(url, timeoutMs = 7000) {
+        async fetchData(url, timeoutMs = 9000) {
             try {
                 const responsePromise = this.$http.get(this.$apiURL + url);
                 const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), timeoutMs));
                 const response = await Promise.race([responsePromise, timeoutPromise]);
                 return response.data;
+
             } catch (error) {
-                console.error('Error fetching data:', error);
+
                 return null;  // Retornar null o manejar de otra forma según sea necesario
             }
         },
@@ -140,7 +148,7 @@ export default {
         async getTableMantenimientos() {
             try {
                 const data = await this.fetchData('control-panel/maintenanceprogresstable');
-                if(data){
+                if(data.series.length>0){
                     this.processTableData(data, this.tableData2, this.fields2,'maintenance_progress',this.tableDate2);
                 }
                 else{
@@ -153,7 +161,7 @@ export default {
         async getTableInstalaciones() {
             try {
                 const data = await this.fetchData('control-panel/installationprogresstable');
-                if(data){
+                if(data.series.length>0){
                     this.processTableData(data, this.tableData, this.fields,'installation_progress_table',this.tableDate);
                 }
                 else{
@@ -166,14 +174,16 @@ export default {
         async getTableInstalacionesDia(){
             try {
                 const response = await this.fetchData('control-panel/productiontableinstallation');
-                if (response) {
+                if (response.series.length > 0) {
                     this.donutInstalaciones = {... constructor_donutchart(response.series, response.fields)}
                     localStorage.setItem('production_table_installation', JSON.stringify(response));
+                    this.InstalacionesDate = this.formatearHora(response.date)
                 }
                 else{
                     const currentData = JSON.parse(localStorage.getItem('production_table_installation')); // Convertir los datos del usuario a JSON
                     if(currentData){
                         this.donutInstalaciones = {... constructor_donutchart(currentData.series, currentData.fields)}
+                        this.InstalacionesDate = this.formatearHora(currentData.date)
                     }
                     else {
                         this.donutInstalaciones = {... constructor_donutchart([], [])}
@@ -186,14 +196,16 @@ export default {
         async getTableMantenimientosDia(){
             try {
                 const response = await this.fetchData('control-panel/productiontablemaintenance');
-                if (response) {
+                if (response.series.length>0) {
                     this.donutMaintenance = {... constructor_donutchart(response.series, response.fields)}
                     localStorage.setItem('production_table_mantenimientos', JSON.stringify(response));
+                    this.MantenimientosDate = this.formatearHora(response.date)
                 }
                 else{
                     const currentData = JSON.parse(localStorage.getItem('production_table_mantenimientos')); // Convertir los datos del usuario a JSON
                     if(currentData){
                         this.donutMaintenance = {... constructor_donutchart(currentData.series, currentData.fields)}
+                        this.MantenimientosDate = this.formatearHora(currentData.date)
                     }
                     else {
                         this.donutMaintenance = {... constructor_donutchart([], [])}
@@ -206,7 +218,7 @@ export default {
         async getTableAgendaPorDias(){
             try {
                 const data = await this.fetchData('control-panel/diarytable');
-                if(data){
+                if(data.series.length>0){
                     this.processTableData(data, this.tableDataAgenda, this.fieldsAgenda,'agenda_dias',this.tableDateAux);
                     this.totalRowsAgenda = this.tableDataAgenda.length;
                 }
@@ -388,112 +400,6 @@ export default {
                         >
                     </BTable>
                     </div>
-                </BCardBody>
-            </BCard>
-        </BCol>
-    </div>
-    <div class="row">
-        <BCol lg="12">
-            <BCard no-body>
-                <BCardBody>
-                    <BCardTitle>Producción Día : S/{{ totalesPorDia }}</BCardTitle>
-                    <BRow class="mt-4">
-                        <BCol sm="12" md="6">
-                            <div id="tickets-table_length" class="dataTables_length">
-                            <label class="d-inline-flex align-items-center">
-                                Show&nbsp;
-                                <BFormSelect
-                                    v-model="perPagePorDia"
-                                    size="sm"
-                                    :options="pageOptionsPorDia"
-                                ></BFormSelect
-                                >&nbsp;entries
-                            </label>
-                            </div>
-                        </BCol>
-                        <!-- Search -->
-                        <div class="col-sm-12 col-md-6">
-                            <div
-                            id="tickets-table_filter"
-                            class="dataTables_filter text-md-end"
-                            >
-                            <label class="d-inline-flex align-items-center">
-                                Search:
-                                <BFormInput
-                                v-model="filterPorDia"
-                                type="search"
-                                placeholder="Search..."
-                                class="form-control form-control-sm ms-2"
-                                ></BFormInput>
-                            </label>
-                            </div>
-                        </div>
-                        <!-- End search -->
-                    </BRow>
-                    <!-- Table -->
-                    <div class="table-responsive mb-0">
-                        <BTable
-                            :items="tableDataPorDia"
-                            :fields="fieldsPorDia"
-                            responsive="sm"
-                            :per-page="perPagePorDia"
-                            :current-page="currentPagePorDia"
-                            :sort-by.sync="sortByPorDia"
-                            :sort-desc.sync="sortDescPorDia"
-                            :filter="filterPorDia"
-                            :filter-included-fields="filterOnPorDia"
-                            @filtered="onFilteredPorDia"
-                        >                    
-                    </BTable>
-                    </div>
-                    <BRow>
-                        <BCol>
-                            <div
-                            class="dataTables_paginate paging_simple_numbers float-end"
-                            >
-                            <ul class="pagination pagination-rounded mb-0">
-                                <!-- pagination -->
-                                <BPagination
-                                v-model="currentPagePorDia"
-                                :total-rows="totalRowsPorDia"
-                                :per-page="perPagePorDia"
-                                ></BPagination>
-                            </ul>
-                            </div>
-                        </BCol>
-                    </BRow>
-                </BCardBody>
-            </BCard>
-        </BCol>
-        <BCol lg="6">
-            <BCard no-body>
-                <BCardBody>
-                    <BCardTitle class="mb-4">Producción día - Instalaciones</BCardTitle>
-                    <!-- Donut Chart -->
-                    <apexchart
-                    class="apex-charts"
-                    height="320"
-                    type="donut"
-                    dir="ltr"
-                    :series="donutInstalaciones.series"
-                    :options="donutInstalaciones.chartOptions"
-                    ></apexchart>
-                </BCardBody>
-            </BCard>
-        </BCol>
-        <BCol lg="6">
-            <BCard no-body>
-                <BCardBody>
-                    <BCardTitle class="mb-4">Producción día - Reparaciones</BCardTitle>
-                    <!-- Donut Chart -->
-                    <apexchart
-                    class="apex-charts"
-                    height="320"
-                    type="donut"
-                    dir="ltr"
-                    :series="donutMaintenance.series"
-                    :options="donutMaintenance.chartOptions"
-                    ></apexchart>
                 </BCardBody>
             </BCard>
         </BCol>
