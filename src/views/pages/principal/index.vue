@@ -399,17 +399,17 @@ export default {
             <div class="button-items d-flex flex-wrap gap-2">
               <a
                 class="btn btn-primary"
-                href="https://back.sistemastest.xyz/importdiary"
+                href="https://back.comficaconect.com/importdiary"
                 role="button" target="_blank"
                 >Importar Agendas</a>
                 <a
                 class="btn btn-primary"
-                href="https://back.sistemastest.xyz/importaudit"
+                href="https://back.comficaconect.com/importaudit"
                 role="button" target="_blank"
                 >Importar Auditorias</a>
                 <a
                 class="btn btn-primary"
-                href="https://back.sistemastest.xyz/importevidence"
+                href="https://back.comficaconect.com/importevidence"
                 role="button" target="_blank"
                 >Importar Evidencias</a>
             </div>
