@@ -97,3 +97,7 @@ div.table-responsive>div.dataTables_wrapper>div.row>div[class^="col-"]{
     }
   }
 }
+.table.dataTable thead {
+  background-color: #2a1abd; /* Cambia "your-color" por el color que desees */
+  color: #000000; /* Cambia el color del texto si es necesario */
+}

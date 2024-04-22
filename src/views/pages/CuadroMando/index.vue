@@ -3,6 +3,7 @@ import Layout from "../../layouts/main";
 import PageHeader from "@/components/page-header";
 import {constructor_chart,constructor_piechart,constructor_donutchart} from "@/components/constructor";
 import moment from 'moment';
+import { BCardHeader } from "bootstrap-vue-next";
 
 
 /**
@@ -11,7 +12,8 @@ import moment from 'moment';
 export default {
     components: {
         Layout,
-        PageHeader
+        PageHeader,
+        BCardHeader
     },
     data() {
         return {
@@ -174,7 +176,9 @@ export default {
         async getTableInstalacionesDia(){
             try {
                 const response = await this.fetchData('control-panel/productiontableinstallation');
+                console.log(response)
                 if (response !== null && 'series' in response && response.series.length > 0) {
+                console.log(response)
                     this.donutInstalaciones = {... constructor_donutchart(response.series, response.fields)}
                     localStorage.setItem('production_table_installation', JSON.stringify(response));
                     this.InstalacionesDate = this.formatearHora(response.date)
@@ -322,8 +326,8 @@ export default {
     <BRow>
     <BCol lg="6">
         <BCard no-body>
+            <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important"><i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Avance instalaciones</BCardHeader>
             <BCardBody>
-                <BCardTitle class="mb-4">Avance instalaciones</BCardTitle>
                 <!-- Column Charts -->
                 <apexchart
                     class="apex-charts"
@@ -338,8 +342,8 @@ export default {
     </BCol>
     <BCol lg="6">
         <BCard no-body>
+            <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important"><i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Avance mantenimientos</BCardHeader>
             <BCardBody>
-                <BCardTitle class="mb-4">Avance mantenimientos</BCardTitle>
                 <!-- Column Charts -->
                 <apexchart
                     class="apex-charts"
@@ -359,8 +363,8 @@ export default {
     <div class="row">
         <BCol lg="6">
             <BCard no-body>
+                <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important"><i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Instalaciones</BCardHeader>
                 <BCardBody>
-                    <BCardTitle>Instalaciones</BCardTitle>
                     <!-- Table -->
                     <div class="table-responsive mb-0">
                         <BTable
@@ -382,8 +386,8 @@ export default {
         </BCol>
         <BCol lg="6">
             <BCard no-body>
+                <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important"><i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Mantenimientos</BCardHeader>
                 <BCardBody>
-                    <BCardTitle>Mantenimientos</BCardTitle>
                     <!-- Table -->
                     <div class="table-responsive mb-0">
                         <BTable
@@ -407,15 +411,18 @@ export default {
     <div class="row">
         <BCol lg="6">
             <BCard no-body>
-                <BCardBody>
+                <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important">
                     <BRow>
                         <BCol sm="7">
-                            <BCardTitle class="mb-4">Producción día - Instalaciones</BCardTitle>
+                            <i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Producción día - Instalaciones
                         </BCol>
                         <BCol sm="5">
-                            <p class="text-muted">Actualizado a las {{ InstalacionesDate }}</p>
+                            Actualizado a las {{ InstalacionesDate }}
                         </BCol>
                     </BRow>
+                </BCardHeader>
+                <BCardBody>
+                    
                     <!-- Donut Chart -->
                     <apexchart
                     class="apex-charts"
@@ -430,15 +437,17 @@ export default {
         </BCol>
         <BCol lg="6">
             <BCard no-body>
-                <BCardBody>
+                <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important">
                     <BRow>
                         <BCol sm="7">
-                            <BCardTitle class="mb-4">Producción día - Reparaciones</BCardTitle>
+                            <i class="bx bx-female-sign"></i>Producción día - Reparaciones
                         </BCol>
                         <BCol sm="5">
-                            <p class="text-muted">Actualizado a las {{ MantenimientosDate }}</p>
+                            Actualizado a las {{ MantenimientosDate }}
                         </BCol>
                     </BRow>
+                </BCardHeader>
+                <BCardBody>
                     <!-- Donut Chart -->
                     <apexchart
                     class="apex-charts"
@@ -456,8 +465,8 @@ export default {
         
         <BCol lg="12">
             <BCard no-body>
+                <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important"><i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Agenda a 7 días</BCardHeader>
                 <BCardBody>
-                    <BCardTitle>Agenda a 7 días</BCardTitle>
                     <!-- Table -->
                     <div class="table-responsive mb-0">
                         <BTable
@@ -481,8 +490,8 @@ export default {
     <div class="row">
         <BCol lg="6">
             <BCard no-body>
+                <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important"><i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Ratio de instalaciones tec</BCardHeader>
                 <BCardBody>
-                    <BCardTitle class="mb-4">Ratio de instalaciones tec</BCardTitle>
                     <!-- Pie Chart -->
                     <apexchart
                         class="apex-charts"
@@ -497,8 +506,8 @@ export default {
         </BCol>
         <BCol lg="6">
             <BCard no-body>
+                <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important"><i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Ratio de mantenimientos tec</BCardHeader>
                 <BCardBody>
-                    <BCardTitle class="mb-4">Ratio de mantenimientos tec</BCardTitle>
                     <!-- Pie Chart -->
                     <apexchart
                         class="apex-charts"

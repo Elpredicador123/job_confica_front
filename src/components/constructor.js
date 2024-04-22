@@ -140,6 +140,7 @@ function constructor_barchart(data_series,data_categories){
 }
 
 function constructor_donutchart(data_series,data_categories){
+    let total = data_series.reduce((sum, value) => sum + value, 0);
     let donutChart = {
         series: data_series,
         chartOptions: {
@@ -167,7 +168,37 @@ function constructor_donutchart(data_series,data_categories){
                 }
               }
             }
-          ]
+          ],
+          dataLabels: {
+            enabled: true,
+            formatter: function (val, opts) {
+              return "S/ "+ opts.w.config.series[opts.seriesIndex];
+            },
+            style: {
+                fontSize: '14px', // Ajusta el tamaño de la fuente del porcentaje
+                fontweight: 'bold'
+            }
+          },
+          plotOptions: {
+            pie: {
+              donut: {
+                labels: {
+                  show: true,
+                  total: {
+                    show: true,
+                    label: 'Total',
+                    formatter: function () {
+                      return total;
+                    }
+                  },
+                  style: {
+                    fontSize: '14px', // Ajusta el tamaño de la fuente del porcentaje
+                    fontweight: 'bold'
+                }
+                }
+              }
+            }
+          },
         }
       };
     return donutChart;
