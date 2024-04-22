@@ -440,7 +440,7 @@ export default {
                 <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important">
                     <BRow>
                         <BCol sm="7">
-                            <i class="bx bx-female-sign"></i>Producción día - Reparaciones
+                            <i class="bx bx-check-circle"></i>Producción día - Reparaciones
                         </BCol>
                         <BCol sm="5">
                             Actualizado a las {{ MantenimientosDate }}
