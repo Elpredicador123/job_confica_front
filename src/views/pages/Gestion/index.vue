@@ -1,6 +1,7 @@
 <script>
 import Layout from "../../layouts/main";
 import PageHeader from "@/components/page-header";
+import moment from 'moment';
 
 /**
  * Apex-chart component
@@ -37,9 +38,9 @@ export default {
                 }
             ],
             //Primera tabla------------:
-            totalRows: 1,
+            dataDateInstalaciones: null,
             currentPage: 1,
-            perPage: 10,
+            perPage: 20,
             pageOptions: [10, 25, 50, 100],
             filter: null,
             filterOn: [],
@@ -48,9 +49,9 @@ export default {
             fields: [
             ],
             //--------------------
-            totalRows2: 1,
+            dataDateMantenimientos: null,
             currentPage2: 1,
-            perPage2: 10,
+            perPage2: 20,
             pageOptions2: [10, 25, 50, 100],
             filter2: null,
             filterOn2: [],
@@ -59,9 +60,9 @@ export default {
             fieldsMantenimiento: [
             ],
             //--------------------
-            totalRowsGestor: 1,
+            dataDateGestor: null,
             currentPageGestor: 1,
-            perPageGestor: 10,
+            perPageGestor: 20,
             pageOptionsGestor: [10,25,50,100],
             filterOnGestor: [],
             filterGestor: null,
@@ -69,9 +70,9 @@ export default {
             sortDescGestor: false,
             fieldsGestor: [],
             //--------------------
-            totalRowsOrder: 1,
+            dataDateOrder: null,
             currentPageOrder: 1,
-            perPageOrder: 10,
+            perPageOrder: 20,
             pageOptionsOrder: [10,25,50,100],
             filterOnOrder: [],
             filterOrder: null,
@@ -88,44 +89,31 @@ export default {
     },
     mounted() {
         this.getCity();
-        //obtener datos de la api
         this.getGestorAgenda();
         this.getOrdenesGestor();
-
-        // Establecer intervalo para obtener datos de la API cada 5 minutos
-        // setInterval(() => {
-        //     this.updateDataIfChanged();
-        // }, 100000);
     },
     methods:{
-        onFiltered(filteredItems) {
-            // Trigger pagination to update the number of buttons/pages due to filtering
-            this.totalRows = filteredItems.length;
-            this.currentPage = 1;
+        formatearHora(value){
+            if (!value) return '';
+            return moment(value, 'DD/MM/YYYY HH:mm:ss').format('HH:mm:ss');
         },
-        onFiltered2(filteredItems) {
-            // Trigger pagination to update the number of buttons/pages due to filtering
-            this.totalRows2 = filteredItems.length;
-            this.currentPage2 = 1;
-        },
-        onFilteredGestor(filteredItems) {
-            // Trigger pagination to update the number of buttons/pages due to filtering
-            this.totalRowsGestor = filteredItems.length;
-            this.currentPageGestor = 1;
-        },
-        onFilteredOrder(filteredItems) {
-            // Trigger pagination to update the number of buttons/pages due to filtering
-            this.totalRowsOrder = filteredItems.length;
-            this.currentPageOrder = 1;
+        async fetchData(url, timeoutMs = 4000) {
+            try {
+                const responsePromise = this.$http.get(this.$apiURL + url);
+                const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), timeoutMs));
+                const response = await Promise.race([responsePromise, timeoutPromise]);
+                return response.data;
+
+            } catch (error) {
+
+                return null;  // Retornar null o manejar de otra forma según sea necesario
+            }
         },
         async getGestorAgenda(){
             try {
-                const TIMEOUT_MS = 4000; // Tiempo de espera en milisegundos
-                const responsePromise = this.$http.get(this.$apiURL + 'manager/managersaltas');
-                const timeoutPromise = new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
-                const response = await Promise.race([responsePromise, timeoutPromise]);
-                if (response && response.data.data) {
-                    response.data.data.map(i => this.GestorAgenda.push( i.manager ));
+                const response = await this.fetchData('manager/managersaltas');
+                if (response && response.data) {
+                    response.data.map(i => this.GestorAgenda.push( i.manager ));
                     this.GestorAgendaId = this.GestorAgenda[0]
                 }
                 else{
@@ -138,12 +126,9 @@ export default {
         },
         async getCity() {
             try {
-                const TIMEOUT_MS = 4000; // Tiempo de espera en milisegundos
-                const responsePromise = this.$http.get(this.$apiURL + 'city/all');
-                const timeoutPromise = new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
-                const response = await Promise.race([responsePromise, timeoutPromise]);
-                if (response && response.data.data) {
-                    response.data.data.forEach(city => this.Ciudades.push(city.name));
+                const response = await this.fetchData('city/all');
+                if (response && response.data) {
+                    response.data.forEach(city => this.Ciudades.push(city.name));
                     this.ciudadId = this.Ciudades[0];
                     this.ciudadId2 = this.Ciudades[0];
                 } else {
@@ -160,12 +145,9 @@ export default {
 
         async getOrdenesGestor(){
             try {
-                const TIMEOUT_MS = 4000; // Tiempo de espera en milisegundos
-                const responsePromise = this.$http.get(this.$apiURL + 'manager/managersaverias');
-                const timeoutPromise = new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
-                const response = await Promise.race([responsePromise, timeoutPromise]);
-                if (response && response.data.data) {
-                    response.data.data.forEach(i => this.OrdenesGestor.push(i.manager));
+                const response = await this.fetchData('manager/managersaverias');
+                if (response && response.data) {
+                    response.data.forEach(i => this.OrdenesGestor.push(i.manager));
                     this.OrdenesGestorId = this.OrdenesGestor[0]
                 } else {
                     this.OrdenesGestorId = "";
@@ -189,7 +171,7 @@ export default {
                         if (response && response.data.series && response.data.fields) {
                             response.data.series.map(i => this.tableMantenimiento.push({ ...i }));
                             response.data.fields.map(i => this.fieldsMantenimiento.push({ key: i, sortable : true }));
-                            this.totalRows2 = this.tableMantenimiento.length;
+                            this.dataDateMantenimientos = this.formatearHora(response.data.date)
                             localStorage.setItem('maintenance_progress_table', JSON.stringify(response));
                         }
                         else{
@@ -198,7 +180,7 @@ export default {
                             if(currentData){
                                 currentData.data.series.map(i => this.tableMantenimiento.push({ ...i }));
                                 currentData.data.fields.map(i => this.fieldsMantenimiento.push({ key: i, sortable : true }));
-                                this.totalRows2 = this.tableMantenimiento.length;
+                                this.dataDateMantenimientos = this.formatearHora(currentData.data.date)
                             }
                         }
                     });
@@ -218,10 +200,11 @@ export default {
                         const responsePromise = this.$http.get(this.$apiURL + 'management/installationprogresstable/' + this.ciudadId);
                         const timeoutPromise = new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
                         const response = await Promise.race([responsePromise, timeoutPromise]);
+                        console.log(response)
                         if (response && response.data.series && response.data.fields) {
                             response.data.series.map(i => this.TableInstalaciones.push({ ...i }));
                             response.data.fields.map(i => this.fields.push({ key: i, sortable : true }));
-                            this.totalRows = this.TableInstalaciones.length;
+                            this.dataDateInstalaciones = this.formatearHora(response.data.date)
                             localStorage.setItem('installation_progress_table', JSON.stringify(response));
                         }
                         else{
@@ -229,7 +212,7 @@ export default {
                             if(currentData){
                                 currentData.data.series.map(i => this.TableInstalaciones.push({ ...i }));
                                 currentData.data.fields.map(i => this.fields.push({ key: i, sortable : true }));
-                                this.totalRows = this.TableInstalaciones.length;
+                                this.dataDateInstalaciones = this.formatearHora(currentData.data.date)
                             }
                         }
                     });
@@ -254,7 +237,7 @@ export default {
                         if (response && response.data.series && response.data.categories) {
                             response.data.series.map(i => this.tableDataGestor.push({ ...i }));
                             response.data.categories.map(i => this.fieldsGestor.push({ key: i, sortable : true }));
-                            this.totalRowsGestor = this.tableDataGestor.length;
+                            this.dataDateGestor = this.formatearHora(response.data.date)
                             localStorage.setItem('installation_manager_table', JSON.stringify(response));
                         }
                         else{
@@ -262,7 +245,7 @@ export default {
                             if(currentData){
                                 currentData.data.series.map(i => this.tableDataGestor.push({ ...i }));
                                 currentData.data.categories.map(i => this.fieldsGestor.push({ key: i, sortable : true }));
-                                this.totalRowsGestor = this.tableDataGestor.length;
+                                this.dataDateGestor = this.formatearHora(currentData.data.date)
                             }
                         }
                     });
@@ -285,18 +268,16 @@ export default {
 
                         if (response && response.data.series && response.data.categories) {
                             response.data.series.map(i => this.tableDataOrder.push({ ...i }));
-                            //this.fieldsOrder.push({ key: "Ciudad", sortable : true })
                             response.data.categories.map(i => this.fieldsOrder.push({ key: i, sortable : true }));
-                            this.totalRowsOrder = this.tableDataOrder.length;
+                            this.dataDateOrder = this.formatearHora(response.data.date)
                             localStorage.setItem('order_manager_table', JSON.stringify(response));
                         }
                         else{
                             const currentData = JSON.parse(localStorage.getItem('order_manager_table')); // Convertir los datos del usuario a JSON
                             if(currentData){
                                 currentData.data.series.map(i => this.tableDataOrder.push({ ...i }));
-                                //this.fieldsOrder.push({ key: "Ciudad", sortable : true })
                                 currentData.data.categories.map(i => this.fieldsOrder.push({ key: i, sortable : true }));
-                                this.totalRowsOrder = this.tableDataOrder.length;
+                                this.dataDateOrder = this.formatearHora(currentData.data.date)
                             }
                         }
                     });
@@ -304,6 +285,18 @@ export default {
             } catch (error) {
                 console.error(error);
             }
+        },
+        getColor(tiempoSinAtencion) {
+            console.log(tiempoSinAtencion)
+            return 'success';
+
+            // if (tiempoSinAtencion >= 0 && tiempoSinAtencion < 50) {
+            //     return 'success'; // Verde
+            // } else if (tiempoSinAtencion >= 50 && tiempoSinAtencion < 70) {
+            //     return 'warning'; // Amarillo
+            // } else {
+            //     return 'danger'; // Rojo
+            // }
         },
     },
     middleware: "authentication"
@@ -316,8 +309,17 @@ export default {
     <BRow>
         <BCol lg="6">
             <BCard no-body>
+                <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important">
+                    <BRow>
+                        <BCol sm="7">
+                            <i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Avance instalaciones
+                        </BCol>
+                        <BCol sm="5">
+                            Actualizado a las {{ dataDateInstalaciones }}
+                        </BCol>
+                    </BRow>
+                </BCardHeader>
                 <BCardBody>
-                    <BCardTitle>Avance instalaciones</BCardTitle>
                     <BRow>
                         <BCol cols="7">
 
@@ -331,39 +333,6 @@ export default {
                                 @change="getTableInstalaciones()"
                             ></BFormSelect>
                         </BCol>
-                    </BRow>
-                    <BRow class="mt-4">
-                        <BCol sm="12" md="6">
-                            <div id="tickets-table_length" class="dataTables_length">
-                            <label class="d-inline-flex align-items-center">
-                                Show&nbsp;
-                                <BFormSelect
-                                v-model="perPage"
-                                size="sm"
-                                :options="pageOptions"
-                                ></BFormSelect
-                                >&nbsp;entries
-                            </label>
-                            </div>
-                        </BCol>
-                        <!-- Search -->
-                        <div class="col-sm-12 col-md-6">
-                            <div
-                            id="tickets-table_filter"
-                            class="dataTables_filter text-md-end"
-                            >
-                            <label class="d-inline-flex align-items-center">
-                                Search:
-                                <BFormInput
-                                v-model="filter"
-                                type="search"
-                                placeholder="Search..."
-                                class="form-control form-control-sm ms-2"
-                                ></BFormInput>
-                            </label>
-                            </div>
-                        </div>
-                        <!-- End search -->
                     </BRow>
                     <!-- Table -->
                     <div class="table-responsive mb-0">
@@ -381,29 +350,22 @@ export default {
                         >
                     </BTable>
                     </div>
-                    <BRow>
-                        <BCol>
-                            <div
-                            class="dataTables_paginate paging_simple_numbers float-end"
-                            >
-                            <ul class="pagination pagination-rounded mb-0">
-                                <!-- pagination -->
-                                <BPagination
-                                v-model="currentPage"
-                                :total-rows="totalRows"
-                                :per-page="perPage"
-                                ></BPagination>
-                            </ul>
-                            </div>
-                        </BCol>
-                    </BRow>
                 </BCardBody>
             </BCard>
         </BCol>
         <BCol lg="6">
             <BCard no-body>
+                <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important">
+                    <BRow>
+                        <BCol sm="7">
+                            <i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Ordenes por gestor instalaciones
+                        </BCol>
+                        <BCol sm="5">
+                            Actualizado a las {{ dataDateGestor }}
+                        </BCol>
+                    </BRow>
+                </BCardHeader>
                 <BCardBody>
-                    <BCardTitle>Ordenes por gestor instalaciones</BCardTitle>
                     <BRow>
                         <BCol cols="7">
 
@@ -417,39 +379,6 @@ export default {
                                 @change="getTableGestor()"
                             ></BFormSelect>
                         </BCol>
-                    </BRow>
-                    <BRow class="mt-4">
-                        <BCol sm="12" md="6">
-                            <div id="tickets-table_length" class="dataTables_length">
-                            <label class="d-inline-flex align-items-center">
-                                Show&nbsp;
-                                <BFormSelect
-                                    v-model="perPageGestor"
-                                    size="sm"
-                                    :options="pageOptionsGestor"
-                                ></BFormSelect
-                                >&nbsp;entries
-                            </label>
-                            </div>
-                        </BCol>
-                        <!-- Search -->
-                        <div class="col-sm-12 col-md-6">
-                            <div
-                            id="tickets-table_filter"
-                            class="dataTables_filter text-md-end"
-                            >
-                            <label class="d-inline-flex align-items-center">
-                                Search:
-                                <BFormInput
-                                v-model="filterGestor"
-                                type="search"
-                                placeholder="Search..."
-                                class="form-control form-control-sm ms-2"
-                                ></BFormInput>
-                            </label>
-                            </div>
-                        </div>
-                        <!-- End search -->
                     </BRow>
                     <!-- Table -->
                     <div class="table-responsive mb-0">
@@ -467,22 +396,6 @@ export default {
                         >                    
                     </BTable>
                     </div>
-                    <BRow>
-                        <BCol>
-                            <div
-                            class="dataTables_paginate paging_simple_numbers float-end"
-                            >
-                            <ul class="pagination pagination-rounded mb-0">
-                                <!-- pagination -->
-                                <BPagination
-                                v-model="currentPageGestor"
-                                :total-rows="totalRowsGestor"
-                                :per-page="perPageGestor"
-                                ></BPagination>
-                            </ul>
-                            </div>
-                        </BCol>
-                    </BRow>
                 </BCardBody>
             </BCard>
         </BCol>
@@ -493,8 +406,17 @@ export default {
     <div class="row">
         <BCol lg="6">
             <BCard no-body>
+                <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important">
+                    <BRow>
+                        <BCol sm="7">
+                            <i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Avance Mantenimientos
+                        </BCol>
+                        <BCol sm="5">
+                            Actualizado a las {{ dataDateMantenimientos }}
+                        </BCol>
+                    </BRow>
+                </BCardHeader>
                 <BCardBody>
-                    <BCardTitle>Avance Mantenimientos</BCardTitle>
                     <BRow>
                         <BCol cols="7">
 
@@ -508,39 +430,6 @@ export default {
                                 @change="getTableMantenimientos()"
                             ></BFormSelect>
                         </BCol>
-                    </BRow>
-                    <BRow class="mt-4">
-                        <BCol sm="12" md="6">
-                            <div id="tickets-table_length" class="dataTables_length">
-                            <label class="d-inline-flex align-items-center">
-                                Show&nbsp;
-                                <BFormSelect
-                                v-model="perPage2"
-                                size="sm"
-                                :options="pageOptions2"
-                                ></BFormSelect
-                                >&nbsp;entries
-                            </label>
-                            </div>
-                        </BCol>
-                        <!-- Search -->
-                        <div class="col-sm-12 col-md-6">
-                            <div
-                            id="tickets-table_filter"
-                            class="dataTables_filter text-md-end"
-                            >
-                            <label class="d-inline-flex align-items-center">
-                                Search:
-                                <BFormInput
-                                v-model="filter2"
-                                type="search"
-                                placeholder="Search..."
-                                class="form-control form-control-sm ms-2"
-                                ></BFormInput>
-                            </label>
-                            </div>
-                        </div>
-                        <!-- End search -->
                     </BRow>
                     <!-- Table -->
                     <div class="table-responsive mb-0">
@@ -558,29 +447,22 @@ export default {
                         >
                     </BTable>
                     </div>
-                    <BRow>
-                        <BCol>
-                            <div
-                            class="dataTables_paginate paging_simple_numbers float-end"
-                            >
-                            <ul class="pagination pagination-rounded mb-0">
-                                <!-- pagination -->
-                                <BPagination
-                                v-model="currentPage2"
-                                :total-rows="totalRows2"
-                                :per-page="perPage2"
-                                ></BPagination>
-                            </ul>
-                            </div>
-                        </BCol>
-                    </BRow>
                 </BCardBody>
             </BCard>
         </BCol>
         <BCol lg="6">
             <BCard no-body>
+                <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important">
+                    <BRow>
+                        <BCol sm="7">
+                            <i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Ordenes por gestor - horas pendientes
+                        </BCol>
+                        <BCol sm="5">
+                            Actualizado a las {{ dataDateOrder }}
+                        </BCol>
+                    </BRow>
+                </BCardHeader>
                 <BCardBody>
-                    <BCardTitle>Ordenes por gestor - horas pendientes</BCardTitle>
                     <BRow>
                         <BCol cols="8">
 
@@ -595,36 +477,6 @@ export default {
                             ></BFormSelect>
                         </BCol>
                     </BRow>
-                    <BRow class="mt-4">
-                        <BCol sm="12" md="6">
-                            <div id="tickets-table_length" class="dataTables_length">
-                                <label class="d-inline-flex align-items-center">
-                                    Show&nbsp;
-                                    <BFormSelect
-                                        v-model="perPageOrder"
-                                        size="sm"
-                                        :options="pageOptionsOrder"
-                                    ></BFormSelect
-                                    >&nbsp;entries
-                                </label>
-                            </div>
-                        </BCol>
-                        <!-- Search -->
-                        <div class="col-sm-12 col-md-6">
-                            <div id="tickets-table_filter" class="dataTables_filter text-md-end">
-                                <label class="d-inline-flex align-items-center">
-                                    Search:
-                                    <BFormInput
-                                    v-model="filterOrder"
-                                    type="search"
-                                    placeholder="Search..."
-                                    class="form-control form-control-sm ms-2"
-                                    ></BFormInput>
-                                </label>
-                            </div>
-                        </div>
-                        <!-- End search -->
-                    </BRow>
                     <!-- Table -->
                     <div class="table-responsive mb-0">
                         <BTable
@@ -638,23 +490,17 @@ export default {
                             :filter="filterOrder"
                             :filter-included-fields="filterOnOrder"
                             @filtered="onFilteredOrder"
-                        >                    
+                        >
+                        <template v-slot:cell(button)="row">
+                            <BButton
+                                :variant="getColor(row.item['Tiempo sin atención'])"
+                                size="sm"
+                            >
+                                Validar
+                            </BButton>
+                        </template>
                         </BTable>
                     </div>
-                <BRow>
-                    <BCol>
-                        <div class="dataTables_paginate paging_simple_numbers float-end">
-                            <ul class="pagination pagination-rounded mb-0">
-                                <!-- pagination -->
-                                <BPagination
-                                    v-model="currentPageOrder"
-                                    :total-rows="totalRowsOrder"
-                                    :per-page="perPageOrder"
-                                ></BPagination>
-                            </ul>
-                        </div>
-                    </BCol>
-                </BRow>
                 </BCardBody>
             </BCard>
         </BCol>

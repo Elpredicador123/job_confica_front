@@ -12,7 +12,7 @@ export default {
     }, 
     data() {
         return { 
-            title: "Gestión",
+            title: "Calidad",
             Ciudades : [],
             Months: [],
             Gestor: [],
@@ -32,7 +32,7 @@ export default {
             tableDataEfectividad: [],
             totalRowsEfectividad: 1,
             currentPageEfectividad: 1,
-            perPageEfectividad: 3,
+            perPageEfectividad: 20,
             pageOptionsEfectividad: [3,10,25,50,100],
             filterOnEfectividad: [],
             filterEfectividad: null,
@@ -44,7 +44,7 @@ export default {
             tableDataInspeccionesTec: [],
             totalRowsInspeccionesTec: 1,
             currentPageInspeccionesTec: 1,
-            perPageInspeccionesTec: 3,
+            perPageInspeccionesTec: 20,
             pageOptionsInspeccionesTec: [3,10,25,50,100],
             filterOnInspeccionesTec: [],
             filterInspeccionesTec: null,
@@ -56,7 +56,7 @@ export default {
             tableDataAvanceTec: [],
             totalRowsAvanceTec: 1,
             currentPageAvanceTec: 1,
-            perPageAvanceTec: 3,
+            perPageAvanceTec: 20,
             pageOptionsAvanceTec: [3,10,25,50,100],
             filterOnAvanceTec: [],
             filterAvanceTec: null,
@@ -68,7 +68,7 @@ export default {
             tableDataAuditoria: [],
             totalRowsAuditoria: 1,
             currentPageAuditoria: 1,
-            perPageAuditoria: 3,
+            perPageAuditoria: 20,
             pageOptionsAuditoria: [3,10,25,50,100],
             filterOnAuditoria: [],
             filterAuditoria: null,
@@ -80,7 +80,7 @@ export default {
             tableDataRestace: [],
             totalRowsRestace: 1,
             currentPageRestace: 1,
-            perPageRestace: 3,
+            perPageRestace: 20,
             pageOptionsRestace: [3,10,25,50,100],
             filterOnRestace: [],
             filterRestace: null,
@@ -92,7 +92,7 @@ export default {
             tableDataErrorTec: [],
             totalRowsErrorTec: 1,
             currentPageErrorTec: 1,
-            perPageErrorTec: 3,
+            perPageErrorTec: 20,
             pageOptionsErrorTec: [3,10,25,50,100],
             filterOnErrorTec: [],
             filterErrorTec: null,
@@ -104,7 +104,7 @@ export default {
             tableDataRescate: [],
             totalRowsRescate: 1,
             currentPageRescate: 1,
-            perPageRescate: 3,
+            perPageRescate: 20,
             pageOptionsRescate: [3,10,25,50,100],
             filterOnRescate: [],
             filterRescate: null,
@@ -401,10 +401,10 @@ export default {
 <Layout>
     <PageHeader :title="title" :items="items" />
     <BRow>
-        <BCol lg="6">
+        <BCol lg="12">
             <BCard no-body>
+                <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important"><i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Efectividad inspecciones</BCardHeader>
                 <BCardBody>
-                    <BCardTitle>Efectividad inspecciones</BCardTitle>
                     <BRow>
                         <BCol cols="12">
                             Filtrar por:
@@ -426,36 +426,6 @@ export default {
                             ></BFormSelect>
                         </BCol>
                     </BRow>
-                    <BRow class="mt-4">
-                        <BCol sm="12" md="6">
-                            <div id="tickets-table_length" class="dataTables_length">
-                                <label class="d-inline-flex align-items-center">
-                                    Show&nbsp;
-                                    <BFormSelect
-                                        v-model="perPageEfectividad"
-                                        size="sm"
-                                        :options="pageOptionsEfectividad"
-                                    ></BFormSelect
-                                    >&nbsp;entries
-                                </label>
-                            </div>
-                        </BCol>
-                        <!-- Search -->
-                        <div class="col-sm-12 col-md-6">
-                            <div id="tickets-table_filter" class="dataTables_filter text-md-end">
-                                <label class="d-inline-flex align-items-center">
-                                    Search:
-                                    <BFormInput
-                                    v-model="filterEfectividad"
-                                    type="search"
-                                    placeholder="Search..."
-                                    class="form-control form-control-sm ms-2"
-                                    ></BFormInput>
-                                </label>
-                            </div>
-                        </div>
-                        <!-- End search -->
-                    </BRow>
                     <!-- Table -->
                     <div class="table-responsive mb-0">
                         <BTable
@@ -472,27 +442,13 @@ export default {
                         >                    
                         </BTable>
                     </div>
-                    <BRow>
-                        <BCol>
-                            <div class="dataTables_paginate paging_simple_numbers float-end">
-                                <ul class="pagination pagination-rounded mb-0">
-                                    <!-- pagination -->
-                                    <BPagination
-                                        v-model="currentPageEfectividad"
-                                        :total-rows="totalRowsEfectividad"
-                                        :per-page="perPageEfectividad"
-                                    ></BPagination>
-                                </ul>
-                            </div>
-                        </BCol>
-                    </BRow>
                 </BCardBody>
             </BCard>
         </BCol>
-        <BCol lg="6">
+        <BCol lg="12">
             <BCard no-body>
+                <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important"><i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Efectividad inspecciones x tec</BCardHeader>
                 <BCardBody>
-                    <BCardTitle>Efectividad inspecciones x tec</BCardTitle>
                     <BRow>
                         <BCol cols="12">
                             Filtrar por:
@@ -514,36 +470,6 @@ export default {
                             ></BFormSelect>
                         </BCol>
                     </BRow>
-                    <BRow class="mt-4">
-                        <BCol sm="12" md="6">
-                            <div id="tickets-table_length" class="dataTables_length">
-                                <label class="d-inline-flex align-items-center">
-                                    Show&nbsp;
-                                    <BFormSelect
-                                        v-model="perPageInspeccionesTec"
-                                        size="sm"
-                                        :options="pageOptionsInspeccionesTec"
-                                    ></BFormSelect
-                                    >&nbsp;entries
-                                </label>
-                            </div>
-                        </BCol>
-                        <!-- Search -->
-                        <div class="col-sm-12 col-md-6">
-                            <div id="tickets-table_filter" class="dataTables_filter text-md-end">
-                                <label class="d-inline-flex align-items-center">
-                                    Search:
-                                    <BFormInput
-                                    v-model="filterInspeccionesTec"
-                                    type="search"
-                                    placeholder="Search..."
-                                    class="form-control form-control-sm ms-2"
-                                    ></BFormInput>
-                                </label>
-                            </div>
-                        </div>
-                        <!-- End search -->
-                    </BRow>
                     <!-- Table -->
                     <div class="table-responsive mb-0">
                         <BTable
@@ -560,27 +486,13 @@ export default {
                         >                    
                         </BTable>
                     </div>
-                    <BRow>
-                        <BCol>
-                            <div class="dataTables_paginate paging_simple_numbers float-end">
-                                <ul class="pagination pagination-rounded mb-0">
-                                    <!-- pagination -->
-                                    <BPagination
-                                        v-model="currentPageInspeccionesTec"
-                                        :total-rows="totalRowsInspeccionesTec"
-                                        :per-page="perPageInspeccionesTec"
-                                    ></BPagination>
-                                </ul>
-                            </div>
-                        </BCol>
-                    </BRow>
                 </BCardBody>
             </BCard>
         </BCol>
         <BCol lg="12">
             <BCard no-body>
+                <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important"><i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Avance auditorias</BCardHeader>
                 <BCardBody>
-                    <BCardTitle>Avance auditorias</BCardTitle>
                     <BRow>
                         <BCol cols="12">
                             Filtrar por:
@@ -602,36 +514,6 @@ export default {
                             ></BFormSelect>
                         </BCol>
                     </BRow>
-                    <BRow class="mt-4">
-                        <BCol sm="12" md="6">
-                            <div id="tickets-table_length" class="dataTables_length">
-                                <label class="d-inline-flex align-items-center">
-                                    Show&nbsp;
-                                    <BFormSelect
-                                        v-model="perPageAuditoria"
-                                        size="sm"
-                                        :options="pageOptionsAuditoria"
-                                    ></BFormSelect
-                                    >&nbsp;entries
-                                </label>
-                            </div>
-                        </BCol>
-                        <!-- Search -->
-                        <div class="col-sm-12 col-md-6">
-                            <div id="tickets-table_filter" class="dataTables_filter text-md-end">
-                                <label class="d-inline-flex align-items-center">
-                                    Search:
-                                    <BFormInput
-                                    v-model="filterAuditoria"
-                                    type="search"
-                                    placeholder="Search..."
-                                    class="form-control form-control-sm ms-2"
-                                    ></BFormInput>
-                                </label>
-                            </div>
-                        </div>
-                        <!-- End search -->
-                    </BRow>
                     <!-- Table -->
                     <div class="table-responsive mb-0">
                         <BTable
@@ -648,28 +530,14 @@ export default {
                         >                    
                         </BTable>
                     </div>
-                    <BRow>
-                        <BCol>
-                            <div class="dataTables_paginate paging_simple_numbers float-end">
-                                <ul class="pagination pagination-rounded mb-0">
-                                    <!-- pagination -->
-                                    <BPagination
-                                        v-model="currentPageAuditoria"
-                                        :total-rows="totalRowsAuditoria"
-                                        :per-page="perPageAuditoria"
-                                    ></BPagination>
-                                </ul>
-                            </div>
-                        </BCol>
-                    </BRow>
                 </BCardBody>
             </BCard>
         </BCol>
 
         <BCol lg="12">
             <BCard no-body>
+                <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important"><i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Avance auditoria x tec</BCardHeader>
                 <BCardBody>
-                    <BCardTitle>Avance auditoria x tec</BCardTitle>
                     <BRow>
                         <BCol cols="12">
                             Filtrar por:
@@ -691,36 +559,6 @@ export default {
                             ></BFormSelect>
                         </BCol>
                     </BRow>
-                    <BRow class="mt-4">
-                        <BCol sm="12" md="6">
-                            <div id="tickets-table_length" class="dataTables_length">
-                                <label class="d-inline-flex align-items-center">
-                                    Show&nbsp;
-                                    <BFormSelect
-                                        v-model="perPageAvanceTec"
-                                        size="sm"
-                                        :options="pageOptionsAvanceTec"
-                                    ></BFormSelect
-                                    >&nbsp;entries
-                                </label>
-                            </div>
-                        </BCol>
-                        <!-- Search -->
-                        <div class="col-sm-12 col-md-6">
-                            <div id="tickets-table_filter" class="dataTables_filter text-md-end">
-                                <label class="d-inline-flex align-items-center">
-                                    Search:
-                                    <BFormInput
-                                    v-model="filterAvanceTec"
-                                    type="search"
-                                    placeholder="Search..."
-                                    class="form-control form-control-sm ms-2"
-                                    ></BFormInput>
-                                </label>
-                            </div>
-                        </div>
-                        <!-- End search -->
-                    </BRow>
                     <!-- Table -->
                     <div class="table-responsive mb-0">
                         <BTable
@@ -737,29 +575,15 @@ export default {
                         >                    
                         </BTable>
                     </div>
-                    <BRow>
-                        <BCol>
-                            <div class="dataTables_paginate paging_simple_numbers float-end">
-                                <ul class="pagination pagination-rounded mb-0">
-                                    <!-- pagination -->
-                                    <BPagination
-                                        v-model="currentPageAvanceTec"
-                                        :total-rows="totalRowsAvanceTec"
-                                        :per-page="perPageAvanceTec"
-                                    ></BPagination>
-                                </ul>
-                            </div>
-                        </BCol>
-                    </BRow>
                 </BCardBody>
             </BCard>
         </BCol>
     </BRow>
     <BRow>
-        <BCol lg="6">
+        <BCol lg="12">
             <BCard no-body>
+                <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important"><i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Errores en línea de rescate</BCardHeader>
                 <BCardBody>
-                    <BCardTitle>Errores en línea de rescate</BCardTitle>
                     <BRow>
                         <BCol cols="7">
 
@@ -773,36 +597,6 @@ export default {
                                 @change="getRescate()"
                             ></BFormSelect>
                         </BCol>
-                    </BRow>
-                    <BRow class="mt-4">
-                        <BCol sm="12" md="6">
-                            <div id="tickets-table_length" class="dataTables_length">
-                                <label class="d-inline-flex align-items-center">
-                                    Show&nbsp;
-                                    <BFormSelect
-                                        v-model="perPageRescate"
-                                        size="sm"
-                                        :options="pageOptionsRescate"
-                                    ></BFormSelect
-                                    >&nbsp;entries
-                                </label>
-                            </div>
-                        </BCol>
-                        <!-- Search -->
-                        <div class="col-sm-12 col-md-6">
-                            <div id="tickets-table_filter" class="dataTables_filter text-md-end">
-                                <label class="d-inline-flex align-items-center">
-                                    Search:
-                                    <BFormInput
-                                    v-model="filterRescate"
-                                    type="search"
-                                    placeholder="Search..."
-                                    class="form-control form-control-sm ms-2"
-                                    ></BFormInput>
-                                </label>
-                            </div>
-                        </div>
-                        <!-- End search -->
                     </BRow>
                     <!-- Table -->
                     <div class="table-responsive mb-0">
@@ -820,27 +614,13 @@ export default {
                         >                    
                         </BTable>
                     </div>
-                    <BRow>
-                        <BCol>
-                            <div class="dataTables_paginate paging_simple_numbers float-end">
-                                <ul class="pagination pagination-rounded mb-0">
-                                    <!-- pagination -->
-                                    <BPagination
-                                        v-model="currentPageRescate"
-                                        :total-rows="totalRowsRescate"
-                                        :per-page="perPageRescate"
-                                    ></BPagination>
-                                </ul>
-                            </div>
-                        </BCol>
-                    </BRow>
                 </BCardBody>
             </BCard>
         </BCol>
-        <BCol lg="6">
+        <BCol lg="12">
             <BCard no-body>
+                <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important"><i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;% Errores calidad</BCardHeader>
                 <BCardBody>
-                    <BCardTitle class="mb-4">% Errores calidad</BCardTitle>
                     <!-- Pie Chart -->
                     <apexchart
                         class="apex-charts"
@@ -855,8 +635,8 @@ export default {
         </BCol>
         <BCol lg="12">
             <BCard no-body>
+                <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important"><i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Errores en línea de rescate - Tec</BCardHeader>
                 <BCardBody>
-                    <BCardTitle>Errores en línea de rescate - Tec</BCardTitle>
                     <BRow>
                         <BCol cols="7">
 
@@ -870,36 +650,6 @@ export default {
                                 @change="getErrorTec()"
                             ></BFormSelect>
                         </BCol>
-                    </BRow>
-                    <BRow class="mt-4">
-                        <BCol sm="12" md="6">
-                            <div id="tickets-table_length" class="dataTables_length">
-                                <label class="d-inline-flex align-items-center">
-                                    Show&nbsp;
-                                    <BFormSelect
-                                        v-model="perPageErrorTec"
-                                        size="sm"
-                                        :options="pageOptionsErrorTec"
-                                    ></BFormSelect
-                                    >&nbsp;entries
-                                </label>
-                            </div>
-                        </BCol>
-                        <!-- Search -->
-                        <div class="col-sm-12 col-md-6">
-                            <div id="tickets-table_filter" class="dataTables_filter text-md-end">
-                                <label class="d-inline-flex align-items-center">
-                                    Search:
-                                    <BFormInput
-                                    v-model="filterErrorTec"
-                                    type="search"
-                                    placeholder="Search..."
-                                    class="form-control form-control-sm ms-2"
-                                    ></BFormInput>
-                                </label>
-                            </div>
-                        </div>
-                        <!-- End search -->
                     </BRow>
                     <!-- Table -->
                     <div class="table-responsive mb-0">
@@ -917,20 +667,6 @@ export default {
                         >                    
                         </BTable>
                     </div>
-                    <BRow>
-                        <BCol>
-                            <div class="dataTables_paginate paging_simple_numbers float-end">
-                                <ul class="pagination pagination-rounded mb-0">
-                                    <!-- pagination -->
-                                    <BPagination
-                                        v-model="currentPageErrorTec"
-                                        :total-rows="totalRowsErrorTec"
-                                        :per-page="perPageErrorTec"
-                                    ></BPagination>
-                                </ul>
-                            </div>
-                        </BCol>
-                    </BRow>
                 </BCardBody>
             </BCard>
         </BCol>

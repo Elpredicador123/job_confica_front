@@ -31,7 +31,7 @@ export default {
             //--------------------
             totalRowsSup: 1,
             currentPageSup: 1,
-            perPageSup: 3,
+            perPageSup: 20,
             pageOptionsSup: [3,10,25,50,100],
             filterOnSup: [],
             filterSup: null,
@@ -41,7 +41,7 @@ export default {
             //--------------------
             totalRowsTec: 1,
             currentPageTec: 1,
-            perPageTec: 3,
+            perPageTec: 20,
             pageOptionsTec: [3,10,25,50,100],
             filterOnTec: [],
             filterTec: null,
@@ -233,8 +233,9 @@ export default {
     <BRow>
         <BCol lg="6">
             <BCard no-body>
+                <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important"><i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Inefectiva Gestor</BCardHeader>
                 <BCardBody>
-                    <BCardTitle class="mb-4">Inefectiva Gestor</BCardTitle>
+                    <BCardTitle class="mb-4"></BCardTitle>
                     <BRow>
                         <BCol cols="7">
 
@@ -263,8 +264,8 @@ export default {
         </BCol>
         <BCol lg="6">
             <BCard no-body>
+                <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important"><i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Distrubución Inefectiva</BCardHeader>
                 <BCardBody>
-                    <BCardTitle class="mb-4">Distrubución Inefectiva</BCardTitle>
                     <!-- Pie Chart -->
                     <apexchart
                         class="apex-charts"
@@ -277,10 +278,10 @@ export default {
                 </BCardBody>
             </BCard>
         </BCol>
-        <BCol lg="6">
+        <BCol lg="12">
             <BCard no-body>
+                <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important"><i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Distribución Reitero</BCardHeader>
                 <BCardBody>
-                    <BCardTitle class="mb-4">Distribución Reitero</BCardTitle>
                     <!-- Pie Chart -->
                     <apexchart
                         class="apex-charts"
@@ -293,10 +294,10 @@ export default {
                 </BCardBody>
             </BCard>
         </BCol>
-        <BCol lg="6">
+        <BCol lg="12">
             <BCard no-body>
+                <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important"><i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Averías Reiteradas - Sup</BCardHeader>
                 <BCardBody>
-                    <BCardTitle>Averías Reiteradas - Sup</BCardTitle>
                     <BRow>
                         <BCol cols="7">
 
@@ -310,39 +311,6 @@ export default {
                                 @change="getTableSup()"
                             ></BFormSelect>
                         </BCol>
-                    </BRow>
-                    <BRow class="mt-4">
-                        <BCol sm="12" md="6">
-                            <div id="tickets-table_length" class="dataTables_length">
-                            <label class="d-inline-flex align-items-center">
-                                Show&nbsp;
-                                <BFormSelect
-                                    v-model="perPageSup"
-                                    size="sm"
-                                    :options="pageOptionsSup"
-                                ></BFormSelect
-                                >&nbsp;entries
-                            </label>
-                            </div>
-                        </BCol>
-                        <!-- Search -->
-                        <div class="col-sm-12 col-md-6">
-                            <div
-                            id="tickets-table_filter"
-                            class="dataTables_filter text-md-end"
-                            >
-                            <label class="d-inline-flex align-items-center">
-                                Search:
-                                <BFormInput
-                                v-model="filterSup"
-                                type="search"
-                                placeholder="Search..."
-                                class="form-control form-control-sm ms-2"
-                                ></BFormInput>
-                            </label>
-                            </div>
-                        </div>
-                        <!-- End search -->
                     </BRow>
                     <!-- Table -->
                     <div class="table-responsive mb-0">
@@ -359,30 +327,14 @@ export default {
                             @filtered="onFilteredSup"
                         >                    
                     </BTable>
-                    </div>
-                    <BRow>
-                        <BCol>
-                            <div
-                            class="dataTables_paginate paging_simple_numbers float-end"
-                            >
-                            <ul class="pagination pagination-rounded mb-0">
-                                <!-- pagination -->
-                                <BPagination
-                                v-model="currentPageSup"
-                                :total-rows="totalRowsSup"
-                                :per-page="perPageSup"
-                                ></BPagination>
-                            </ul>
-                            </div>
-                        </BCol>
-                    </BRow>
+                    </div>                   
                 </BCardBody>
             </BCard>
         </BCol>
-        <BCol lg="6">
+        <BCol lg="12">
             <BCard no-body>
+                <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important"><i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Averías Reiteradas - Tec</BCardHeader>
                 <BCardBody>
-                    <BCardTitle>Averías Reiteradas - Tec</BCardTitle>
                     <BRow>
                         <BCol cols="7">
 
@@ -396,36 +348,6 @@ export default {
                                 @change="getTableTec()"
                             ></BFormSelect>
                         </BCol>
-                    </BRow>
-                    <BRow class="mt-4">
-                        <BCol sm="12" md="6">
-                            <div id="tickets-table_length" class="dataTables_length">
-                                <label class="d-inline-flex align-items-center">
-                                    Show&nbsp;
-                                    <BFormSelect
-                                        v-model="perPageTec"
-                                        size="sm"
-                                        :options="pageOptionsTec"
-                                    ></BFormSelect
-                                    >&nbsp;entries
-                                </label>
-                            </div>
-                        </BCol>
-                        <!-- Search -->
-                        <div class="col-sm-12 col-md-6">
-                            <div id="tickets-table_filter" class="dataTables_filter text-md-end">
-                                <label class="d-inline-flex align-items-center">
-                                    Search:
-                                    <BFormInput
-                                    v-model="filterTec"
-                                    type="search"
-                                    placeholder="Search..."
-                                    class="form-control form-control-sm ms-2"
-                                    ></BFormInput>
-                                </label>
-                            </div>
-                        </div>
-                        <!-- End search -->
                     </BRow>
                     <!-- Table -->
                     <div class="table-responsive mb-0">
@@ -443,20 +365,6 @@ export default {
                         >                    
                         </BTable>
                     </div>
-                <BRow>
-                    <BCol>
-                        <div class="dataTables_paginate paging_simple_numbers float-end">
-                            <ul class="pagination pagination-rounded mb-0">
-                                <!-- pagination -->
-                                <BPagination
-                                    v-model="currentPageTec"
-                                    :total-rows="totalRowsTec"
-                                    :per-page="perPageTec"
-                                ></BPagination>
-                            </ul>
-                        </div>
-                    </BCol>
-                </BRow>
                 </BCardBody>
             </BCard>
         </BCol>
