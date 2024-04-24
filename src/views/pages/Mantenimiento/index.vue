@@ -2,6 +2,7 @@
 import Layout from "../../layouts/main";
 import PageHeader from "@/components/page-header";
 import {constructor_barchart,constructor_piechart} from "@/components/constructor";
+import moment from 'moment';
 /**
  * Apex-chart component
  */
@@ -12,7 +13,7 @@ export default {
     }, 
     data() {
         return { 
-            title: "Gestión",
+            title: "Mantenimiento",
             tableDataSup: [],
             tableDataTec: [],
             ContrataBar: [],
@@ -49,6 +50,11 @@ export default {
             sortDescTec: false,
             fieldsTec: [],
             //--------------------
+            ContrataDate : null,
+            SupDate : null,
+            TecDate : null,
+            InstalacionesDate : null,
+            MantenimientosDate : null,
         };
     },
     mounted() {
@@ -58,6 +64,11 @@ export default {
         this.getRatioMantenimientos();
     },
     methods:{
+        formatearHora(value){
+            const date = moment(value, ['DD/MM/YYYY HH:mm:ss', 'YYYY-MM-DDTHH:mm:ss']);
+            if (!date.isValid()) return ': ' + value;
+            return date.format('HH:mm:ss');
+        },
         onFilteredSup(filteredItems) {
             // Trigger pagination to update the number of buttons/pages due to filtering
             this.totalRowsSup = filteredItems.length;
@@ -76,14 +87,16 @@ export default {
                     const responsePromise = this.$http.get(this.$apiURL + 'maintenance/ineffectivecontratagraphic/'+this.CiudadId1);
                     const timeoutPromise = new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
                     const response = await Promise.race([responsePromise, timeoutPromise]);
-                    if (response && response.data.series && response.data.categories) {
+                    if (response && response !== null && 'series' in response.data && response.data.series.length>0) {
                         this.ContrataBar = {... constructor_barchart(response.data.series, response.data.categories)}
                         localStorage.setItem('ineffective_contrata', JSON.stringify(response));
+                        this.ContrataDate = this.formatearHora(response.data.date)
                     }
                     else{
                         const currentData = JSON.parse(localStorage.getItem('ineffective_contrata')); // Convertir los datos del usuario a JSON
                         if(currentData){
                             this.ContrataBar = {... constructor_barchart(currentData.data.series, currentData.data.categories)}
+                            this.ContrataDate = this.formatearHora(currentData.data.date)
                         }
                         else{
                             this.ContrataBar = {... constructor_barchart([],[])}
@@ -106,11 +119,12 @@ export default {
                     this.tableDataSup.splice(0, this.tableDataSup.length);
                     this.fieldsSup.splice(0, this.fieldsSup.length);
 
-                    if (response && response.data.series && response.data.fields) {
+                    if (response && response !== null && 'series' in response.data && response.data.series.length>0) {
                         response.data.series.map(i => this.tableDataSup.push({ ...i }));
                         response.data.fields.map(i => this.fieldsSup.push({ key: i, sortable : true }));
                         this.totalRowsSup = this.tableDataSup.length;
                         localStorage.setItem('childhood_break', JSON.stringify(response));
+                        this.SupDate = this.formatearHora(response.data.date)
                     }
                     else{
                         const currentData = JSON.parse(localStorage.getItem('childhood_break')); // Convertir los datos del usuario a JSON
@@ -118,6 +132,7 @@ export default {
                             currentData.data.series.map(i => this.tableDataSup.push({ ...i }));
                             currentData.data.fields.map(i => this.fieldsSup.push({ key: i, sortable : true }));
                             this.totalRowsSup = this.tableDataSup.length;
+                            this.SupDate = this.formatearHora(currentData.data.date)
                         }
                     }
                 });
@@ -133,11 +148,12 @@ export default {
                     this.tableDataTec.splice(0, this.tableDataTec.length);
                     this.fieldsTec.splice(0, this.fieldsTec.length);
 
-                    if (response && response.data.series && response.data.fields) {
+                    if (response && response !== null && 'series' in response.data && response.data.series.length>0) {
                         response.data.series.map(i => this.tableDataTec.push({ ...i }));
                         response.data.fields.map(i => this.fieldsTec.push({ key: i, sortable : true }));
                         this.totalRowsTec = this.tableDataTec.length;
                         localStorage.setItem('childhood_break_downs', JSON.stringify(response));
+                        this.TecDate = this.formatearHora(response.data.date)
                     }
                     else{
                         const currentData = JSON.parse(localStorage.getItem('childhood_break_downs')); // Convertir los datos del usuario a JSON
@@ -145,6 +161,7 @@ export default {
                             currentData.data.series.map(i => this.tableDataTec.push({ ...i }));
                             currentData.data.fields.map(i => this.fieldsTec.push({ key: i, sortable : true }));
                             this.totalRowsTec = this.tableDataTec.length;
+                            this.TecDate = this.formatearHora(currentData.data.date)
                         }
                     }
                 });
@@ -183,13 +200,15 @@ export default {
                 const timeoutPromise = new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
                 const response = await Promise.race([responsePromise, timeoutPromise]);
 
-                if (response && response.data.series && response.data.categories) {
+                if (response && response !== null && 'series' in response.data && response.data.series.length>0) {
                     this.pieChart = {... constructor_piechart(response.data.series, response.data.categories)}
                     localStorage.setItem('child_hood_break', JSON.stringify(response));
+                    this.InstalacionesDate = this.formatearHora(response.data.date)
                 } else {
                     const currentData = JSON.parse(localStorage.getItem('child_hood_break')); // Convertir los datos del usuario a JSON
                     if(currentData){
                         this.pieChart = {... constructor_piechart(currentData.data.series, currentData.data.categories)}
+                        this.InstalacionesDate = this.formatearHora(currentData.data.date)
                     }
                     else {
                         this.pieChart = {... constructor_piechart([], [])}
@@ -206,13 +225,15 @@ export default {
                 const timeoutPromise = new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
                 const response = await Promise.race([responsePromise, timeoutPromise]);
 
-                if (response && response.data.series && response.data.categories) {
+                if (response && response !== null && 'series' in response.data && response.data.series.length>0) {
                     this.pieChart2 = {... constructor_piechart(response.data.series, response.data.categories)}
                     localStorage.setItem('ineffective_distribution', JSON.stringify(response));
+                    this.MantenimientosDate = this.formatearHora(response.data.date)
                 } else {
                     const currentData = JSON.parse(localStorage.getItem('ineffective_distribution')); // Convertir los datos del usuario a JSON
                     if(currentData){
                         this.pieChart2 = {... constructor_piechart(currentData.data.series, currentData.data.categories)}
+                        this.MantenimientosDate = this.formatearHora(currentData.data.date)
                     }
                     else {
                         this.pieChart2 = {... constructor_piechart([], [])}
@@ -233,7 +254,16 @@ export default {
     <BRow>
         <BCol lg="6">
             <BCard no-body>
-                <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important"><i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Inefectiva Gestor</BCardHeader>
+                <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important">
+                    <BRow>
+                        <BCol sm="7">
+                            <i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Inefectiva Gestor
+                        </BCol>
+                        <BCol sm="5">
+                            Actualizado a las {{ ContrataDate }}
+                        </BCol>
+                    </BRow>
+                </BCardHeader>
                 <BCardBody>
                     <BCardTitle class="mb-4"></BCardTitle>
                     <BRow>
@@ -264,7 +294,16 @@ export default {
         </BCol>
         <BCol lg="6">
             <BCard no-body>
-                <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important"><i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Distrubución Inefectiva</BCardHeader>
+                <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important">
+                    <BRow>
+                        <BCol sm="7">
+                            <i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Distrubución Inefectiva
+                        </BCol>
+                        <BCol sm="5">
+                            Actualizado a las {{ MantenimientosDate }}
+                        </BCol>
+                    </BRow>
+                </BCardHeader>
                 <BCardBody>
                     <!-- Pie Chart -->
                     <apexchart
@@ -280,7 +319,16 @@ export default {
         </BCol>
         <BCol lg="12">
             <BCard no-body>
-                <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important"><i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Distribución Reitero</BCardHeader>
+                <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important">
+                    <BRow>
+                        <BCol sm="7">
+                            <i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Distrubución Reitero
+                        </BCol>
+                        <BCol sm="5">
+                            Actualizado a las {{ InstalacionesDate }}
+                        </BCol>
+                    </BRow>
+                </BCardHeader>
                 <BCardBody>
                     <!-- Pie Chart -->
                     <apexchart
@@ -296,7 +344,16 @@ export default {
         </BCol>
         <BCol lg="12">
             <BCard no-body>
-                <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important"><i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Averías Reiteradas - Sup</BCardHeader>
+                <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important">
+                    <BRow>
+                        <BCol sm="7">
+                            <i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Averías Reiteradas - Sup
+                        </BCol>
+                        <BCol sm="5">
+                            Actualizado a las {{ SupDate }}
+                        </BCol>
+                    </BRow>
+                </BCardHeader>
                 <BCardBody>
                     <BRow>
                         <BCol cols="7">
@@ -333,7 +390,16 @@ export default {
         </BCol>
         <BCol lg="12">
             <BCard no-body>
-                <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important"><i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Averías Reiteradas - Tec</BCardHeader>
+                <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important">
+                    <BRow>
+                        <BCol sm="7">
+                            <i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Averías Reiteradas - Tec
+                        </BCol>
+                        <BCol sm="5">
+                            Actualizado a las {{ TecDate }}
+                        </BCol>
+                    </BRow>
+                </BCardHeader>
                 <BCardBody>
                     <BRow>
                         <BCol cols="7">

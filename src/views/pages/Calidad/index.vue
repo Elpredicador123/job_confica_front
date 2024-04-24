@@ -2,6 +2,7 @@
 import Layout from "../../layouts/main";
 import PageHeader from "@/components/page-header";
 import {constructor_piechart} from "@/components/constructor";
+import moment from 'moment';
 /**
  * Apex-chart component
  */
@@ -112,6 +113,13 @@ export default {
             sortDescRescate: false,
             fieldsRescate: [],
             totalesRescate : 0,
+            ErrorCalidadDate : null,
+            EfectividadDate : null,
+            AuditoriaDate : null,
+            InspeccionesTecDate : null,
+            AvanceTecDate : null,
+            RescateDate : null,
+            ErrorTecDate : null,
         };
     },
     mounted() {
@@ -121,6 +129,11 @@ export default {
         this.getErrorCalidad();
     },
     methods:{
+        formatearHora(value){
+            const date = moment(value, ['DD/MM/YYYY HH:mm:ss', 'YYYY-MM-DDTHH:mm:ss']);
+            if (!date.isValid()) return ': ' + value;
+            return date.format('HH:mm:ss');
+        },
         onFilteredEfectividad(filteredItems) {
             // Trigger pagination to update the number of buttons/pages due to filtering
             this.totalRowsEfectividad = filteredItems.length;
@@ -163,11 +176,12 @@ export default {
                     const timeoutPromise = new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
                     const response = await Promise.race([responsePromise, timeoutPromise]);
 
-                    if (response && response.data.series && response.data.categories) {
+                    if (response && response !== null && 'series' in response.data && response.data.series.length>0) {
                         response.data.series.map(i => this.tableDataEfectividad.push({ ...i }));
                         response.data.categories.map(i => this.fieldsEfectividad.push({ key: i, sortable : true }));
                         this.totalRowsEfectividad = this.tableDataEfectividad.length;
                         localStorage.setItem('inspection_efectiveness', JSON.stringify(response));
+                        this.EfectividadDate = this.formatearHora(response.data.date)
                     }
                     else{
                         const currentData = JSON.parse(localStorage.getItem('inspection_efectiveness')); // Convertir los datos del usuario a JSON
@@ -175,6 +189,7 @@ export default {
                             currentData.data.series.map(i => this.tableDataEfectividad.push({ ...i }));
                             currentData.data.categories.map(i => this.fieldsEfectividad.push({ key: i, sortable : true }));
                             this.totalRowsEfectividad = this.tableDataEfectividad.length;
+                            this.EfectividadDate = this.formatearHora(currentData.data.date)
                         }
                     }
                 });
@@ -190,11 +205,12 @@ export default {
                     const timeoutPromise = new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
                     const response = await Promise.race([responsePromise, timeoutPromise]);
 
-                    if (response && response.data.series && response.data.categories) {
+                    if (response && response !== null && 'series' in response.data && response.data.series.length>0) {
                         response.data.series.map(i => this.tableDataAuditoria.push({ ...i }));
                         response.data.categories.map(i => this.fieldsAuditoria.push({ key: i, sortable : true }));
                         this.totalRowsAuditoria = this.tableDataAuditoria.length;
                         localStorage.setItem('audits_progress_table', JSON.stringify(response));
+                        this.AuditoriaDate = this.formatearHora(response.data.date)
                     }
                     else{
                         const currentData = JSON.parse(localStorage.getItem('audits_progress_table')); // Convertir los datos del usuario a JSON
@@ -202,6 +218,7 @@ export default {
                             currentData.data.series.map(i => this.tableDataAuditoria.push({ ...i }));
                             currentData.data.categories.map(i => this.fieldsAuditoria.push({ key: i, sortable : true }));
                             this.totalRowsAuditoria = this.tableDataAuditoria.length;
+                            this.AuditoriaDate = this.formatearHora(currentData.data.date)
                         }
                     }
                 });
@@ -217,11 +234,12 @@ export default {
                     const timeoutPromise = new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
                     const response = await Promise.race([responsePromise, timeoutPromise]);
 
-                    if (response && response.data.series && response.data.categories) {
+                    if (response && response !== null && 'series' in response.data && response.data.series.length>0) {
                         response.data.series.map(i => this.tableDataInspeccionesTec.push({ ...i }));
                         response.data.categories.map(i => this.fieldsInspeccionesTec.push({ key: i, sortable : true }));
                         this.totalRowsInspeccionesTec = this.tableDataInspeccionesTec.length;
                         localStorage.setItem('inspection_effective', JSON.stringify(response));
+                        this.InspeccionesTecDate = this.formatearHora(response.data.date)
                     }
                     else{
                         const currentData = JSON.parse(localStorage.getItem('inspection_effective')); // Convertir los datos del usuario a JSON
@@ -229,6 +247,7 @@ export default {
                             currentData.data.series.map(i => this.tableDataInspeccionesTec.push({ ...i }));
                             currentData.data.categories.map(i => this.fieldsInspeccionesTec.push({ key: i, sortable : true }));
                             this.totalRowsInspeccionesTec = this.tableDataInspeccionesTec.length;
+                            this.InspeccionesTecDate = this.formatearHora(currentData.data.date)
                         }
                     }
                 });
@@ -244,11 +263,12 @@ export default {
                     const timeoutPromise = new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
                     const response = await Promise.race([responsePromise, timeoutPromise]);
 
-                    if (response && response.data.series && response.data.categories) {
+                    if (response && response !== null && 'series' in response.data && response.data.series.length>0) {
                         response.data.series.map(i => this.tableDataAvanceTec.push({ ...i }));
                         response.data.categories.map(i => this.fieldsAvanceTec.push({ key: i, sortable : true }));
                         this.totalRowsAvanceTec = this.tableDataAvanceTec.length;
                         localStorage.setItem('audits_progress_tec', JSON.stringify(response));
+                        this.AvanceTecDate = this.formatearHora(response.data.date)
                     }
                     else{
                         const currentData = JSON.parse(localStorage.getItem('audits_progress_tec')); // Convertir los datos del usuario a JSON
@@ -256,6 +276,7 @@ export default {
                             currentData.data.series.map(i => this.tableDataAvanceTec.push({ ...i }));
                             currentData.data.categories.map(i => this.fieldsAvanceTec.push({ key: i, sortable : true }));
                             this.totalRowsAvanceTec = this.tableDataAvanceTec.length;
+                            this.AvanceTecDate = this.formatearHora(currentData.data.date)
                         }
                     }
                 });
@@ -271,11 +292,12 @@ export default {
                     const timeoutPromise = new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
                     const response = await Promise.race([responsePromise, timeoutPromise]);
 
-                    if (response && response.data.series && response.data.categories) {
+                    if (response && response !== null && 'series' in response.data && response.data.series.length>0) {
                         response.data.series.map(i => this.tableDataRescate.push({ ...i }));
                         response.data.categories.map(i => this.fieldsRescate.push({ key: i, sortable : true }));
                         this.totalRowsRescate = this.tableDataRescate.length;
                         localStorage.setItem('errors_evidence', JSON.stringify(response));
+                        this.RescateDate = this.formatearHora(response.data.date)
                     }
                     else{
                         const currentData = JSON.parse(localStorage.getItem('errors_evidence')); // Convertir los datos del usuario a JSON
@@ -283,6 +305,7 @@ export default {
                             currentData.data.series.map(i => this.tableDataRescate.push({ ...i }));
                             currentData.data.categories.map(i => this.fieldsRescate.push({ key: i, sortable : true }));
                             this.totalRowsRescate = this.tableDataRescate.length;
+                            this.RescateDate = this.formatearHora(currentData.data.date)
                         }
                     }
                 });
@@ -297,11 +320,12 @@ export default {
                     const responsePromise = this.$http.get(this.$apiURL + 'quality/errorsevidencebytectable/' + this.CiudadId4);
                     const timeoutPromise = new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
                     const response = await Promise.race([responsePromise, timeoutPromise]);
-                    if (response && response.data.series && response.data.categories) {
+                    if (response && response !== null && 'series' in response.data && response.data.series.length>0) {
                         response.data.series.map(i => this.tableDataErrorTec.push({ ...i }));
                         response.data.categories.map(i => this.fieldsErrorTec.push({ key: i, sortable : true }));
                         this.totalRowsErrorTec = this.tableDataErrorTec.length;
                         localStorage.setItem('maintenance_progress_calidad', JSON.stringify(response));
+                        this.ErrorTecDate = this.formatearHora(response.data.date)
                     }
                     else{
                         const currentData = JSON.parse(localStorage.getItem('maintenance_progress_calidad')); // Convertir los datos del usuario a JSON
@@ -309,6 +333,7 @@ export default {
                             currentData.data.series.map(i => this.tableDataErrorTec.push({ ...i }));
                             currentData.data.categories.map(i => this.fieldsErrorTec.push({ key: i, sortable : true }));
                             this.totalRowsErrorTec = this.tableDataErrorTec.length;
+                            this.ErrorTecDate = this.formatearHora(currentData.data.date)
                         }
                     }
                 });
@@ -321,13 +346,15 @@ export default {
                 const timeoutPromise = new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
                 const response = await Promise.race([responsePromise, timeoutPromise]);
 
-                if (response && response.data.series && response.data.categories) {
+                if (response && response !== null && 'series' in response.data && response.data.series.length>0) {
                     this.pieChart = {... constructor_piechart(response.data.series, response.data.categories)}
                     localStorage.setItem('error_inspection', JSON.stringify(response));
+                    this.ErrorCalidadDate = this.formatearHora(response.data.date)
                 } else {
                     const currentData = JSON.parse(localStorage.getItem('error_inspection')); // Convertir los datos del usuario a JSON
                     if(currentData){
                         this.pieChart = {... constructor_piechart(currentData.data.series, currentData.data.categories)}
+                        this.ErrorCalidadDate = this.formatearHora(currentData.data.date)
                     }
                     else {
                         this.pieChart = {... constructor_piechart([], [])}
@@ -403,7 +430,16 @@ export default {
     <BRow>
         <BCol lg="12">
             <BCard no-body>
-                <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important"><i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Efectividad inspecciones</BCardHeader>
+                <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important">
+                    <BRow>
+                        <BCol sm="7">
+                            <i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Efectividad inspecciones
+                        </BCol>
+                        <BCol sm="5">
+                            Actualizado a las {{ EfectividadDate }}
+                        </BCol>
+                    </BRow>
+                </BCardHeader>
                 <BCardBody>
                     <BRow>
                         <BCol cols="12">
@@ -447,7 +483,16 @@ export default {
         </BCol>
         <BCol lg="12">
             <BCard no-body>
-                <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important"><i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Efectividad inspecciones x tec</BCardHeader>
+                <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important">
+                    <BRow>
+                        <BCol sm="7">
+                            <i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Efectividad inspecciones x tec
+                        </BCol>
+                        <BCol sm="5">
+                            Actualizado a las {{ InspeccionesTecDate }}
+                        </BCol>
+                    </BRow>
+                </BCardHeader>
                 <BCardBody>
                     <BRow>
                         <BCol cols="12">
@@ -491,7 +536,16 @@ export default {
         </BCol>
         <BCol lg="12">
             <BCard no-body>
-                <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important"><i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Avance auditorias</BCardHeader>
+                <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important">
+                    <BRow>
+                        <BCol sm="7">
+                            <i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Avance auditorias
+                        </BCol>
+                        <BCol sm="5">
+                            Actualizado a las {{ AuditoriaDate }}
+                        </BCol>
+                    </BRow>
+                </BCardHeader>
                 <BCardBody>
                     <BRow>
                         <BCol cols="12">
@@ -536,7 +590,16 @@ export default {
 
         <BCol lg="12">
             <BCard no-body>
-                <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important"><i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Avance auditoria x tec</BCardHeader>
+                <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important">
+                    <BRow>
+                        <BCol sm="7">
+                            <i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Avance auditoria x tec
+                        </BCol>
+                        <BCol sm="5">
+                            Actualizado a las {{ AvanceTecDate }}
+                        </BCol>
+                    </BRow>
+                </BCardHeader>
                 <BCardBody>
                     <BRow>
                         <BCol cols="12">
@@ -582,7 +645,16 @@ export default {
     <BRow>
         <BCol lg="12">
             <BCard no-body>
-                <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important"><i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Errores en línea de rescate</BCardHeader>
+                <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important">
+                    <BRow>
+                        <BCol sm="7">
+                            <i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Errores en línea de rescate
+                        </BCol>
+                        <BCol sm="5">
+                            Actualizado a las {{ RescateDate }}
+                        </BCol>
+                    </BRow>
+                </BCardHeader>
                 <BCardBody>
                     <BRow>
                         <BCol cols="7">
@@ -619,7 +691,16 @@ export default {
         </BCol>
         <BCol lg="12">
             <BCard no-body>
-                <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important"><i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;% Errores calidad</BCardHeader>
+                <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important">
+                    <BRow>
+                        <BCol sm="7">
+                            <i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;% Errores calidad
+                        </BCol>
+                        <BCol sm="5">
+                            Actualizado a las {{ ErrorCalidadDate }}
+                        </BCol>
+                    </BRow>
+                </BCardHeader>
                 <BCardBody>
                     <!-- Pie Chart -->
                     <apexchart
@@ -635,7 +716,16 @@ export default {
         </BCol>
         <BCol lg="12">
             <BCard no-body>
-                <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important"><i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Errores en línea de rescate - Tec</BCardHeader>
+                <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important">
+                    <BRow>
+                        <BCol sm="7">
+                            <i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Errores en línea de rescate - Tec
+                        </BCol>
+                        <BCol sm="5">
+                            Actualizado a las {{ ErrorTecDate }}
+                        </BCol>
+                    </BRow>
+                </BCardHeader>
                 <BCardBody>
                     <BRow>
                         <BCol cols="7">

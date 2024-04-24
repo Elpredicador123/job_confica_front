@@ -33,7 +33,7 @@ export default {
                     href: "/"
                 },
                 {
-                    text: "Listadp",
+                    text: "Listado",
                     active: true
                 }
             ],
@@ -94,8 +94,9 @@ export default {
     },
     methods:{
         formatearHora(value){
-            if (!value) return '';
-            return moment(value, 'DD/MM/YYYY HH:mm:ss').format('HH:mm:ss');
+            const date = moment(value, ['DD/MM/YYYY HH:mm:ss', 'YYYY-MM-DDTHH:mm:ss']);
+            if (!date.isValid()) return ': ' + value;
+            return date.format('HH:mm:ss');
         },
         async fetchData(url, timeoutMs = 4000) {
             try {
@@ -156,7 +157,7 @@ export default {
                 this.getTableOrder();
             } catch (error) {
                 console.error(error);
-            }    
+            }
         },
         async getTableMantenimientos() {
             try {
@@ -168,7 +169,7 @@ export default {
                         const responsePromise = this.$http.get(this.$apiURL + 'management/maintenanceprogresstable/' + this.ciudadId2);
                         const timeoutPromise = new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
                         const response = await Promise.race([responsePromise, timeoutPromise]);
-                        if (response && response.data.series && response.data.fields) {
+                        if (response && response !== null && 'series' in response.data && response.data.series.length>0) {
                             response.data.series.map(i => this.tableMantenimiento.push({ ...i }));
                             response.data.fields.map(i => this.fieldsMantenimiento.push({ key: i, sortable : true }));
                             this.dataDateMantenimientos = this.formatearHora(response.data.date)
@@ -201,7 +202,7 @@ export default {
                         const timeoutPromise = new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
                         const response = await Promise.race([responsePromise, timeoutPromise]);
                         console.log(response)
-                        if (response && response.data.series && response.data.fields) {
+                        if (response && response !== null && 'series' in response.data && response.data.series.length>0) {
                             response.data.series.map(i => this.TableInstalaciones.push({ ...i }));
                             response.data.fields.map(i => this.fields.push({ key: i, sortable : true }));
                             this.dataDateInstalaciones = this.formatearHora(response.data.date)
@@ -234,7 +235,7 @@ export default {
                         const timeoutPromise = new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
                         const response = await Promise.race([responsePromise, timeoutPromise]);
 
-                        if (response && response.data.series && response.data.categories) {
+                        if (response && response !== null && 'series' in response.data && response.data.series.length>0) {
                             response.data.series.map(i => this.tableDataGestor.push({ ...i }));
                             response.data.categories.map(i => this.fieldsGestor.push({ key: i, sortable : true }));
                             this.dataDateGestor = this.formatearHora(response.data.date)
@@ -266,7 +267,7 @@ export default {
                         const timeoutPromise = new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
                         const response = await Promise.race([responsePromise, timeoutPromise]);
 
-                        if (response && response.data.series && response.data.categories) {
+                        if (response && response !== null && 'series' in response.data && response.data.series.length>0) {
                             response.data.series.map(i => this.tableDataOrder.push({ ...i }));
                             response.data.categories.map(i => this.fieldsOrder.push({ key: i, sortable : true }));
                             this.dataDateOrder = this.formatearHora(response.data.date)

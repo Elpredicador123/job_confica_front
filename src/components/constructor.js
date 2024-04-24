@@ -140,7 +140,8 @@ function constructor_barchart(data_series,data_categories){
 }
 
 function constructor_donutchart(data_series,data_categories){
-    let total = data_series.reduce((sum, value) => sum + value, 0);
+    let total = Number((data_series.reduce((sum, value) => sum + value, 0)).toFixed(2));
+
     let donutChart = {
         series: data_series,
         chartOptions: {
@@ -188,7 +189,7 @@ function constructor_donutchart(data_series,data_categories){
                     show: true,
                     label: 'Total',
                     formatter: function () {
-                      return total;
+                      return 'S/ '+total;
                     }
                   },
                   style: {

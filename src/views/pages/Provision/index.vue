@@ -2,6 +2,7 @@
 import Layout from "../../layouts/main";
 import PageHeader from "@/components/page-header";
 import {constructor_barchart} from "@/components/constructor";
+import moment from 'moment';
 /**
  * Apex-chart component
  */
@@ -56,11 +57,10 @@ export default {
             fieldsTec: [],
             totalesTec : 0,
             //---------------------
-            previousContrataData: null,
-            previousGestorData: null,
-            previousTableSupData: null,
-            previousTableTecData: null,
-            previousCityData: null
+            TecDate :null,
+            SupDate : null,
+            GestorDate: null,
+            ContrataDate : null,
         };
     },
     mounted() {
@@ -71,6 +71,11 @@ export default {
         this.getCity();
     },
     methods:{
+        formatearHora(value){
+            const date = moment(value, ['DD/MM/YYYY HH:mm:ss', 'YYYY-MM-DDTHH:mm:ss']);
+            if (!date.isValid()) return ': ' + value;
+            return date.format('HH:mm:ss');
+        },
         onFilteredSup(filteredItems) {
             // Trigger pagination to update the number of buttons/pages due to filtering
             this.totalRowsSup = filteredItems.length;
@@ -88,14 +93,17 @@ export default {
                     const responsePromise = this.$http.get(this.$apiURL + 'provision/diarycontratagraphic/'+this.ciudadId1);
                     const timeoutPromise = new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
                     const response = await Promise.race([responsePromise, timeoutPromise]);
-                    if (response && response.data.series && response.data.categories) {
+                    console.log(response)
+                    if (response && response !== null && 'series' in response.data && response.data.series.length>0) {
                         this.ContrataBar = {... constructor_barchart(response.data.series, response.data.categories)}
                         localStorage.setItem('contrata_bar_provision', JSON.stringify(response));
+                        this.ContrataDate = this.formatearHora(response.data.date)
                     }
                     else{
                         const currentData = JSON.parse(localStorage.getItem('contrata_bar_provision')); // Convertir los datos del usuario a JSON
                         if(currentData){
                             this.ContrataBar = {... constructor_barchart(currentData.data.series, currentData.data.categories)}
+                            this.ContrataDate = this.formatearHora(currentData.data.date)
                         }
                         else{
                             this.ContrataBar = {... constructor_barchart([],[])}
@@ -116,14 +124,16 @@ export default {
                         const responsePromise = this.$http.get(this.$apiURL + 'provision/diarymanagergraphic/'+this.ciudadId2);
                         const timeoutPromise = new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
                         const response = await Promise.race([responsePromise, timeoutPromise]);
-                        if (response && response.data.series && response.data.categories) {
+                        if (response && response !== null && 'series' in response.data && response.data.series.length>0) {
                             this.GestorBar = {... constructor_barchart(response.data.series, response.data.categories)}
                             localStorage.setItem('diary_manager_provision', JSON.stringify(response));
+                            this.GestorDate = this.formatearHora(response.data.date)
                         }
                         else{
                             const currentData = JSON.parse(localStorage.getItem('diary_manager_provision')); // Convertir los datos del usuario a JSON
                             if(currentData){
                                 this.GestorBar = {... constructor_barchart(currentData.data.series, currentData.data.categories)}
+                                this.GestorDate = this.formatearHora(currentData.data.date)
                             }
                             else{
                                 this.GestorBar = {... constructor_barchart([],[])}
@@ -148,11 +158,12 @@ export default {
                         const response = await Promise.race([responsePromise, timeoutPromise]);
                         this.tableDataSup.splice(0, this.tableDataSup.length);
                         this.fieldsSup.splice(0, this.fieldsSup.length);
-                        if (response && response.data.series && response.data.fields) {
+                        if (response && response !== null && 'series' in response.data && response.data.series.length>0) {
                             response.data.series.map(i => this.tableDataSup.push({ ...i }));
                             response.data.fields.map(i => this.fieldsSup.push({ key: i, sortable : true }));
                             this.totalRowsSup = this.tableDataSup.length;
                             localStorage.setItem('installation_manager_provision', JSON.stringify(response));
+                            this.SupDate = this.formatearHora(response.data.date)
                         }
                         else{
                             const currentData = JSON.parse(localStorage.getItem('installation_manager_provision')); // Convertir los datos del usuario a JSON
@@ -160,6 +171,7 @@ export default {
                                 currentData.data.series.map(i => this.tableDataSup.push({ ...i }));
                                 currentData.data.fields.map(i => this.fieldsSup.push({ key: i, sortable : true }));
                                 this.totalRowsSup = this.tableDataSup.length;
+                                this.SupDate = this.formatearHora(currentData.data.date)
                             }
                         }
                     });
@@ -178,12 +190,13 @@ export default {
                         const response = await Promise.race([responsePromise, timeoutPromise]);
                         this.tableDataTec.splice(0, this.tableDataTec.length);
                         this.fieldsTec.splice(0, this.fieldsTec.length);
-
-                        if (response && response.data.series && response.data.fields) {
+                        console.log(response)
+                        if (response && response !== null && 'series' in response.data && response.data.series.length>0) {
                             response.data.series.map(i => this.tableDataTec.push({ ...i }));
                             response.data.fields.map(i => this.fieldsTec.push({ key: i, sortable : true }));
                             this.totalRowsTec = this.tableDataTec.length;
                             localStorage.setItem('childhood_table', JSON.stringify(response));
+                            this.TecDate = this.formatearHora(response.data.date)
                         }
                         else{
                             const currentData = JSON.parse(localStorage.getItem('childhood_table')); // Convertir los datos del usuario a JSON
@@ -191,6 +204,7 @@ export default {
                                 currentData.data.series.map(i => this.tableDataTec.push({ ...i }));
                                 currentData.data.fields.map(i => this.fieldsTec.push({ key: i, sortable : true }));
                                 this.totalRowsTec = this.tableDataTec.length;
+                                this.TecDate = this.formatearHora(currentData.data.date)
                             }
                         }
                     });
@@ -236,7 +250,16 @@ export default {
     <BRow>
         <BCol lg="6">
             <BCard no-body>
-                <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important"><i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Cumplimiento agenda - Contrata</BCardHeader>
+                <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important">
+                    <BRow>
+                        <BCol sm="7">
+                            <i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Cumplimiento agenda - Contrata
+                        </BCol>
+                        <BCol sm="5">
+                            Actualizado a las {{ ContrataDate }}
+                        </BCol>
+                    </BRow>
+                </BCardHeader>
                 <BCardBody>
                     <BRow>
                         <BCol cols="7">
@@ -266,7 +289,16 @@ export default {
         </BCol>
         <BCol lg="6">
             <BCard no-body>
-                <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important"><i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Cumplimiento agenda - Gestor</BCardHeader>
+                <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important">
+                    <BRow>
+                        <BCol sm="7">
+                            <i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Cumplimiento agenda - Gestor
+                        </BCol>
+                        <BCol sm="5">
+                            Actualizado a las {{ GestorDate }}
+                        </BCol>
+                    </BRow>
+                </BCardHeader>
                 <BCardBody>
                     <BRow>
                         <BCol cols="7">
@@ -296,7 +328,16 @@ export default {
         </BCol>
         <BCol lg="12">
             <BCard no-body>
-                <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important"><i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Averías de infancia - Sup</BCardHeader>
+                <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important">
+                    <BRow>
+                        <BCol sm="7">
+                            <i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Averías de infancia - Sup
+                        </BCol>
+                        <BCol sm="5">
+                            Actualizado a las {{ SupDate }}
+                        </BCol>
+                    </BRow>
+                </BCardHeader>
                 <BCardBody>
                     <BRow>
                         <BCol cols="7">
@@ -333,7 +374,16 @@ export default {
         </BCol>
         <BCol lg="12">
             <BCard no-body>
-                <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important"><i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Averías de infancia - Tec</BCardHeader>
+                <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important">
+                    <BRow>
+                        <BCol sm="7">
+                            <i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Averías de infancia - Tec
+                        </BCol>
+                        <BCol sm="5">
+                            Actualizado a las {{ TecDate }}
+                        </BCol>
+                    </BRow>
+                </BCardHeader>
                 <BCardBody>
                     <BRow>
                         <BCol cols="7">

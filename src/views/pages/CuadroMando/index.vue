@@ -65,7 +65,6 @@ export default {
             totalesPorDia : 0,
             tableDatePorDia:null,
             //--------------------
-            totalRowsAgenda: 1,
             currentPageAgenda: 1,
             perPageAgenda: 4,
             pageOptionsAgenda: [4,10,25,50,100],
@@ -80,13 +79,19 @@ export default {
             tableDateAux:null,
             InstalacionesDate : null,
             MantenimientosDate : null,
+            MantenimientoDate : null,
+            InstalacionDate : null,
+            DiaryDate : null,
+            RatioMantenimientoDate : null,
+            RatioInstalacionesDate: null,
+            AvanceMantenimientoDate:null,
+            AvanceInstalacionDate: null
         };
     },
     mounted() {
         // Set the initial number of items
         this.totalRows2 = this.tableData2.length;
         this.totalRowsPorDia = this.tableDataPorDia.length;
-        this.totalRowsAgenda = this.tableDataAgenda.length;
 
         //obtener datos de la api
         this.getInstalaciones();
@@ -105,16 +110,13 @@ export default {
     },
     methods:{
         formatearHora(value){
-            if (!value) return '';
-            return moment(value, 'DD/MM/YYYY HH:mm:ss').format('HH:mm:ss');
+            const date = moment(value, ['DD/MM/YYYY HH:mm:ss', 'YYYY-MM-DDTHH:mm:ss']);
+            if (!date.isValid()) return ': ' + value;
+            return date.format('HH:mm:ss');
         },
         onFilteredPorDia(filteredItems) {
             this.totalRowsPorDia = filteredItems.length;
             this.currentPagePorDia = 1;
-        },
-        onFilteredAgenda(filteredItems) {
-            this.totalRowsAgenda = filteredItems.length;
-            this.currentPageAgenda = 1;
         },
         async fetchData(url, timeoutMs = 12000) {
             try {
@@ -128,33 +130,37 @@ export default {
                 return null;  // Retornar null o manejar de otra forma según sea necesario
             }
         },
-        processTableData(data, tableData, fields, storageKey,tableDate) {
+        processTableData(data, tableData, fields, storageKey) {
             if (data.series && data.fields) {
                 tableData.push(...data.series.map(i => ({ ...i })));
                 fields.push(...data.fields.map(i => ({ key: i, sortable: true })));
                 if(data.totales){
                     this.totalesPorDia = data.totales;
                 }
-                tableDate = { ...data.date };
                 localStorage.setItem(storageKey, JSON.stringify({ data }));
             } else {
-                this.loadFromLocalStorage(storageKey, tableData, fields,tableDate);
+                this.loadFromLocalStorage(storageKey, tableData, fields);
             }
         },
-        loadFromLocalStorage(storageKey, tableData, fields,tableDate) {
+        loadFromLocalStorage(storageKey, tableData, fields) {
             const currentData = JSON.parse(localStorage.getItem(storageKey));
             if (currentData) {
-                this.processTableData(currentData.data, tableData, fields,tableDate);
+                this.processTableData(currentData.data, tableData, fields);
             }
         },
         async getTableMantenimientos() {
             try {
                 const data = await this.fetchData('control-panel/maintenanceprogresstable');
                 if(data !== null && 'series' in data && data.series.length>0){
-                    this.processTableData(data, this.tableData2, this.fields2,'maintenance_progress',this.tableDate2);
+                    this.processTableData(data, this.tableData2, this.fields2,'maintenance_progress');
+                    this.MantenimientoDate = data.date
                 }
                 else{
-                    this.loadFromLocalStorage('maintenance_progress', this.tableData2, this.fields2,this.tableDate2);
+                    const currentData = JSON.parse(localStorage.getItem('maintenance_progress'));
+                    if (currentData) {
+                        this.processTableData(currentData.data, this.tableData2, this.fields2);
+                    }
+                    this.MantenimientoDate = this.formatearHora(currentData.data.date)
                 }
             } catch (error) {
                 console.error(error);
@@ -164,10 +170,17 @@ export default {
             try {
                 const data = await this.fetchData('control-panel/installationprogresstable');
                 if(data !== null && 'series' in data && data.series.length>0){
-                    this.processTableData(data, this.tableData, this.fields,'installation_progress_table',this.tableDate);
+                    this.processTableData(data, this.tableData, this.fields,'installation_progress_table');
+                    console.log(data)
+                    this.InstalacionDate = data.date
                 }
                 else{
-                    this.loadFromLocalStorage('installation_progress_table', this.tableData, this.fields,this.tableDate);
+                    const currentData = JSON.parse(localStorage.getItem('installation_progress_table'));
+                    console.log(currentData )
+                    if (currentData) {
+                        this.processTableData(currentData.data, this.tableData, this.fields);
+                        this.InstalacionDate = this.formatearHora(currentData.data.date)
+                    }
                 }
             } catch (error) {
                 console.error(error);
@@ -223,12 +236,15 @@ export default {
             try {
                 const data = await this.fetchData('control-panel/diarytable');
                 if(data !== null && 'series' in data && data.series.length>0){
-                    this.processTableData(data, this.tableDataAgenda, this.fieldsAgenda,'agenda_dias',this.tableDateAux);
-                    this.totalRowsAgenda = this.tableDataAgenda.length;
+                    this.processTableData(data, this.tableDataAgenda, this.fieldsAgenda,'agenda_dias');
+                    this.DiaryDate = this.formatearHora(data.date)
                 }
                 else{
-                    this.loadFromLocalStorage('agenda_dias', this.tableDataAgenda, this.fieldsAgenda,this.tableDateAux);
-                    this.totalRowsAgenda = this.tableDataAgenda.length;
+                    const currentData = JSON.parse(localStorage.getItem('agenda_dias'));
+                    if (currentData) {
+                        this.processTableData(currentData.data, this.tableDataAgenda, this.fieldsAgenda);
+                    }
+                    this.DiaryDate = this.formatearHora(currentData.data.date)
                 }
             } catch (error) {
                 console.error(error);
@@ -241,11 +257,13 @@ export default {
                 if (response !== null && 'series' in response && response.series.length>0) {
                     this.columnChart = {... constructor_chart(response.series, response.categories)}
                     localStorage.setItem('installation_progress', JSON.stringify(response));
+                    this.AvanceInstalacionDate = this.formatearHora(response.date)
                 }
                 else{
                     const currentData = JSON.parse(localStorage.getItem('installation_progress')); // Convertir los datos del usuario a JSON
                     if(currentData){
-                        this.columnChart = {... constructor_chart(currentData.data.series, currentData.data.categories)}
+                        this.columnChart = {... constructor_chart(currentData.series, currentData.categories)}
+                        this.AvanceInstalacionDate = this.formatearHora(currentData.date)
                     }
                     else {
                         this.columnChart = {... constructor_chart([], [])}
@@ -262,10 +280,12 @@ export default {
                 if (response !== null && 'series' in response && response.series.length >0) {
                     this.columnChart2 = {... constructor_chart(response.series, response.categories)}
                     localStorage.setItem('mantenimientos_data', JSON.stringify(response));
+                    this.AvanceMantenimientoDate = this.formatearHora(response.date)
                 } else {
                     const currentData = JSON.parse(localStorage.getItem('mantenimientos_data')); // Convertir los datos del usuario a JSON
                     if(currentData){
                         this.columnChart2 = {... constructor_chart(currentData.series, currentData.categories)}
+                        this.AvanceMantenimientoDate = this.formatearHora(currentData.date)
                     }
                     else {
                         this.columnChart2 = {... constructor_chart([], [])}
@@ -282,10 +302,12 @@ export default {
                 if (response !== null && 'series' in response && response.series.length > 0) {
                     this.pieChart = {... constructor_piechart(response.series, response.labels)}
                     localStorage.setItem('installation_ratio', JSON.stringify(response));
+                    this.RatioInstalacionesDate = this.formatearHora(response.date)
                 } else {
                     const currentData = JSON.parse(localStorage.getItem('installation_ratio')); // Convertir los datos del usuario a JSON
                     if(currentData){
                         this.pieChart = {... constructor_piechart(currentData.series, currentData.labels)}
+                        this.RatioInstalacionesDate = this.formatearHora(currentData.date)
                     }
                     else {
                         this.pieChart = {... constructor_piechart([], [])}
@@ -301,10 +323,12 @@ export default {
                 if (response !== null && 'series' in response && response.series.length>0) {
                     this.pieChart2 = {... constructor_piechart(response.series, response.labels,"distinto")}
                     localStorage.setItem('maintenance_ratio', JSON.stringify(response));
+                    this.RatioMantenimientoDate = this.formatearHora(response.date)
                 } else {
                     const currentData = JSON.parse(localStorage.getItem('maintenance_ratio')); // Convertir los datos del usuario a JSON
                     if(currentData){
                         this.pieChart2 = {... constructor_piechart(currentData.series, currentData.labels,"distinto")}
+                        this.RatioMantenimientoDate = this.formatearHora(currentData.date)
                     }
                     else {
                         this.pieChart2 = {... constructor_piechart([], [])}
@@ -326,7 +350,16 @@ export default {
     <BRow>
     <BCol lg="6">
         <BCard no-body>
-            <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important"><i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Avance instalaciones</BCardHeader>
+            <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important">
+                <BRow>
+                    <BCol sm="7">
+                        <i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Avance instalaciones
+                    </BCol>
+                    <BCol sm="5">
+                        Actualizado a las {{ AvanceInstalacionDate }}
+                    </BCol>
+                </BRow>
+            </BCardHeader>
             <BCardBody>
                 <!-- Column Charts -->
                 <apexchart
@@ -342,7 +375,16 @@ export default {
     </BCol>
     <BCol lg="6">
         <BCard no-body>
-            <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important"><i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Avance mantenimientos</BCardHeader>
+            <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important">
+                <BRow>
+                    <BCol sm="7">
+                        <i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Avance mantenimientos
+                    </BCol>
+                    <BCol sm="5">
+                        Actualizado a las {{ AvanceMantenimientoDate }}
+                    </BCol>
+                </BRow>
+            </BCardHeader>
             <BCardBody>
                 <!-- Column Charts -->
                 <apexchart
@@ -363,7 +405,16 @@ export default {
     <div class="row">
         <BCol lg="6">
             <BCard no-body>
-                <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important"><i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Instalaciones</BCardHeader>
+                <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important">
+                    <BRow>
+                        <BCol sm="7">
+                            <i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Instalaciones
+                        </BCol>
+                        <BCol sm="5">
+                            Actualizado a las {{ InstalacionDate }}
+                        </BCol>
+                    </BRow>
+                </BCardHeader>
                 <BCardBody>
                     <!-- Table -->
                     <div class="table-responsive mb-0">
@@ -386,7 +437,16 @@ export default {
         </BCol>
         <BCol lg="6">
             <BCard no-body>
-                <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important"><i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Mantenimientos</BCardHeader>
+                <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important">
+                    <BRow>
+                        <BCol sm="7">
+                            <i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Mantenimientos
+                        </BCol>
+                        <BCol sm="5">
+                            Actualizado a las {{ MantenimientoDate }}
+                        </BCol>
+                    </BRow>
+                </BCardHeader>
                 <BCardBody>
                     <!-- Table -->
                     <div class="table-responsive mb-0">
@@ -440,7 +500,7 @@ export default {
                 <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important">
                     <BRow>
                         <BCol sm="7">
-                            <i class="bx bx-check-circle"></i>Producción día - Reparaciones
+                            <i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Producción día - Reparaciones
                         </BCol>
                         <BCol sm="5">
                             Actualizado a las {{ MantenimientosDate }}
@@ -465,7 +525,16 @@ export default {
         
         <BCol lg="12">
             <BCard no-body>
-                <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important"><i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Agenda a 7 días</BCardHeader>
+                <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important">
+                    <BRow>
+                        <BCol sm="7">
+                            <i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Agenda a 7 días
+                        </BCol>
+                        <BCol sm="5">
+                            Actualizado a las {{ MantenimientosDate }}
+                        </BCol>
+                    </BRow>
+                </BCardHeader>
                 <BCardBody>
                     <!-- Table -->
                     <div class="table-responsive mb-0">
@@ -490,7 +559,16 @@ export default {
     <div class="row">
         <BCol lg="6">
             <BCard no-body>
-                <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important"><i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Ratio de instalaciones tec</BCardHeader>
+                <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important">
+                    <BRow>
+                        <BCol sm="7">
+                            <i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Ratio de instalaciones tec
+                        </BCol>
+                        <BCol sm="5">
+                            Actualizado a las {{ RatioInstalacionesDate }}
+                        </BCol>
+                    </BRow>
+                </BCardHeader>
                 <BCardBody>
                     <!-- Pie Chart -->
                     <apexchart
@@ -506,7 +584,16 @@ export default {
         </BCol>
         <BCol lg="6">
             <BCard no-body>
-                <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important"><i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Ratio de mantenimientos tec</BCardHeader>
+                <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important">
+                    <BRow>
+                        <BCol sm="7">
+                            <i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Ratio de mantenimientos tec
+                        </BCol>
+                        <BCol sm="5">
+                            Actualizado a las {{ RatioMantenimientoDate }}
+                        </BCol>
+                    </BRow>
+                </BCardHeader>
                 <BCardBody>
                     <!-- Pie Chart -->
                     <apexchart
@@ -525,3 +612,10 @@ export default {
     <!-- end row -->
 </Layout>
 </template>
+<style>
+.apex-charts text {
+    font-family: var(--bs-font-sans-serif) !important;
+    fill: #0d151d !important;
+    font-weight: 400 !important;
+}
+</style>
