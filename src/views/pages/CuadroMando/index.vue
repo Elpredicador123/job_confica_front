@@ -153,7 +153,7 @@ export default {
                 const data = await this.fetchData('control-panel/maintenanceprogresstable');
                 if(data !== null && 'series' in data && data.series.length>0){
                     this.processTableData(data, this.tableData2, this.fields2,'maintenance_progress');
-                    this.MantenimientoDate = data.date
+                    this.MantenimientoDate = this.formatearHora(data.date)
                 }
                 else{
                     const currentData = JSON.parse(localStorage.getItem('maintenance_progress'));
@@ -171,8 +171,7 @@ export default {
                 const data = await this.fetchData('control-panel/installationprogresstable');
                 if(data !== null && 'series' in data && data.series.length>0){
                     this.processTableData(data, this.tableData, this.fields,'installation_progress_table');
-                    console.log(data)
-                    this.InstalacionDate = data.date
+                    this.InstalacionDate = this.formatearHora(data.date)
                 }
                 else{
                     const currentData = JSON.parse(localStorage.getItem('installation_progress_table'));
@@ -253,7 +252,7 @@ export default {
         async getInstalaciones() {
             try {
                 const response = await this.fetchData('control-panel/installationprogressgraphic');
-
+                console.log(response)
                 if (response !== null && 'series' in response && response.series.length>0) {
                     this.columnChart = {... constructor_chart(response.series, response.categories)}
                     localStorage.setItem('installation_progress', JSON.stringify(response));
@@ -531,7 +530,7 @@ export default {
                             <i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Agenda a 7 días
                         </BCol>
                         <BCol sm="5">
-                            Actualizado a las {{ MantenimientosDate }}
+                            Actualizado a las {{ DiaryDate }}
                         </BCol>
                     </BRow>
                 </BCardHeader>
