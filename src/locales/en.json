@@ -143,6 +143,9 @@
         "index": "Listado Cumpleaños"
       }
     },
+    "soporte":{
+      "text" : "Soporte"
+    },
     "reservation": {
       "text": "Reservaciones",
       "list": {
