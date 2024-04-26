@@ -13,7 +13,7 @@ export const menuItems = [
     {
         id: 15,
         label : "menuitems.soporte.text",
-        icon: "uil-calendar-slash",
+        icon: "bx bx-support",
         subItems: [
             {
                 id: 2,

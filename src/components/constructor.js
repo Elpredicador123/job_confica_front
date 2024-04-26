@@ -140,13 +140,32 @@ function constructor_barchart(data_series,data_categories){
 }
 
 function constructor_donutchart(data_series,data_categories){
+    console.log(data_categories)
     let total = Number((data_series.reduce((sum, value) => sum + value, 0)).toFixed(2));
+    let colors = [];
+    for (let index = 0; index < data_categories.length; index++) {
+        const element = data_categories[index];
+        switch (element) {
+            case "Lima":
+                colors.push("#34c38f");
+                break;
+            case "Cuzco":
+                colors.push("#5b73e8");
+                break;
+            case "Puno":
+                colors.push("#f1b44c");
+                break;
+            case "Arequipa":
+                colors.push("#50a5f1");
+                break;
+        }
+    }
 
     let donutChart = {
         series: data_series,
         chartOptions: {
           labels: data_categories,
-          colors: ["#34c38f", "#5b73e8","#f1b44c", "#50a5f1", "#f46a6a"],
+          colors: colors, // Utiliza los colores definidos
           legend: {
             show: true,
             position: "bottom",
