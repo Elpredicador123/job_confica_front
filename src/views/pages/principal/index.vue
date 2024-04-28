@@ -1,27 +1,13 @@
 <script>
-import FullCalendar from "@fullcalendar/vue3";
-import dayGridPlugin from "@fullcalendar/daygrid";
-import timeGridPlugin from "@fullcalendar/timegrid";
-import interactionPlugin from "@fullcalendar/interaction";
-import bootstrapPlugin from "@fullcalendar/bootstrap";
-import listPlugin from "@fullcalendar/list";
 
 import { useVuelidate } from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
-
-import Swal from "sweetalert2";
-
 import Layout from "../../layouts/main";
-
-import {  categories } from "../calendar/data-calendar";
-import { format } from 'date-fns';
-import esLocale from '@fullcalendar/core/locales/es';
-
 /**
  * Calendar component
  */
 export default {
-    components: { FullCalendar, Layout },
+    components: { Layout },
     setup() {
         return { v$: useVuelidate() };
     },
@@ -37,95 +23,11 @@ export default {
                     active: true
                 }
             ],
-            calendarEvents: [],
-            calendarOptions: {
-                locale: esLocale,
-                eventDrop: this.handleEventDrop,
-                headerToolbar: {
-                    left: "prev,next today",
-                    center: "title",
-                    right: "dayGridMonth,timeGridWeek,listWeek" // Elimina "timeGridDay" de las opciones de la barra de herramientas del encabezado
-                },
-                plugins: [
-                    dayGridPlugin,
-                    timeGridPlugin,
-                    interactionPlugin,
-                    bootstrapPlugin,
-                    listPlugin
-                ],
-                initialView: "dayGridMonth",
-                themeSystem: "bootstrap",
-                initialEvents: [],
-                editable: true,
-                droppable: true,
-                eventResizableFromStart: true,
-                eventClick: this.editEvent,
-                eventsSet: this.handleEvents,
-                weekends: true,
-                selectable: true,
-                selectMirror: true,
-                dayMaxEvents: true,
-                views: {
-                    timeGridWeek: {
-                        buttonText: 'Semana', // Cambia el texto del botón de la vista "timeGridWeek" a "All Day"
-                        allDaySlot: true, // Mostrar solo la opción de "All Day" en la vista "timeGridWeek"
-                        slotDuration: '24:00:00' // Hace que cada ranura tenga una duración de 24 horas, ocultando así las horas específicas
-                    }
-                }
-            },
-            calendarOptions2: {
-                locale: esLocale,
-                eventDrop: this.handleEventDrop,
-                headerToolbar: {
-                    left: "prev,next today",
-                    center: "title",
-                    right: "dayGridMonth,timeGridWeek,timeGridDay,listWeek"
-                },
-                plugins: [
-                    dayGridPlugin,
-                    timeGridPlugin,
-                    interactionPlugin,
-                    bootstrapPlugin,
-                    listPlugin
-                ],
-                initialView: "dayGridMonth",
-                themeSystem: "bootstrap",
-                initialEvents: [],
-                editable: true,
-                droppable: true,
-                eventResizableFromStart: true,
-                eventClick: this.editEvent2,
-                eventsSet: this.handleEvents,
-                weekends: true,
-                selectable: true,
-                selectMirror: true,
-                dayMaxEvents: true
-            },
+            TablaReservas: [],
+            TablaCumpleanios: [],
             currentEvents: [],
             tableData: [],
-            showModal: false,
-            eventModal: false,
-            eventModal2: false,
-            categories: categories,
-            submitted: false,
-            submit: false,
-            newEventData: {},
-            edit: {},
-            deleteId: {},
-            event: {
-                title: "",
-                category: "",
-            },
-            editevent: {
-                editTitle: "",
-                editcategory: ""
-            },
-            editevent2: {
-                editTitle: "",
-                editCategory: "",
-                editNumber_of_people : null,
-                editDescription: ""
-            }
+            DiaActual: null,
         };
     },
     validations: {
@@ -139,257 +41,77 @@ export default {
         this.getData();
         this.getData2();
         this.getDataNews();
+        this.obtenerSemanaActual();
     },
     methods: {
-    /**
-     * Modal form submit
-     */
-     async getDataNews() {
-        try {
-            const response = await this.$http.get(this.$apiURL+'news/principal');
-            response.data.data.map(i => this.tableData.push({ ...i }));
-            this.totalRows = this.tableData.length;
-        } catch (error) {
-            console.error(error);
-        }
-    },
-    getFullImageUrl(relativeUrl) {
-        console.log(relativeUrl)
-      return this.$storageURL+"/" + relativeUrl;
-    },
-    async getData() {
-        try {
-            const response = await this.$http.get(this.$apiURL+'birthday/all');
-            this.calendarOptions.events  = response.data.data;
-            console.log(this.calendarOptions.events)
+        /**
+         * Modal form submit
+         */
+        async getDataNews() {
+            try {
+                const response = await this.$http.get(this.$apiURL+'news/principal');
+                response.data.data.map(i => this.tableData.push({ ...i }));
+            } catch (error) {
+                console.error(error);
+            }
+        },
+        getFullImageUrl(relativeUrl) {
+            console.log(relativeUrl)
+        return this.$storageURL+"/" + relativeUrl;
+        },
+        async getData() {
+            try {
+                const response = await this.$http.get(this.$apiURL+'user/all');
+                response.data.data.map(i => this.TablaCumpleanios.push({ ...i }));
+                this.TablaCumpleanios = response.data.data.map(item => {
+                    const fecha = new Date(item.date);
+                    const fechaFormatted = `${fecha.getDate()} de ${fecha.toLocaleString('es-ES', { month: 'long' })}`;
+                    
+                    return {
+                        username: item.username, 
+                        date: fechaFormatted
+                    };
+                });
+            } catch (error) {
+                console.error(error);
+            }
+        },
+        obtenerSemanaActual() {
+            const hoy = new Date();
+            const primerDiaSemana = new Date(hoy.setDate(hoy.getDate() - hoy.getDay() + (hoy.getDay() === 0 ? -6 : 1)));
+            const ultimoDiaSemana = new Date(hoy.setDate(hoy.getDate() - hoy.getDay() + 7));
             
-        } catch (error) {
-            console.error(error);
-        }
-    },
-    async getData2() {
-        try {
-            const response = await this.$http.get(this.$apiURL+'reservation/all');
-            this.calendarOptions2.events  = response.data.data;
-            console.log(this.calendarOptions2.events)
-            
-        } catch (error) {
-            console.error(error);
-        }
-    },
-    handleSubmit() {
-      this.submitted = true;
+            const options = { weekday: 'long', day: 'numeric', month: 'long' };
+            const primerDia = primerDiaSemana.toLocaleDateString('es-ES', options);
+            const ultimoDia = ultimoDiaSemana.toLocaleDateString('es-ES', options);
 
-      // stop here if form is invalid
-      this.v$.$touch();
-      if (this.v$.$invalid) {
-        return;
-      }
-      const formattedStartDate = format(new Date(this.newEventData.date), 'yyyy-MM-dd');
-      const eventData = {
-          title: this.event.title,
-          start: formattedStartDate,
-          end: formattedStartDate, // Ajusta esto si tienes una lógica diferente para 'end'
-          user_id: 1 // Asegúrate de que este dato esté disponible
-      };
-
-      // Aquí realizas la solicitud POST a tu API
-      this.$http.post(this.$apiURL+'birthday/store', eventData)
-          .then(response => {
-              console.log(response);
-              this.successmsg();
-              
-              this.showModal = false;
-              this.getData()
-          })
-          .catch(error => {
-              console.error(error);
-              // Manejar errores aquí
-          });
-
-      this.submitted = false;
-      this.event = {};
-    },
-    handleEventDrop(info) {
-      console.log(info)
-      // Obtener la nueva fecha de inicio y finalización
-      const startDate = format(new Date(info.event.start), 'yyyy-MM-dd');
-      const endDate = info.event.end ? format(new Date(info.event.end), 'yyyy-MM-dd') : startDate;
-
-      // Datos del evento para actualizar
-      const updatedEventData = {
-        title: info.event.title,
-        start: startDate,
-        end: endDate,
-        id : parseInt(info.event.id)
-        // otros campos que puedas necesitar actualizar
-      };
-
-      // Llamar a tu API para actualizar el evento
-      this.updateEvent(info.event.id, updatedEventData);
-    },
-    updateEvent(eventId, updatedEventData) {
-      console.log(eventId,updatedEventData)
-      // Aquí puedes hacer una solicitud a tu API para actualizar el evento
-      this.$http.post(this.$apiURL+'birthday/store', updatedEventData)
-          .then(response => {
-              console.log(response);
-              this.successmsg();
-              
-              this.showModal = false;
-              this.getData()
-          })
-          .catch(error => {
-              console.error(error);
-              // Manejar errores aquí
-          });
-      
-    },
-    hideModal() {
-      this.submitted = false;
-      this.showModal = false;
-      this.event = {};
-    },
-    /**
-     * Edit event modal submit
-     */
-     editSubmit() {
-      console.log(this.editevent)
-
-      // Datos del evento para actualizar
-      const updatedEventData = {
-        title: this.editevent.editTitle,
-        id : parseInt(this.edit.id),
-        // otros campos que puedas necesitar actualizar
-      };
-      // Llamar a tu API para actualizar el evento
-      this.updateEvent(this.edit.id, updatedEventData);
-      this.closeModal()
-      // Llamar a tu API para actualizar el evento
-      // Asumiendo que 'this.edit.id' contiene el ID del evento que estás editando
-    },
-
-    /**
-     * Delete event
-     */
-    deleteEvent() {
-      this.edit.remove();
-      this.eventModal = false;
-    },
-    /**
-     * Modal open for add event
-     */
-
-    /**
-     * Modal open for edit event
-     */
-    editEvent(info) {
-      this.edit = info.event;
-      this.editevent.editTitle = this.edit.title;
-      this.editevent.editcategory = this.edit.classNames[0];
-      this.eventModal = true;
-    },
-
-    editEvent2(info) {
-        console.log(info)
-        this.edit = info.event;
-        this.editevent2.editTitle = this.edit.title;
-        this.editevent2.editDescription = this.edit.extendedProps.description;
-        this.editevent2.editNumber_of_people = this.edit.extendedProps.number_of_people;
-        this.editevent2.editcategory = this.edit.classNames[0];
-        this.eventModal2 = true;
-    },
-
-    closeModal() {
-      this.eventModal = false;
-      this.eventModal2 = false;
-    },
-
-    confirm() {
-      Swal.fire({
-        title: "Are you sure?",
-        text: "You won't be able to delete this!",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#34c38f",
-        cancelButtonColor: "#f46a6a",
-        confirmButtonText: "Yes, delete it!"
-      }).then((result) => {
-        if (result.value) {
-          this.deleteEvent();
-          Swal.fire("Deleted!", "Event has been deleted.", "success");
-        }
-      });
-    },
-
-    /**
-     * Show list of events
-     */
-    handleEvents(events) {
-      this.currentEvents = events;
-    },
-
-    /**
-     * Show successfull Save Dialog
-     */
-    successmsg() {
-      Swal.fire({
-        position: "center",
-        icon: "success",
-        title: "Event has been saved",
-        showConfirmButton: false,
-        timer: 1000
-      });
+            this.DiaActual = `Semana del ${primerDia} al ${ultimoDia}`;
+        },
+        async getData2() {
+            try {
+                const response = await this.$http.get(this.$apiURL+'reservation/all');
+                console.log(response)
+                this.TablaReservas = response.data.data.map(item => {
+                    const startTimeFormatted = item.start_time.slice(0, 5);
+                    const endTimeFormatted = item.end_time.slice(0, 5);
+                    
+                    const fecha = new Date(item.date);
+                    const fechaFormatted = `${fecha.getDate()} de ${fecha.toLocaleString('es-ES', { month: 'long' })}`;
+                    
+                    return {
+                        nombre: item.title, 
+                        start_time: startTimeFormatted,
+                        end_time: endTimeFormatted,
+                        date: fechaFormatted
+                    };
+                });
+            } catch (error) {
+                console.error(error);
+            }
+        },
     }
-  }
 };
 </script>
-<style>
-.w-100 {
-    width: 100% !important;
-    max-height: 600px;
-    object-fit: contain;
-}
-.carousel-item.active, .carousel-item-next, .carousel-item-prev {
-    display: block;
-    background: transparent !important;
-}
-/* Estilo para reducir el tamaño del calendario */
-.app-calendar .fc {
-  font-size: 12px; /* Reducir el tamaño de la fuente */
-}
-
-.app-calendar .fc-event {
-  font-size: 10px; /* Reducir el tamaño de la fuente de los eventos */
-}
-
-.app-calendar .fc th, 
-.app-calendar .fc td {
-  padding: 5px; /* Reducir el espacio entre celdas */
-}
-
-.app-calendar .fc-list-item {
-  font-size: 12px; /* Reducir el tamaño de la fuente en la vista de lista */
-}
-
-.app-calendar .fc-list-heading {
-  font-size: 14px; /* Reducir el tamaño de la fuente en los encabezados de la vista de lista */
-}
-.app-calendar .btn {
-  font-size: 10px; /* Reducir el tamaño de la fuente de los botones */
-  padding: 5px 10px; /* Reducir el padding de los botones */
-}
-.app-calendar .month-year-text {
-  font-size: 9px; /* Tamaño de la fuente */
-}
-.fc .fc-toolbar h2, .fc .fc-toolbar .h2 {
-    font-size: 12px;
-    line-height: 15px;
-    text-transform: uppercase;
-}
-
-</style>
-
 <template>
   <Layout>
     <BRow>
@@ -443,26 +165,40 @@ export default {
             <BRow>
                 <BCol cols="12">
                     <BCard np-body>
-                    Reservas
+                        <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important">
+                            <BRow>
+                                <BCol sm="7">
+                                    <i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Reserva de salas
+                                </BCol>
+                            </BRow>
+                        </BCardHeader>
                         <BCardBody>
-                            <div class="app-calendar">
-                            <FullCalendar
-                                ref="fullCalendar"
-                                :options="calendarOptions2"
-                            ></FullCalendar>
+                            <strong>{{DiaActual}}</strong>
+                            <div class="table-responsive mb-0" v-for="(row, index) in TablaReservas"
+                                                                    :key="index">
+                                <li >
+                                    {{ row.date }} | {{ row.start_time }} - {{ row.end_time }} | {{ row.user_id }}
+                                </li>
                             </div>
                         </BCardBody>
                     </BCard>
                 </BCol>
                 <BCol cols="12">
                     <BCard np-body>
-                    Cumpleaños
+                        <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important">
+                            <BRow>
+                                <BCol sm="7">
+                                    <i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Cumpleaños
+                                </BCol>
+                            </BRow>
+                        </BCardHeader>
                         <BCardBody>
-                            <div class="app-calendar">
-                            <FullCalendar
-                                ref="fullCalendar"
-                                :options="calendarOptions"
-                            ></FullCalendar>
+                            <strong>{{DiaActual}}</strong>
+                            <div class="table-responsive mb-0" v-for="(row, index) in TablaCumpleanios"
+                                                                    :key="index">
+                                <li >
+                                    | {{ row.username }}
+                                </li>
                             </div>
                         </BCardBody>
                     </BCard>
@@ -470,103 +206,5 @@ export default {
             </BRow>
         </BCol>
     </BRow>
-    <!-- Edit Modal -->
-    <BModal
-      v-model="eventModal"
-      title="Cumpleaño"
-      title-class="font-18"
-      hide-footer
-      body-class="p-3"
-    >
-      <form @submit.prevent="editSubmit">
-        <BRow>
-            <BCol lg="12">
-                <div class="mb-3">
-                <label for="name" class="form-label">Event Name</label>
-                <input
-                    id="name"
-                    v-model="editevent.editTitle"
-                    type="text"
-                    class="form-control"
-                    placeholder="Insert Event name"
-                    disabled
-                />
-                </div>
-            </BCol>
-            <BCol lg="12">
-                <div class="mb-3">
-                <label class="control-label form-label">Category</label>
-                <select
-                    v-model="editevent.editcategory"
-                    class="form-control"
-                    name="category"
-                    disabled
-                >
-                    <option
-                    v-for="option in categories"
-                    :key="option.backgroundColor"
-                    :value="`${option.value}`"
-                    >
-                    {{ option.name }}
-                    </option>
-                </select>
-                </div>
-            </BCol>
-        </BRow>
-      </form>
-    </BModal>
-    <BModal
-        v-model="eventModal2"
-        title="Detail Event"
-        title-class="font-18"
-        hide-footer
-        body-class="p-3"
-        >
-        <BRow>
-            <BCol lg="12">
-                <div class="mb-3">
-                    <label for="name" class="form-label">Event Name</label>
-                    <input
-                        id="name"
-                        v-model="editevent2.editTitle"
-                        type="text"
-                        class="form-control"
-                        disabled
-                        placeholder="Insert Event name"
-                    />
-                </div>
-            </BCol>
-            <BCol lg="12">
-                <div class="mb-3">
-                    <label class="control-label form-label">Category</label>
-                    <select
-                        v-model="editevent2.editcategory"
-                        class="form-control"
-                        name="category"
-                    >
-                        <option
-                        v-for="option in categories"
-                        :key="option.backgroundColor"
-                        :value="`${option.value}`"
-                        >
-                        {{ option.name }}
-                        </option>
-                    </select>
-                </div>
-            </BCol>
-            <BCol lg="12">
-                <div class="mb-3">
-                    <label for="description" class="form-label">Descripción</label>
-                    <textarea id="description" v-model="editevent2.editDescription" class="form-control" placeholder="Descripción del evento"></textarea>
-                </div>
-            </BCol>
-            <BCol lg="12">
-                <div class="mb-3">
-                    <label for="numberOfPeople" class="form-label">Número de Personas</label>
-                    <input id="numberOfPeople" v-model="editevent2.editNumber_of_people" type="number" class="form-control" placeholder="Número de personas">
-                </div>
-            </BCol>
-        </BRow>
-    </BModal>
   </Layout>
 </template>
