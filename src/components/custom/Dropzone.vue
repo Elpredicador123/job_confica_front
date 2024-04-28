@@ -7,10 +7,10 @@
         <i class="bi bi-cloud-download fs-1" v-if="cloudIcon == 'bootstrap'"></i>
       </div>
       <h5 class="fs-md mb-0" v-if="cloudIcon == 'bootstrap'">
-        Drop files here or click to upload.
+        Suelte los archivos aquí o haga clic para cargarlos.
       </h5>
       <h4 v-if="cloudIcon == 'remix'">
-        Drop {{ files }} here or click to upload.
+        Suelte los archivos aquí o haga clic para cargarlos.
       </h4>
       <label :for="dropzoneFile" class="stretched-link"></label>
       <input type="file" :id="dropzoneFile" class="btn btn-primary d-none" :class="dropzoneFile" :multiple="isMultiple"

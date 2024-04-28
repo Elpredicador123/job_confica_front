@@ -5,27 +5,38 @@
           <BCol cols="12">
               <BCard no-body>
                   <BCardBody>
-                      <BCardTitle>Editar Noticias</BCardTitle>
+                      <strong><h1>Editar Noticias</h1></strong>
                       <form class="needs-validation" @submit.prevent="submit">
-                        <BRow>
-                            <BCol lg="6">
+                        <BRow>                          
+                            <BCol cols="6">
+                              <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important">
+                                  <BRow>
+                                      <BCol sm="7">
+                                          <i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Titulo
+                                      </BCol>
+                                  </BRow>
+                              </BCardHeader>
                                 <BCard no-body>
-                                  <BCardBody>
-
-                                    <div class="vuePicDatePicker">
-                                      <div class="form-group mb-3">
-                                        <label>Default Date Picker</label>
-                                        <br />
-                                    <VueDatePicker
-                                          v-model="news.date"
-                                          model-type="yyyy-MM-dd HH:mm:ss"
-                                        />
-                                      </div>
-                                    </div>
-                                  </BCardBody>
+                                    <BCardBody>
+                                        <ckeditor v-model="news.title" :editor="editor_title"></ckeditor>
+                                    </BCardBody>
                                 </BCard>
                             </BCol>
-                            <BCol lg="6">
+                          <BCol cols="6">
+                            <BCard no-body>
+                              <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important">
+                                  <BRow>
+                                      <BCol sm="7">
+                                          <i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Descripción
+                                      </BCol>
+                                  </BRow>
+                              </BCardHeader>
+                              <BCardBody>
+                                <ckeditor v-model="news.description" :editor="editor_description"></ckeditor>
+                              </BCardBody>
+                            </BCard>
+                          </BCol>
+                          <BCol lg="4">
                               Seleccionar para eliminar
                               <ul class="list-unstyled mb-0" id="dropzone-preview2">
                                 <li class="mt-2" id="dropzone-preview-list2">
@@ -52,25 +63,7 @@
                                 </li>
                               </ul>
                             </BCol>
-                            <BCol cols="6">
-                                <BCard no-body>
-                                    <BCardBody>
-                                        <BCardTitle>Titulo</BCardTitle>
-                                        <!-- Editor -->
-                                        <ckeditor v-model="news.title" :editor="editor_title"></ckeditor>
-                                    </BCardBody>
-                                </BCard>
-                            </BCol>
-                          <BCol cols="6">
-                            <BCard no-body>
-                              <BCardBody>
-                                <BCardTitle>Descripción</BCardTitle>
-                                <!-- Editor -->
-                                <ckeditor v-model="news.description" :editor="editor_description"></ckeditor>
-                              </BCardBody>
-                            </BCard>
-                          </BCol>
-                          <BCol lg="12">
+                          <BCol lg="8">
                               <BCard no-body>
                                 <BCardBody>
                                   <BCardTitle class="mb-1">Cargar Archivo</BCardTitle>
@@ -151,15 +144,12 @@
 import CKEditor from "@ckeditor/ckeditor5-vue";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import DropZone from "@/components/custom/Dropzone.vue";
+import moment from 'moment';
 
-import VueDatePicker from "@vuepic/vue-datepicker";
-import "@vuepic/vue-datepicker/dist/main.css";
-import "flatpickr/dist/flatpickr.css";
 export default {
   components: {
         ckeditor: CKEditor.component,
         DropZone,
-        VueDatePicker
     },
   data() {
       return {
@@ -194,7 +184,7 @@ export default {
           this.isOpen = true;
           this.news.title = item.title;
           this.news.description = item.description;
-          this.news.date = item.date;
+          this.news.date = moment().format('YYYY-MM-DD HH:mm:ss'),
           this.news.id = item.id;
           this.news.user_id = user.id;
           this.galleryFilesEdit = item.images.map(image => ({

@@ -116,10 +116,9 @@
       }
     },
     "news": {
-      "text": "Noticias",
       "list": {
-        "index": "Listado",
-        "create": "Crear"
+        "index": "Listado de artículos",
+        "create": "Crear artículos"
       }
     },
     "usuarios": {
@@ -149,7 +148,7 @@
     "reservation": {
       "text": "Reservaciones",
       "list": {
-        "create": "Nueva Reservación",
+        "create": "Reservar Sala",
         "index": "Listado"
       }
     },

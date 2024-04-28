@@ -5,9 +5,8 @@ import DropZone from "@/components/custom/Dropzone.vue";
 
 import Layout from "../../layouts/main";
 import PageHeader from "@/components/page-header";
-import VueDatePicker from "@vuepic/vue-datepicker";
-import "@vuepic/vue-datepicker/dist/main.css";
 import "flatpickr/dist/flatpickr.css";
+import moment from 'moment';
 
 /**
  * Editor component
@@ -17,8 +16,7 @@ export default {
         ckeditor: CKEditor.component,
         Layout,
         PageHeader,
-        DropZone,
-        VueDatePicker
+        DropZone
     },
     data() {
         return {
@@ -51,7 +49,7 @@ export default {
           this.news = {
                 title:"",
                 description :"",
-                date: null,
+                date : moment().format('YYYY-MM-DD HH:mm:ss'),
                 user_id : user.id,
             };
             this.dPDefaultDate = null;
@@ -149,27 +147,16 @@ export default {
     <form class="needs-validation" @submit.prevent="submit">
 
     <BRow>
-        <BCol lg="12">
-            <BCard no-body>
-          <BCardBody>
-
-            <div class="vuePicDatePicker">
-              <div class="form-group mb-3">
-                <label>Default Date Picker</label>
-                <br />
-            <VueDatePicker
-                  v-model="news.date"
-                  model-type="yyyy-MM-dd HH:mm:ss"
-                />
-              </div>
-            </div>
-        </BCardBody>
-            </BCard>
-        </BCol>
         <BCol lg="6">
             <BCard no-body>
+              <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important">
+                  <BRow>
+                      <BCol sm="7">
+                          <i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Titulo
+                      </BCol>
+                  </BRow>
+              </BCardHeader>
                 <BCardBody>
-                    <BCardTitle>Titulo</BCardTitle>
                     <!-- Editor -->
                     <ckeditor v-model="news.title" :editor="editor_title"></ckeditor>
                 </BCardBody>
@@ -177,21 +164,28 @@ export default {
         </BCol>
       <BCol lg="6">
         <BCard no-body>
+          <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important">
+              <BRow>
+                  <BCol sm="7">
+                      <i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Descripción
+                  </BCol>
+              </BRow>
+          </BCardHeader>
           <BCardBody>
-            <BCardTitle>Descripción</BCardTitle>
-            <!-- Editor -->
             <ckeditor v-model="news.description" :editor="editor_description"></ckeditor>
           </BCardBody>
         </BCard>
       </BCol>
       <BCol lg="12">
           <BCard no-body>
+            <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important">
+              <BRow>
+                  <BCol sm="7">
+                      <i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Cargar imagen
+                  </BCol>
+              </BRow>
+            </BCardHeader>
             <BCardBody>
-              <BCardTitle class="mb-1">Dropzone</BCardTitle>
-              <p class="text-muted">
-                DropzoneJS is an open source library that provides drag’n’drop
-                file uploads with image previews.
-              </p>
               <div>
                 <DropZone
                   files="files"

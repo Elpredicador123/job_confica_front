@@ -16,31 +16,21 @@ export const menuItems = [
         icon: "bx bx-support",
         subItems: [
             {
-                id: 2,
-                label: "menuitems.news.text",
-                icon: "uil-newspaper",
-                subItems: [
-                    {
-                        id: 91,
-                        label: "menuitems.news.list.index",
-                        link: "/news/index",
-                        parentId: 2,
-                        meta: {
-                            permissions: ['L_NEWS'] // Permisos necesarios para acceder a este elemento del menú
-                        }
-                    },
-                    {
-                        id: 92,
-                        label: "menuitems.news.list.create",
-                        link: "/news/create",
-                        parentId: 2,
-                        meta: {
-                            permissions: ['C_NEWS'] // Permisos necesarios para acceder a este elemento del menú
-                        }
-                    }
-                ],
+                id: 91,
+                label: "menuitems.news.list.index",
+                link: "/news/index",
+                parentId: 15,
                 meta: {
-                    permissions: ['NEWS'] // Permisos necesarios para acceder a este elemento del menú
+                    permissions: ['L_NEWS'] // Permisos necesarios para acceder a este elemento del menú
+                }
+            },
+            {
+                id: 92,
+                label: "menuitems.news.list.create",
+                link: "/news/create",
+                parentId: 15,
+                meta: {
+                    permissions: ['C_NEWS'] // Permisos necesarios para acceder a este elemento del menú
                 }
             },
             {
@@ -183,63 +173,7 @@ export const menuItems = [
                     permissions: ['USER'] // Permisos necesarios para acceder a este elemento del menú
                 }
             },
-            {
-                id: 3,
-                label: "menuitems.birthday.text",
-                icon: "uil-calendar-alt",
-                subItems: [
-                    {
-                        id: 93,
-                        label: "menuitems.birthday.list.index",
-                        link: "/birthday/index",
-                        parentId: 3,
-                        meta: {
-                            permissions: ['L_BIRTHDAY'] // Permisos necesarios para acceder a este elemento del menú
-                        }
-                    },
-                    {
-                        id: 94,
-                        label: "menuitems.birthday.list.calendar",
-                        link: "/birthday/calendar",
-                        parentId: 3,
-                        meta: {
-                            permissions: ['C_BIRTHDAY'] // Permisos necesarios para acceder a este elemento del menú
-                        }
-                    }
-                ],
-                meta: {
-                    permissions: ['BIRTHDAY'] // Permisos necesarios para acceder a este elemento del menú
-                }
-            },
         ]
-    },
-    {
-        id: 4,
-        label: "menuitems.reservation.text",
-        icon: "uil-calendar-slash",
-        subItems: [
-            {
-                id: 95,
-                label: "menuitems.reservation.list.index",
-                link: "/reservation/index",
-                parentId: 4,
-                meta: {
-                    permissions: ['L_RESERVATION'] // Permisos necesarios para acceder a este elemento del menú
-                }
-            },
-            {
-                id: 96,
-                label: "menuitems.reservation.list.create",
-                link: "/reservation/create",
-                parentId: 4,
-                meta: {
-                    permissions: ['C_RESERVATION'] // Permisos necesarios para acceder a este elemento del menú
-                }
-            }
-        ],
-        meta: {
-            permissions: ['RESERVATION'] // Permisos necesarios para acceder a este elemento del menú
-        }
     },
     {
         id: 6,

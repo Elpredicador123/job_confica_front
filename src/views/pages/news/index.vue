@@ -157,9 +157,6 @@ export default {
                             <template #cell(title)="data">
                                 <div v-html="data.item.title"></div>
                             </template>
-                            <template #cell(description)="data">
-                                <div v-html="data.item.description"></div>
-                            </template>
                             </BTable>
                         </div>
                         <BRow>
