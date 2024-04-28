@@ -7,6 +7,7 @@ import Layout from "../../layouts/main";
 import PageHeader from "@/components/page-header";
 import "flatpickr/dist/flatpickr.css";
 import moment from 'moment';
+import Multiselect from "@vueform/multiselect";
 
 /**
  * Editor component
@@ -16,7 +17,8 @@ export default {
         ckeditor: CKEditor.component,
         Layout,
         PageHeader,
-        DropZone
+        DropZone,
+        Multiselect
     },
     data() {
         return {
@@ -34,6 +36,13 @@ export default {
             dPDefaultDate: null,
             galleryDropzoneFile: "",
             galleryFiles: [],
+            categories: [
+                "RECURSOS HUMANOS",
+                "MASIVOS",
+                "PLANTA EXTERNA",
+                "CONTABILIDAD",
+                "FLM",
+            ],
             DropFile : [],
             editor_title: ClassicEditor,
             editor_description: ClassicEditor,
@@ -51,6 +60,7 @@ export default {
                 description :"",
                 date : moment().format('YYYY-MM-DD HH:mm:ss'),
                 user_id : user.id,
+                category : null,
             };
             this.dPDefaultDate = null;
             this.galleryDropzoneFile = "";
@@ -176,7 +186,31 @@ export default {
           </BCardBody>
         </BCard>
       </BCol>
-      <BCol lg="12">
+      <BCol lg="3">
+        <BCard no-body>
+              <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important">
+                  <BRow>
+                      <BCol sm="7">
+                          <i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Titulo
+                      </BCol>
+                  </BRow>
+              </BCardHeader>
+                <BCardBody>
+                    <!-- Editor -->
+                    <Multiselect
+                          v-model="news.category"
+                          :options="categories"
+                          required
+                          class="form-control p-0"
+                      />
+                </BCardBody>
+            </BCard>
+          <div class="mt-4">
+
+                      
+          </div>
+      </BCol>
+      <BCol lg="9">
           <BCard no-body>
             <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important">
               <BRow>
