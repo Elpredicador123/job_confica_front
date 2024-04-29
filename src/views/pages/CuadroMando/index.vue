@@ -66,8 +66,8 @@ export default {
             tableDatePorDia:null,
             //--------------------
             currentPageAgenda: 1,
-            perPageAgenda: 4,
-            pageOptionsAgenda: [4,10,25,50,100],
+            perPageAgenda: 20,
+            pageOptionsAgenda: [20,25,50,100],
             filterOnAgenda: [],
             filterAgenda: null,
             sortByAgenda: "age",
@@ -543,11 +543,6 @@ export default {
                             responsive="sm"
                             :per-page="perPageAgenda"
                             :current-page="currentPageAgenda"
-                            :sort-by.sync="sortByAgenda"
-                            :sort-desc.sync="sortDescAgenda"
-                            :filter="filterAgenda"
-                            :filter-included-fields="filterOnAgenda"
-                            @filtered="onFilteredAgenda"
                         >                    
                         </BTable>
                     </div>

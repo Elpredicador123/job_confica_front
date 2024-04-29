@@ -43,6 +43,24 @@ export default {
         this.getDataNews();
         this.obtenerSemanaActual();
     },
+    computed: {
+        // Estas son funciones computadas correctas
+        truncatedTitle() {
+            console.log(this.newsItem)
+            // Asegúrate de que 'newsItem' está definido y tiene la propiedad 'title'
+            if (this.newsItem && this.newsItem.title && this.newsItem.title.length > 30) {
+                return this.newsItem.title.substring(0, 30) + '... ver más';
+            }
+            return "";
+        },
+        truncatedDescription() {
+            // Asegúrate de que 'newsItem' está definido y tiene la propiedad 'description'
+            if (this.newsItem && this.newsItem.description && this.newsItem.description.length > 30) {
+            return this.newsItem.description.substring(0, 30) + '... ver más';
+            }
+            return "";
+        },
+    },
     methods: {
         /**
          * Modal form submit
@@ -109,6 +127,13 @@ export default {
                 console.error(error);
             }
         },
+        truncateText(text, length) {
+            return text.length > length ? text.substring(0, length) + '... ver más' : text;
+        },
+        handleCardClick(){
+            
+        }
+
     }
 };
 </script>
@@ -141,11 +166,10 @@ export default {
         <BCol lg="8">
             <BRow>
                 <BCol cols="12" v-for="newsItem in tableData" :key="newsItem.id">
-                    <BCard>
+                    <BCard @click="handleCardClick(newsItem.id)">
                         <BCardBody>
                             <BCardTitle v-html="newsItem.title"></BCardTitle>
-                            <BCardText v-html="newsItem.description"></BCardText>
-
+                            <BCardTitle v-html="truncateText(newsItem.description, 30)"></BCardTitle>
                             <!-- Carousel para las imágenes de la noticia -->
                             <BCarousel :interval="3000" 
                                 style="text-shadow: 0px 0px 2px #000; width: 75%;margin: 0 auto;"
@@ -208,3 +232,10 @@ export default {
     </BRow>
   </Layout>
 </template>
+<style>
+p {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    color: #000;
+}
+</style>
