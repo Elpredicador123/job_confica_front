@@ -25,6 +25,8 @@ export default {
                 start_time: null,
                 end_time: null,
                 user_id : user.id,
+                description: "desc",
+                number_of_people : 0
             }
         },
         async submit(){

@@ -1,4 +1,4 @@
-<script>
+<script >
 import Layout from "../../layouts/main";
 import PageHeader from "@/components/page-header";
 import TecnicosModal from "./edit.vue";
@@ -37,18 +37,6 @@ export default {
                 },
                 {
                     key: "Nro_Documento",
-                    sortable: true
-                },
-                {
-                    key: "Apellido_paterno",
-                    sortable: true
-                },
-                {
-                    key: "Apellido_materno",
-                    sortable: true
-                },
-                {
-                    key: "Nombres",
                     sortable: true
                 },
                 {
@@ -117,6 +105,29 @@ export default {
             console.log("Editar item", item);
             this.selectedItem = JSON.parse(JSON.stringify(item)); // Realiza una copia profunda del ítem
             this.$refs.TecnicosModal.open(this.selectedItem);
+        },
+        exportData() {
+            const dataToExport = this.tableDataTec;
+            // Filtrar las cabeceras para excluir la columna 'actions'
+            const fieldsToExport = this.fieldsTec.filter(f => f.key !== "actions");
+            let csvContent = "data:text/csv;charset=utf-8,";
+            // Agregar las cabeceras filtradas
+            csvContent += fieldsToExport.map(f => f.key).join(",") + "\r\n";
+            // Agregar los datos, excluyendo la columna 'actions'
+            dataToExport.forEach(row => {
+                const rowData = fieldsToExport.map(field => `"${row[field.key]}"`).join(",");
+                csvContent += rowData + "\r\n";
+            });
+            // Crear un enlace para descargar el archivo
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "datos.csv");
+            document.body.appendChild(link); // Necesario para FF
+            // Simular clic en el enlace para descargar el archivo
+            link.click();
+            // Limpiar el enlace después de la descarga
+            document.body.removeChild(link);
         }
     },
     middleware: "authentication"
@@ -128,8 +139,17 @@ export default {
         <BRow>
             <BCol cols="12">
                 <BCard no-body>
+                    <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important">
+                        <BRow>
+                            <BCol sm="7">
+                                <i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Maestra de Técnicos
+                            </BCol>
+                            <BCol sm="5" style="text-align: right;">
+                                <b-button @click="exportData">Exportar Datos</b-button>
+                            </BCol>
+                        </BRow>
+                    </BCardHeader>
                     <BCardBody>
-                        <BCardTitle>Averías de infancia - Tec</BCardTitle>
                         <BRow class="mt-4">
                             <BCol sm="12" md="6">
                                 <div id="tickets-table_length" class="dataTables_length">

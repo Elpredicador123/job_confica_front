@@ -85,14 +85,16 @@ export default {
             RatioMantenimientoDate : null,
             RatioInstalacionesDate: null,
             AvanceMantenimientoDate:null,
-            AvanceInstalacionDate: null
+            AvanceInstalacionDate: null,
+            CiudadId1 : null,
+            Ciudades : []
         };
     },
     mounted() {
         // Set the initial number of items
         this.totalRows2 = this.tableData2.length;
         this.totalRowsPorDia = this.tableDataPorDia.length;
-
+        this.getCity();
         //obtener datos de la api
         this.getInstalaciones();
         this.getMantenimientos();
@@ -101,7 +103,7 @@ export default {
         this.getTableInstalaciones();
         this.getRatioInstalaciones();
         this.getRatioMantenimientos();
-        this.getTableAgendaPorDias();
+        //this.getTableAgendaPorDias();
         this.getTableInstalacionesDia();
         this.getTableMantenimientosDia();
         // setInterval(() => {
@@ -109,6 +111,23 @@ export default {
         //     }, 300000);
     },
     methods:{
+        async getCity(){
+            try {
+                const TIMEOUT_MS = 4000; // Tiempo de espera en milisegundos
+                const responsePromise = this.$http.get(this.$apiURL + 'city/all');
+                const timeoutPromise = new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
+                const response = await Promise.race([responsePromise, timeoutPromise]);
+                if (response && response.data.data) {
+                    response.data.data.forEach(city => this.Ciudades.push(city.name));
+                    this.CiudadId1 = this.Ciudades[0]
+                } else {
+                    this.CiudadId1 = "Lima"
+                }
+                this.getTableAgendaPorDias()
+            } catch (error) {
+                console.error(error);
+            }
+        },
         formatearHora(value){
             const date = moment(value, ['DD/MM/YYYY HH:mm:ss', 'YYYY-MM-DDTHH:mm:ss']);
             if (!date.isValid()) return ': ' + value;
@@ -233,17 +252,23 @@ export default {
         },
         async getTableAgendaPorDias(){
             try {
-                const data = await this.fetchData('control-panel/diarytable');
-                if(data !== null && 'series' in data && data.series.length>0){
-                    this.processTableData(data, this.tableDataAgenda, this.fieldsAgenda,'agenda_dias');
-                    this.DiaryDate = this.formatearHora(data.date)
-                }
-                else{
-                    const currentData = JSON.parse(localStorage.getItem('agenda_dias'));
-                    if (currentData) {
-                        this.processTableData(currentData.data, this.tableDataAgenda, this.fieldsAgenda);
-                    }
-                    this.DiaryDate = this.formatearHora(currentData.data.date)
+                if(this.CiudadId1 != null ){
+                    this.$nextTick(async () => {
+                        this.tableDataAgenda.splice(0, this.tableDataAgenda.length);
+                        this.fieldsAgenda.splice(0, this.fieldsAgenda.length);
+                        const data = await this.fetchData('control-panel/diarytable/'+this.CiudadId1);
+                        if(data !== null && 'series' in data && data.series.length>0){
+                            this.processTableData(data, this.tableDataAgenda, this.fieldsAgenda,'agenda_dias');
+                            this.DiaryDate = this.formatearHora(data.date)
+                        }
+                        else{
+                            const currentData = JSON.parse(localStorage.getItem('agenda_dias'));
+                            if (currentData) {
+                                this.processTableData(currentData.data, this.tableDataAgenda, this.fieldsAgenda);
+                            }
+                            this.DiaryDate = this.formatearHora(currentData.data.date)
+                        }
+                    }); 
                 }
             } catch (error) {
                 console.error(error);
@@ -535,6 +560,19 @@ export default {
                     </BRow>
                 </BCardHeader>
                 <BCardBody>
+                    <BRow>
+                        <BCol cols="12">
+                            Filtrar por:
+                        </BCol>
+                        <BCol cols="5">
+                            <BFormSelect
+                                v-model="CiudadId1"
+                                size="sm"
+                                :options="Ciudades"
+                                @change="getTableAgendaPorDias()"
+                            ></BFormSelect>
+                        </BCol>
+                    </BRow>
                     <!-- Table -->
                     <div class="table-responsive mb-0">
                         <BTable

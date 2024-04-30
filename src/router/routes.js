@@ -110,6 +110,18 @@ export default [
     component: () => import("../views/pages/infografias/create")
   },
   {
+    path: "/infografias/indexVideo",
+    name: "Material informativo",
+    meta: { title: "Material informativo", authRequired: true, permissions: ['INFOGRAPHIC'] },
+    component: () => import("../views/pages/infografias/indexVideo")
+  },
+  {
+    path: "/infografias/createVideo",
+    name: "Crear Material Informativo",
+    meta: { title: "Crear Material Informativo", authRequired: true, permissions: ['C_INFOGRAPHIC'] },
+    component: () => import("../views/pages/infografias/createVideo")
+  },
+  {
     path: "/liquidacion/index",
     name: "Liquidaciones",
     meta: { title: "Liquidaciones", authRequired: true, permissions: ['ORDER'] },

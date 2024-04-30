@@ -130,8 +130,16 @@ export default {
         <BRow>
             <BCol cols="12">
                 <BCard no-body>
+                    <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important">
+                        <BRow>
+                            <BCol sm="7">
+                                <i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Registro de ordenes
+                            </BCol>
+                            <BCol sm="5">
+                            </BCol>
+                        </BRow>
+                    </BCardHeader>
                     <BCardBody>
-                        <BCardTitle>Registro de ordenes</BCardTitle>
                             <form autocomplete="off"
                                 class="row no-gutters"
                                 @submit.prevent="submit">

@@ -85,10 +85,11 @@
       "text": "Calidad"
     },
     "infografias": {
-      "text": "Infografias",
       "list": {
-        "index": "Listado",
-        "create": "Crear"
+        "index": "Editar Infografías",
+        "create": "Nueva Infografía",
+        "createVideo": "Crear Material de Capacitación",
+        "indexVideo": "Material de Capacitación"
       }
     },
     "liquidacion": {

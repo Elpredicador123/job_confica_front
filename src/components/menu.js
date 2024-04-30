@@ -62,31 +62,39 @@ export const menuItems = [
                 }
             },
             {
-                id: 11,
-                label: "menuitems.infografias.text",
-                icon: "uil-cloud-download",
-                subItems: [
-                    {
-                        id: 99,
-                        label: "menuitems.infografias.list.index",
-                        link: "/infografias/index",
-                        parentId: 11,
-                        meta: {
-                            permissions: ['L_INFOGRAPHIC'] // Permisos necesarios para acceder a este elemento del menú
-                        }
-                    },
-                    {
-                        id: 100,
-                        label: "menuitems.infografias.list.create",
-                        link: "/infografias/create",
-                        parentId: 11,
-                        meta: {
-                            permissions: ['C_INFOGRAPHIC'] // Permisos necesarios para acceder a este elemento del menú
-                        }
-                    }
-                ],
+                id: 99,
+                label: "menuitems.infografias.list.index",
+                link: "/infografias/index",
+                parentId: 12,
                 meta: {
-                    permissions: ['INFOGRAPHIC'] // Permisos necesarios para acceder a este elemento del menú
+                    permissions: ['L_INFOGRAPHIC'] // Permisos necesarios para acceder a este elemento del menú
+                }
+            },
+            {
+                id: 100,
+                label: "menuitems.infografias.list.create",
+                link: "/infografias/create",
+                parentId: 12,
+                meta: {
+                    permissions: ['C_INFOGRAPHIC'] // Permisos necesarios para acceder a este elemento del menú
+                }
+            },
+            {
+                id: 105,
+                label: "menuitems.infografias.list.indexVideo",
+                link: "/infografias/indexVideo",
+                parentId: 12,
+                meta: {
+                    permissions: ['L_INFOGRAPHIC'] // Permisos necesarios para acceder a este elemento del menú
+                }
+            },
+            {
+                id: 106,
+                label: "menuitems.infografias.list.createVideo",
+                link: "/infografias/createVideo",
+                parentId: 12,
+                meta: {
+                    permissions: ['C_INFOGRAPHIC'] // Permisos necesarios para acceder a este elemento del menú
                 }
             },
             {

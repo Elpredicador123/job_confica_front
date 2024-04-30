@@ -11,17 +11,7 @@ export default {
   components: { Layout, PageHeader,InfografiaModal,VideoModal },
     data() {
         return {
-            title: "Infografías",
-            items: [
-                {
-                text: "Infografías",
-                href: "/infografias/index"
-                },
-                {
-                text: "Listado",
-                active: true
-                }
-            ],
+            title: "Material de Capacitación",
             //--------------------------
             tableData: [],
             totalRows: 1,
@@ -42,16 +32,17 @@ export default {
                     sortable: true
                 },
                 {
-                    key: "url",
-                    sortable: true
-                },
-                {
                     key: "Autor",
                     sortable: true
                 },
                 {
-                    key: "accion",
-                }
+                    key: "date",
+                    sortable: true
+                },
+                {
+                    key: "url",
+                    sortable: true
+                },
             ],
             //--------------------------
             tableInfografia: [],
@@ -84,10 +75,6 @@ export default {
                     key: "url",
                     sortable: true
                 },
-
-                {
-                    key: "accion",
-                }
             ]
         }
     },
@@ -150,14 +137,14 @@ export default {
 
 <template>
     <Layout>
-        <PageHeader :title="title" :items="items" />
+        <PageHeader :title="title"  />
         <BRow>
             <BCol cols="12">
                 <BCard no-body>
                     <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important">
                         <BRow>
                             <BCol sm="7">
-                                <i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Listado de Infografías
+                                <i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Material de Capacitación
                             </BCol>
                             <BCol sm="5">
                             </BCol>
@@ -170,9 +157,9 @@ export default {
                                 <label class="d-inline-flex align-items-center">
                                     Show&nbsp;
                                     <BFormSelect
-                                    v-model="perPageInfografia"
+                                    v-model="perPage"
                                     size="sm"
-                                    :options="pageOptionsInfografia"
+                                    :options="pageOptions"
                                     ></BFormSelect
                                     >&nbsp;entries
                                 </label>
@@ -187,7 +174,7 @@ export default {
                                 <label class="d-inline-flex align-items-center">
                                     Search:
                                     <BFormInput
-                                    v-model="filterInfografia"
+                                    v-model="filter"
                                     type="search"
                                     placeholder="Search..."
                                     class="form-control form-control-sm ms-2"
@@ -200,25 +187,21 @@ export default {
                         <!-- Table -->
                         <div class="table-responsive mb-0">
                             <BTable
-                                :items="tableInfografia"
-                                :fields="fieldsInfografia"
+                                :items="tableData"
+                                :fields="fields"
                                 responsive="sm"
-                                :per-page="perPageInfografia"
-                                :current-page="currentPageInfografia"
-                                :sort-by.sync="sortByInfografia"
-                                :sort-desc.sync="sortDescInfografia"
-                                :filter="filterInfografia"
-                                :filter-included-fields="filterOnInfografia"
-                                @filtered="onFilteredInfografia"
+                                :per-page="perPage"
+                                :current-page="currentPage"
+                                :sort-by.sync="sortBy"
+                                :sort-desc.sync="sortDesc"
+                                :filter="filter"
+                                :filter-included-fields="filterOn"
+                                @filtered="onFiltered"
                             >
                             <template #cell(url)="data">
                                 <a :href="`${this.$storageURL}/${data.item.url}`" target="_blank" rel="noopener noreferrer" download>
                                     <i class="fas fa-download"></i> Descargar
                                 </a>
-                            </template>
-                            <template #cell(accion)="{ item }">
-                                <!-- Agregar botón de edición -->
-                                <BButton @click="editInfografia(item)" variant="info">Editar</BButton>
                             </template>
                             </BTable>
                         </div>
@@ -230,9 +213,9 @@ export default {
                                 <ul class="pagination pagination-rounded mb-0">
                                     <!-- pagination -->
                                     <BPagination
-                                    v-model="currentPageInfografia"
-                                    :total-rows="totalRowsInfografia"
-                                    :per-page="perPageInfografia"
+                                    v-model="currentPage"
+                                    :total-rows="totalRows"
+                                    :per-page="perPage"
                                     ></BPagination>
                                 </ul>
                                 </div>

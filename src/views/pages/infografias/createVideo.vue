@@ -107,8 +107,9 @@ export default {
                     formData.append("file", this.DropFile[i][0]); // Utiliza "files" en lugar de "files[]"
                 }
             }          
-
-            this.$http.post(this.$apiURL+"infographic/store", formData, {
+            // Realiza la petición con Axios
+            console.log(formData)
+            this.$http.post(this.$apiURL+"video/store", formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
@@ -150,13 +151,13 @@ export default {
                   <BRow>
                     <BCol lg="6">
                       <BFormGroup
-                          label="Nombre de Infografía"
+                          label="Nombre de Video"
                           label-for="formrow-firstname-input"
                           class="mb-12">
                           <BFormInput
                               type="text"
                               v-model="form.title"
-                              placeholder = "NOMBRE DE INFOGRAFÍA"
+                              placeholder = "NOMBRE DE VIDEO"
                               required
                               id="formrow-firstname-input">
                           </BFormInput>

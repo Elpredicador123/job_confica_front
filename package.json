@@ -60,8 +60,7 @@
     "vuelidate": "^0.7.7",
     "vuex": "^4.1.0",
     "query-string": "^8.1.0",
-    "moment": "^2.22.2",
-    "element-ui": "^2.15.13"
+    "moment": "^2.22.2"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.12.16",

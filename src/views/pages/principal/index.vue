@@ -28,6 +28,7 @@ export default {
             currentEvents: [],
             tableData: [],
             DiaActual: null,
+            fecha_actual: null,
         };
     },
     validations: {
@@ -79,14 +80,14 @@ export default {
         },
         async getData() {
             try {
-                const response = await this.$http.get(this.$apiURL+'user/all');
+                const response = await this.$http.get(this.$apiURL+'technical/listweekbirthdays');
                 response.data.data.map(i => this.TablaCumpleanios.push({ ...i }));
                 this.TablaCumpleanios = response.data.data.map(item => {
-                    const fecha = new Date(item.date);
-                    const fechaFormatted = `${fecha.getDate()} de ${fecha.toLocaleString('es-ES', { month: 'long' })}`;
+                    const fecha = new Date(item.Fecha_Nacimiento + 'T00:00:00Z');
+                    const fechaFormatted = `${fecha.getUTCDate()} de ${fecha.toLocaleString('es-PE', { month: 'long', timeZone: 'America/Lima' })}`;
                     
                     return {
-                        username: item.username, 
+                        username: item.Nombre_Completo,
                         date: fechaFormatted
                     };
                 });
@@ -104,23 +105,27 @@ export default {
             const ultimoDia = ultimoDiaSemana.toLocaleDateString('es-ES', options);
 
             this.DiaActual = `Semana del ${primerDia} al ${ultimoDia}`;
+
+            const fecha = new Date(); // Crea una fecha con la fecha y hora actual
+            const fechaFormatted = `${fecha.getDate()} de ${fecha.toLocaleString('es-PE', { month: 'long', timeZone: 'America/Lima' })}`;
+            this.fecha_actual = fechaFormatted
         },
         async getData2() {
             try {
-                const response = await this.$http.get(this.$apiURL+'reservation/all');
+                const response = await this.$http.get(this.$apiURL+'reservation/listweek');
                 console.log(response)
                 this.TablaReservas = response.data.data.map(item => {
                     const startTimeFormatted = item.start_time.slice(0, 5);
                     const endTimeFormatted = item.end_time.slice(0, 5);
-                    
-                    const fecha = new Date(item.date);
-                    const fechaFormatted = `${fecha.getDate()} de ${fecha.toLocaleString('es-ES', { month: 'long' })}`;
-                    
+                    console.log(item.date)
+                    const fecha = new Date(item.date + 'T00:00:00Z');
+                    const fechaFormatted = `${fecha.getUTCDate()} de ${fecha.toLocaleString('es-PE', { month: 'long', timeZone: 'America/Lima' })}`;
                     return {
                         nombre: item.title, 
                         start_time: startTimeFormatted,
                         end_time: endTimeFormatted,
-                        date: fechaFormatted
+                        date: fechaFormatted,
+                        user : item.user.username
                     };
                 });
             } catch (error) {
@@ -200,9 +205,17 @@ export default {
                             <strong>{{DiaActual}}</strong>
                             <div class="table-responsive mb-0" v-for="(row, index) in TablaReservas"
                                                                     :key="index">
-                                <li >
-                                    {{ row.date }} | {{ row.start_time }} - {{ row.end_time }} | {{ row.user_id }}
-                                </li>
+                                <template v-if="fecha_actual === row.date">
+                                    <li style="background-color: #f1b44c;">
+                                        {{ row.date }} | {{ row.start_time }} - {{ row.end_time }} | {{ row.user }}
+                                    </li>
+                                </template>
+                                <template v-else>
+                                    <li>
+                                        {{ row.date }} | {{ row.start_time }} - {{ row.end_time }} | {{ row.user }}
+                                    </li>
+                                </template>
+
                             </div>
                         </BCardBody>
                     </BCard>
@@ -220,9 +233,16 @@ export default {
                             <strong>{{DiaActual}}</strong>
                             <div class="table-responsive mb-0" v-for="(row, index) in TablaCumpleanios"
                                                                     :key="index">
-                                <li >
-                                    | {{ row.username }}
-                                </li>
+                                <template v-if="fecha_actual === row.date">
+                                    <li style="background-color: #f1b44c;">
+                                        {{ row.date }} | {{ row.username }}
+                                    </li>
+                                </template>
+                                <template v-else>
+                                    <li>
+                                        {{ row.date }} | {{ row.username }}
+                                    </li>
+                                </template>
                             </div>
                         </BCardBody>
                     </BCard>

@@ -32,37 +32,29 @@ export default {
             fields: [
                 {
                     key: "id",
+                    label : "ID",
                     sortable: true
                 },
                 {
                     key: "title",
-                    sortable: true
-                },
-                {
-                    key: "description",
-                    sortable: true
-                },
-                {
-                    key: "number_of_people",
+                    label : "Motivo",
                     sortable: true
                 },
                 {
                     key: "date",
+                    label : "Fecha",
                     sortable: true
                 }
                 ,
                 {
                     key: "start_time",
+                    label : "Hora Inicio",
                     sortable: true
                 }
                 ,
                 {
                     key: "end_time",
-                    sortable: true
-                }
-                ,
-                {
-                    key: "is_active",
+                    label : "Hora Fin",
                     sortable: true
                 }
             ]
@@ -112,8 +104,16 @@ export default {
         <BRow>
             <BCol cols="12">
                 <BCard no-body>
+                    <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important">
+                        <BRow>
+                            <BCol sm="7">
+                                <i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Reservaciones
+                            </BCol>
+                            <BCol sm="5">
+                            </BCol>
+                        </BRow>
+                    </BCardHeader>
                     <BCardBody>
-                        <BCardTitle>Data Table</BCardTitle>
                         <BRow class="mt-4">
                             <BCol sm="12" md="6">
                                 <div id="tickets-table_length" class="dataTables_length">
