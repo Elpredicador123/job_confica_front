@@ -33,14 +33,42 @@ export default {
             fieldsUser: [
                 {
                     key: "id",
+                    label: "ID",
                     sortable: true
                 },
                 {
                     key: "username",
+                    label: "USUARIO",
+                    sortable: true
+                },
+                {
+                    key: "Nombres",
+                    label: "NOMBRES",
+                    sortable: true
+                },
+                {
+                    key: "Apellido_Paterno",
+                    label: "APELLIDO PATERNO",
+                    sortable: true
+                },
+                {
+                    key: "Apellido_Materno",
+                    label: "APELLIDO MATERNO",
+                    sortable: true
+                },
+                {
+                    key: "Dni",
+                    label: "DNI",
+                    sortable: true
+                },
+                {
+                    key: "email",
+                    label: "CORREO",
                     sortable: true
                 },
                 {
                     key: "rol",
+                    label: "ROL",
                     sortable: true
                 },
                 {
@@ -87,8 +115,14 @@ export default {
         <BRow>
             <BCol cols="12">
                 <BCard no-body>
+                    <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important">
+                        <BRow>
+                            <BCol sm="7">
+                                <i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Listado de usuarios
+                            </BCol>
+                        </BRow>
+                    </BCardHeader>
                     <BCardBody>
-                        <BCardTitle>Listado de Usuarios</BCardTitle>
                         <BRow class="mt-4">
                             <BCol sm="12" md="6">
                                 <div id="tickets-table_length" class="dataTables_length">

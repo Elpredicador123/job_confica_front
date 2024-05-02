@@ -194,7 +194,6 @@ export default {
                 }
                 else{
                     const currentData = JSON.parse(localStorage.getItem('installation_progress_table'));
-                    console.log(currentData )
                     if (currentData) {
                         this.processTableData(currentData.data, this.tableData, this.fields);
                         this.InstalacionDate = this.formatearHora(currentData.data.date)
@@ -207,9 +206,7 @@ export default {
         async getTableInstalacionesDia(){
             try {
                 const response = await this.fetchData('control-panel/productiontableinstallation');
-                console.log(response)
                 if (response !== null && 'series' in response && response.series.length > 0) {
-                console.log(response)
                     this.donutInstalaciones = {... constructor_donutchart(response.series, response.fields)}
                     localStorage.setItem('production_table_installation', JSON.stringify(response));
                     this.InstalacionesDate = this.formatearHora(response.date)
@@ -260,6 +257,7 @@ export default {
                         if(data !== null && 'series' in data && data.series.length>0){
                             this.processTableData(data, this.tableDataAgenda, this.fieldsAgenda,'agenda_dias');
                             this.DiaryDate = this.formatearHora(data.date)
+                            console.log(this.fieldsAgenda)
                         }
                         else{
                             const currentData = JSON.parse(localStorage.getItem('agenda_dias'));
@@ -277,7 +275,6 @@ export default {
         async getInstalaciones() {
             try {
                 const response = await this.fetchData('control-panel/installationprogressgraphic');
-                console.log(response)
                 if (response !== null && 'series' in response && response.series.length>0) {
                     this.columnChart = {... constructor_chart(response.series, response.categories)}
                     localStorage.setItem('installation_progress', JSON.stringify(response));
@@ -575,14 +572,22 @@ export default {
                     </BRow>
                     <!-- Table -->
                     <div class="table-responsive mb-0">
-                        <BTable
-                            :items="tableDataAgenda"
-                            :fields="fieldsAgenda"
-                            responsive="sm"
-                            :per-page="perPageAgenda"
-                            :current-page="currentPageAgenda"
-                        >                    
-                        </BTable>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th v-for="field in fieldsAgenda" :key="field.key">
+                                        {{ field.key }} <!-- Mostrando el nombre del campo -->
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="item in tableDataAgenda" :key="item.id" >
+                                    <td v-for="field in fieldsAgenda" :key="field.key" :class="{ 'background-special': item.Tipo === 'Total Migraciones' || item.Tipo === 'Total' || item.Tipo === 'Total Altas'}">
+                                    {{ item[field.key] }}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </BCardBody>
             </BCard>
@@ -644,7 +649,11 @@ export default {
     <!-- end row -->
 </Layout>
 </template>
-<style>
+<style scoped>
+.background-special {
+    font-weight: bold; /* Aplicar negrita */
+
+}
 .apex-charts text {
     font-family: var(--bs-font-sans-serif) !important;
     fill: #0d151d !important;

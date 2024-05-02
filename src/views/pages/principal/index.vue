@@ -29,6 +29,7 @@ export default {
             tableData: [],
             DiaActual: null,
             fecha_actual: null,
+            isModalOpen: false,
         };
     },
     validations: {
@@ -135,9 +136,11 @@ export default {
         truncateText(text, length) {
             return text.length > length ? text.substring(0, length) + '... ver más' : text;
         },
-        handleCardClick(){
-            
-        }
+        handleCardClick(newsItem) {
+            console.log(newsItem)
+            this.currentNews = {...newsItem};
+            this.isModalOpen = true;
+        },
 
     }
 };
@@ -145,33 +148,10 @@ export default {
 <template>
   <Layout>
     <BRow>
-        <BCol lg="12">
-        <BCard no-body>
-          <BCardBody>
-            <div class="button-items d-flex flex-wrap gap-2">
-              <a
-                class="btn btn-primary"
-                href="https://back.comficaconect.com/importdiary"
-                role="button" target="_blank"
-                >Importar Agendas</a>
-                <a
-                class="btn btn-primary"
-                href="https://back.comficaconect.com/importaudit"
-                role="button" target="_blank"
-                >Importar Auditorias</a>
-                <a
-                class="btn btn-primary"
-                href="https://back.comficaconect.com/importevidence"
-                role="button" target="_blank"
-                >Importar Evidencias</a>
-            </div>
-          </BCardBody>
-        </BCard>
-      </BCol>
         <BCol lg="8">
             <BRow>
                 <BCol cols="12" v-for="newsItem in tableData" :key="newsItem.id">
-                    <BCard @click="handleCardClick(newsItem.id)">
+                    <BCard @click="handleCardClick(newsItem)">
                         <BCardBody>
                             <BCardTitle v-html="newsItem.title"></BCardTitle>
                             <BCardTitle v-html="truncateText(newsItem.description, 30)"></BCardTitle>
@@ -250,6 +230,20 @@ export default {
             </BRow>
         </BCol>
     </BRow>
+    <!-- Modal para mostrar los detalles de la noticia -->
+    <BModal v-model="isModalOpen" title="Detalles de la Noticia" size="lg" hide-footer>
+        <div v-if="currentNews">
+            <h5 v-html="currentNews.title"></h5>
+            <p v-html="currentNews.description"></p>
+            <BCarousel :interval="3000" controls v-if="currentNews.images && currentNews.images.length">
+                <BCarouselSlide
+                    v-for="image in currentNews.images"
+                    :key="image.id"
+                    :img-src="getFullImageUrl(image.url)"
+                ></BCarouselSlide>
+            </BCarousel>
+        </div>
+    </BModal>
   </Layout>
 </template>
 <style>

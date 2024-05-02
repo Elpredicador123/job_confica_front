@@ -34,6 +34,15 @@ export const menuItems = [
                 }
             },
             {
+                id: 93,
+                label: "menuitems.principal.importar",
+                link: "/importar",
+                parentId: 15,
+                meta: {
+                    permissions: ['PRINCIPAL'] // Permisos necesarios para acceder a este elemento del menú
+                }
+            },
+            {
                 id: 4,
                 label : "menuitems.reservation.text",
                 icon: "uil-calendar-slash",

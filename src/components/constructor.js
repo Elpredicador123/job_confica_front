@@ -50,7 +50,6 @@ function constructor_chart(data_series,data_categories){
     return columnChartAux;
 }
 function constructor_piechart(data_series,data_categories,colors = null){
-    console.log(data_series,data_categories)
     let colors_pie =( colors == null) ?  ["#3477C3", "#8F34C3", "#C3349A", "#C33459", "#C37534","3479C3"] : ["#FF7F50", "#91cc75", "#ee6666", "#fac858", "#4DB6AC","34C3B8"];
     let pie_chart = {
         series: data_series,
@@ -140,7 +139,6 @@ function constructor_barchart(data_series,data_categories){
 }
 
 function constructor_donutchart(data_series,data_categories){
-    console.log(data_categories)
     let total = Number((data_series.reduce((sum, value) => sum + value, 0)).toFixed(2));
     let colors = [];
     for (let index = 0; index < data_categories.length; index++) {

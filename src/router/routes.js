@@ -74,6 +74,12 @@ export default [
     component: () => import("../views/pages/principal/index")
   },
   {
+    path: "/importar",
+    name: "Importar",
+    meta: { title: "Importar", authRequired: true,permissions: ['PRINCIPAL']},
+    component: () => import("../views/pages/principal/importar")
+  },
+  {
     path: "/cuadromando",
     name: "Cuadro de Mando",
     meta: { title: "Cuadro de Mando", authRequired: true, permissions: ['CONTROL_PANEL']},

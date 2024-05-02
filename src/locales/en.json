@@ -67,7 +67,8 @@
       "text": "Calendar"
     },
     "principal": {
-      "text": "Principal"
+      "text": "Principal",
+      "importar": "Cargar Archivos"
     },
     "cuadromando": {
       "text": "Cuadro de Mando"

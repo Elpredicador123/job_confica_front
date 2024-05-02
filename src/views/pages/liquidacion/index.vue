@@ -121,8 +121,16 @@ export default {
         <BRow>
             <BCol cols="12">
                 <BCard no-body>
+                    <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important">
+                        <BRow>
+                            <BCol sm="7">
+                                <i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Listado de ordenes
+                            </BCol>
+                            <BCol sm="5">
+                            </BCol>
+                        </BRow>
+                    </BCardHeader>
                     <BCardBody>
-                        <BCardTitle>Data Table</BCardTitle>
                         <BRow class="mt-4">
                             <BCol sm="12" md="6">
                                 <div id="tickets-table_length" class="dataTables_length">

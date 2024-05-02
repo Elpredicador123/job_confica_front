@@ -17,14 +17,14 @@ export default {
     },
     data() {
         return {
-            title: "NUEVA INFOGRAFÍA",
+            title: "NUEVO MATERIAL DE CAPACITACION",
             items: [
                     {
                         text: "Infografías",
-                        href: "/infografias/create"
+                        href: "/infografias/createVideo"
                     },
                     {
-                        text: "Nueva Inforgrafía",
+                        text: "MATERIAL DE CAPACITACION",
                         active: true
                     }
             ],

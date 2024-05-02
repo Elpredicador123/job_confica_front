@@ -41,6 +41,7 @@ export default {
                 },
                 {
                     key: "url",
+                    label: "link",
                     sortable: true
                 },
             ],
@@ -200,7 +201,7 @@ export default {
                             >
                             <template #cell(url)="data">
                                 <a :href="`${this.$storageURL}/${data.item.url}`" target="_blank" rel="noopener noreferrer" download>
-                                    <i class="fas fa-download"></i> Descargar
+                                    <i class="bx bx-show"></i> Visualizar
                                 </a>
                             </template>
                             </BTable>
