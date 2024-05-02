@@ -649,7 +649,7 @@ export default {
     <!-- end row -->
 </Layout>
 </template>
-<style scoped>
+<style>
 .background-special {
     font-weight: bold; /* Aplicar negrita */
 
