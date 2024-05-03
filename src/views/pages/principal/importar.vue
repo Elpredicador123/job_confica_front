@@ -15,11 +15,11 @@ export default {
         <BCard no-body>
           <BCardBody>
             <div class="button-items d-flex flex-wrap gap-2">
-              <a
+              <!-- <a
                 class="btn btn-primary"
                 href="https://back.comficaconect.com/importdiary"
                 role="button" target="_blank"
-                >Importar Agendas</a>
+                >Importar Agendas</a> -->
                 <a
                 class="btn btn-primary"
                 href="https://back.comficaconect.com/importaudit"
@@ -39,7 +39,7 @@ export default {
                 class="btn btn-primary"
                 href="https://back.comficaconect.com/importdiaryprimary"
                 role="button" target="_blank"
-                >Importar Diario</a>
+                >Importar Agendas Primarias</a>
             </div>
           </BCardBody>
         </BCard>

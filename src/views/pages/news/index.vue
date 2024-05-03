@@ -11,10 +11,10 @@ export default {
     data() {
         return {
             tableData: [],
-            title: "Noticias",
+            title: "Artículos",
             items: [
                 {
-                text: "Noticias",
+                text: "Artículos",
                 href: "/news/index"
                 },
                 {
@@ -32,26 +32,22 @@ export default {
             sortDesc: false,
             fields: [
                 {
-                    key: "id",
-                    sortable: true
-                },
-                {
                     key: "title",
-                    sortable: true
-                },
-                {
-                    key: "description",
+                    label : "TITULO",
                     sortable: true
                 },
                 {
                     key: "date",
+                    label : "FECHA DE CREACIÓN",
                     sortable: true
                 },
                 {
-                    key: "user_id",
+                    key: "user.username",
+                    label : "USUARIO",
                     sortable: true
                 },
                 {
+                    label : "ACCION",
                     key: "actions",
                 }
             ]
@@ -101,6 +97,13 @@ export default {
         <BRow>
             <BCol cols="12">
                 <BCard no-body>
+                    <BCardHeader style="padding: 1em; background-color: #5b73e8;color : #ffff !important">
+                        <BRow>
+                            <BCol sm="7">
+                                <i class="bx bx-check-circle"></i>&nbsp;&nbsp;&nbsp;Listado de Artículos
+                            </BCol>
+                        </BRow>
+                    </BCardHeader>
                     <BCardBody>
                         <BCardTitle>Data Table</BCardTitle>
                         <BRow class="mt-4">

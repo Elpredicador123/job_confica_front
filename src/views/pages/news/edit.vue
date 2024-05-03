@@ -272,7 +272,9 @@ export default {
                     icon: 'success',
                     confirmButtonColor: '#6457A2', // Cambiar el color del botón de confirmación
                 });
-
+                setTimeout(() => {
+                        window.location.reload();
+                    }, 2000);
               }
           }).catch(error => {
                 this.$swal({
