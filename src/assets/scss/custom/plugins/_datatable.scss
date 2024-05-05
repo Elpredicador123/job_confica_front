@@ -101,3 +101,15 @@ div.table-responsive>div.dataTables_wrapper>div.row>div[class^="col-"]{
   background-color: #2a1abd; /* Cambia "your-color" por el color que desees */
   color: #000000; /* Cambia el color del texto si es necesario */
 }
+.table > :not(caption) > * > * {
+  border-color: #000;
+}
+.table > :not(:last-child) > :last-child > * {
+  background-color: #b5c9dd;
+}
+.table > tbody {
+  text-align: center;
+}
+.table > thead {
+  text-align: center;
+}

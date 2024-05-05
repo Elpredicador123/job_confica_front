@@ -652,7 +652,8 @@ export default {
 <style>
 .background-special {
     font-weight: bold; /* Aplicar negrita */
-
+    background-color: #1a29ad !important;
+    color: #fff !important;
 }
 .apex-charts text {
     font-family: var(--bs-font-sans-serif) !important;
